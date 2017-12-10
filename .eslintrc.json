@@ -1,0 +1,31 @@
+{
+    "extends": "airbnb-base",
+    "env": {
+      "browser": true
+    },
+    "plugins": [
+      "react"
+    ],
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "rules": {
+      "semi": ["error", "never"],
+      "no-console": ["error", { "allow": ["warn", "error"] }],
+      "func-names": ["error", "never"],
+      "no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
+      "no-new": 0,
+      "no-mixed-operators": 0,
+      "prefer-destructuring": 0,
+      "no-param-reassign": 0,
+      "arrow-parens": ["error", "as-needed"],
+      "react/jsx-uses-vars": 2
+    },
+    "globals": {
+      "PIXI": false,
+      "p2": false,
+      "Phaser": false
+    }
+}

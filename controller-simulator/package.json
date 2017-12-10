@@ -1,0 +1,31 @@
+{
+  "name": "TooManyCaptains-controller-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "react": "^16.1.0",
+    "react-dom": "^16.1.0",
+    "react-scripts-ts": "2.8.0",
+    "react-spinkit": "^3.0.0",
+    "socket.io-client": "^2.0.4"
+  },
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject",
+    "deploy": "npm run build && surge -d simulator.toomanycaptains.com build"
+  },
+  "devDependencies": {
+    "@types/isomorphic-fetch": "^0.0.34",
+    "@types/jest": "^21.1.6",
+    "@types/lodash": "^4.14.85",
+    "@types/node": "^8.0.51",
+    "@types/react": "^16.0.22",
+    "@types/react-dom": "^16.0.3",
+    "@types/react-spinkit": "^3.0.2",
+    "@types/socket.io-client": "^1.4.32",
+    "tslint": "^5.8.0"
+  }
+}

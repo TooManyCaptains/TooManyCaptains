@@ -1,0 +1,13 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+       "object-literal-sort-keys": false,
+       "semicolon": [true, "never"],
+       "arrow-parens": [true, "ban-single-arg-parens"],
+       "quotemark": [true, "single", "jsx-double"],
+       "ordered-imports": false,
+       "interface-name": [true, "never-prefix"],
+      "no-console": [true, "log"],
+      "max-classes-per-file": [true, "exclude-class-expressions"]
+    }
+}
