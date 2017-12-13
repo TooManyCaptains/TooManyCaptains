@@ -3,7 +3,7 @@ import PlayerShip from './PlayerShip'
 import { Enemy } from './Enemy'
 import Asteroid from './Asteroid'
 import Doors from './Doors'
-import StartScreen from './StartScreen'
+import { StartScreen, EndScreen } from './Screens'
 
 export default class Main extends Phaser.State {
   init() {
@@ -150,7 +150,7 @@ export default class Main extends Phaser.State {
     // Doors
     this.doors = this.game.add.existing(new Doors(this.game))
 
-    this.startScreen = this.game.add.existing(new StartScreen(this.game))
+    this.screen = this.game.add.existing(new StartScreen(this.game))
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20
@@ -372,7 +372,7 @@ export default class Main extends Phaser.State {
   }
 
   startGame() {
-    this.startScreen.visible = false
+    this.screen.destroy(true, true)
     this.doors.open(() => {
       this.gameState = 'start'
       this.game.server.notifyGameState(this.gameState)
@@ -386,6 +386,7 @@ export default class Main extends Phaser.State {
     this.recentlyEnded = true
     this.game.physics.paused = true
     this.doors.close(() => {
+      this.screen = this.game.add.existing(new EndScreen(this.game, this.score))
       this.gameoverFx.play()
     })
 

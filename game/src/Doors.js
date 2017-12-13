@@ -12,7 +12,7 @@ export default class Doors extends Phaser.Group {
 
     // Animation
     this.durationMillis = 1700
-    this.easing = Phaser.Easing.Default
+    this.easing = Phaser.Easing.Quadratic.InOut
   }
 
   open(callback) {

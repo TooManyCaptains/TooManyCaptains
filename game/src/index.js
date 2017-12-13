@@ -197,33 +197,10 @@ class App extends React.Component {
   }
 
   render() {
-
     return (
       <div className="App" foo={this}/>
     )
-        // {
-//           this.state.isStarted ? null
-//           :
-//           <div className="Splash">
-//             {
-//               this.state.isOnValidDisplay ?
-//               <div className="Splash-button" onClick={() => this.start()}>
-//                {this.game ? 'RESUME' : 'PLAY'}
-//               </div>
-//               :
-//               <div className="Splash-instructions">{`Hey, bad news. This game only works on 1920x1080 resolution displays.
-
-// Unfortunately, this browser window is on a ${window.screen.width}x${window.screen.height} resolution display.
-
-// To fix this problem, please plug your comptuer into an external monitor or TV that's 1080p.`}
-//               </div>
-//             }
-//           </div>
-//         }
-//         {/* <HUD {...this.state.stats}/> */}
-//       </div>
-//     )
   }
 }
 
-ReactDOM.render(<App/>, document.getElementById('UI'))
+ReactDOM.render(<App/>, document.getElementById('surface'))
