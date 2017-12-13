@@ -3,7 +3,7 @@ import PlayerShip from './PlayerShip'
 import { Enemy } from './Enemy'
 import Asteroid from './Asteroid'
 import Doors from './Doors'
-import { setTimeout } from 'core-js/library/web/timers';
+import StartScreen from './StartScreen'
 
 export default class Main extends Phaser.State {
   init() {
@@ -16,7 +16,6 @@ export default class Main extends Phaser.State {
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
     this.game.stage.disableVisibilityChange = true
-    this.game.paused = true
 
     // XXX: Periodically notify controller about state, since its not persisted
     setInterval(() => this.game.server.notifyGameState(this.gameState), 250)
@@ -72,11 +71,12 @@ export default class Main extends Phaser.State {
     this.load.spritesheet('enemy_BY', 'assets/enemies/enemy_BY.png', enemyWidth, enemyHeight)
     this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', enemyWidth, enemyHeight)
 
-    this.load.image('gameover', 'assets/gameover.png')
+
+    this.load.image('logo', 'assets/logo.png')
+    this.load.image('gameover-text', 'assets/gameover-text.png')
+    this.load.image('red-button', 'assets/red-button.png')
     this.load.image('asteroid', 'assets/asteroid.png')
 
-    // XXX: Not actually rendered by phaser, but this is a way to preload the image
-    this.load.image('gameover-bg', 'assets/gameover-bg.png')
     this.load.image('door-left', 'assets/door-left.png')
     this.load.image('door-right', 'assets/door-right.png')
 
@@ -149,6 +149,8 @@ export default class Main extends Phaser.State {
 
     // Doors
     this.doors = this.game.add.existing(new Doors(this.game))
+
+    this.startScreen = this.game.add.existing(new StartScreen(this.game))
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20
@@ -370,7 +372,7 @@ export default class Main extends Phaser.State {
   }
 
   startGame() {
-    this.game.paused = false
+    this.startScreen.visible = false
     this.doors.open(() => {
       this.gameState = 'start'
       this.game.server.notifyGameState(this.gameState)
@@ -382,6 +384,7 @@ export default class Main extends Phaser.State {
     this.gameState = 'over'
     this.game.server.notifyGameState(this.gameState)
     this.recentlyEnded = true
+    this.game.physics.paused = true
     this.doors.close(() => {
       this.gameoverFx.play()
     })
