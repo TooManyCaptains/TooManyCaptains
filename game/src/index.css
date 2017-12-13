@@ -33,8 +33,8 @@ html, body, #root, .App {
   height: 100%;
 }
 
-#game, canvas {
-  height: 60%;
+#surface, canvas {
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;

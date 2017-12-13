@@ -3,7 +3,7 @@ body {
 }
 
 .HUD {
-  height: 45%;
+  /* height: 45%; */
   border-top: 2px solid white;
   margin-top: -2px;
   display: flex;

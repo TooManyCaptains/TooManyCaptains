@@ -4,7 +4,7 @@ import HealthBar from './HealthBar'
 
 export default class PlayerShip extends Phaser.Sprite {
   constructor(game) {
-    super(game, 125 * game.scaleFactor, game.height / 2, 'player')
+    super(game, 125 * game.scaleFactor, game.height / 4, 'player')
     this.animations.add('move')
     this.animations.play('move', 20, true)
 

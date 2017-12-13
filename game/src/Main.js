@@ -75,6 +75,8 @@ export default class Main extends Phaser.State {
 
     // XXX: Not actually rendered by phaser, but this is a way to preload the image
     this.load.image('gameover-bg', 'assets/gameover-bg.png')
+    this.load.image('door-left', 'assets/door-left.png')
+    this.load.image('door-right', 'assets/door-right.png')
 
     this.load.audio('shoot', 'assets/sounds/shoot.wav')
     this.load.audio('move_slow', 'assets/sounds/move_slow.wav')
@@ -90,24 +92,16 @@ export default class Main extends Phaser.State {
 
   create() {
     // Background
-    const bgHeightTweak = 10 * this.game.scaleFactor
-    this.background = this.add.tileSprite(0, 0, this.game.height * bgHeightTweak, this.game.height, 'background')
+    this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height / 2, 'background')
     this.background.autoScroll(-10, 0)
 
     // Planet
-    this.planet = this.add.sprite(this.game.world.centerX, this.game.height, 'planet')
+    this.planet = this.add.sprite(this.game.width, this.game.height / 4, 'planet')
     this.planet.anchor.setTo(0.5, 0.5)
     this.planet.scale.set(this.game.scaleFactor, this.game.scaleFactor)
-    this.planet.x = this.game.width
-    this.planet.y = this.game.height / 2
     this.game.physics.enable(this.planet, Phaser.Physics.ARCADE)
     this.planet.update = () => { this.planet.angle -= 0.05 }
 
-    // Score timer
-    this.game.score = 0
-    const scoreTimer = this.game.time.create()
-    scoreTimer.loop(250, () => this.game.score += 1)
-    scoreTimer.start()
 
     // Score text
     const rectWidth = 260 * this.game.scaleFactor
@@ -117,18 +111,27 @@ export default class Main extends Phaser.State {
     const offsetTop = 14 * this.game.scaleFactor
     const graphics = this.game.add.graphics(
       this.game.width - rectWidth - rectOffsetFromEdge,
-      this.game.height / 2 - (rectHeight / 2),
+      this.game.height / 4 - (rectHeight / 2),
     )
     graphics.lineStyle(2, 0x000000, 1)
     graphics.beginFill(0xffffff)
     graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 37.5 * this.game.scaleFactor)
     this.scoreText = this.game.add.text(
       this.game.width - rectWidth - rectOffsetFromEdge + offsetLeft,
-      this.game.height / 2 - (rectHeight / 2) + offsetTop,
+      this.game.height / 4 - (rectHeight / 2) + offsetTop,
       '',
       { font: `${32 * this.game.scaleFactor}px Exo 2`, fill: 'black', fontWeight: 900 },
     )
+
+    // Boundaries for the playable game area
     this.maxX = this.game.width - this.planet.width / 2 - rectOffsetFromEdge
+    this.maxY = this.game.height / 2
+
+    // Score timer
+    this.game.score = 0
+    const scoreTimer = this.game.time.create()
+    scoreTimer.loop(250, () => this.game.score += 1)
+    scoreTimer.start()
 
     // Player ship
     this.player = this.game.add.existing(new PlayerShip(this.game))
@@ -138,7 +141,7 @@ export default class Main extends Phaser.State {
     const numStartingEnemies = 3
     this.enemies = []
     _.times(numStartingEnemies, i => {
-      this.spawnEnemy(105 * this.game.scaleFactor + i * this.game.height / numStartingEnemies)
+      this.spawnEnemy(this.maxY * i / numStartingEnemies + (this.maxY / numStartingEnemies / 2))
     })
 
     // Periodically spawn an asteroid
@@ -164,11 +167,11 @@ export default class Main extends Phaser.State {
     // Input
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.E)
-      .onDown.add(() => this.spawnEnemy(this.game.height * Math.random()), this)
+      .onDown.add(() => this.spawnEnemy(this.maxY * Math.random()), this)
 
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.A)
-      .onDown.add(() => this.spawnAsteroid(this.game.height * Math.random()), this)
+      .onDown.add(() => this.spawnAsteroid(this.maxY * Math.random()), this)
 
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.K)
@@ -185,6 +188,10 @@ export default class Main extends Phaser.State {
       this.player.maxHealth = health
       this.player.health = health
     }
+    // Doors
+    this.doorLeft = this.add.sprite(0, 0, 'door-left')
+    // this.doorLeft.bringToTop()
+    this.doorRight = this.add.sprite(0, 0, 'door-right')
   }
 
   spawnEnemy(yInitial) {
