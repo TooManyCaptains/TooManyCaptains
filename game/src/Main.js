@@ -103,13 +103,13 @@ export default class Main extends Phaser.State {
     this.game.physics.enable(this.planet, Phaser.Physics.ARCADE)
     this.planet.update = () => { this.planet.angle -= 0.05 }
 
-    // Score
+    // Score timer
     this.game.score = 0
     const scoreTimer = this.game.time.create()
     scoreTimer.loop(250, () => this.game.score += 1)
     scoreTimer.start()
 
-    // Distance to planet text
+    // Score text
     const rectWidth = 260 * this.game.scaleFactor
     const rectHeight = 69 * this.game.scaleFactor
     const rectOffsetFromEdge = 15 * this.game.scaleFactor
@@ -122,17 +122,11 @@ export default class Main extends Phaser.State {
     graphics.lineStyle(2, 0x000000, 1)
     graphics.beginFill(0xffffff)
     graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 37.5 * this.game.scaleFactor)
-    // this.distanceText = this.game.add.text(
-    //   this.game.width - rectWidth - rectOffsetFromEdge + offsetLeft,
-    //   this.game.height / 2 - (rectHeight / 2) + offsetTop,
-    //   '',
-    //   { font: `${47 * this.game.scaleFactor}px DDC Hardware`, fill: 'black' },
-    // )
     this.scoreText = this.game.add.text(
       this.game.width - rectWidth - rectOffsetFromEdge + offsetLeft,
       this.game.height / 2 - (rectHeight / 2) + offsetTop,
       '',
-      { font: `${34 * this.game.scaleFactor}px DDC Hardware`, fill: 'black' },
+      { font: `${32 * this.game.scaleFactor}px Exo 2`, fill: 'black', fontWeight: 900 },
     )
     this.maxX = this.game.width - this.planet.width / 2 - rectOffsetFromEdge
 

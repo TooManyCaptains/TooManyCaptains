@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css?family=Exo+2:700,800,900');
+
+
 @font-face {
   font-family: 'DDC Hardware';
   src: url('fonts/ddc-regular.woff2') format('woff2');
@@ -8,7 +11,7 @@
 html, body{
   margin:0;
   }
-  
+
 
 @font-face {
   font-family: 'DDC Hardware Condensed';
@@ -20,7 +23,8 @@ html, body{
 body {
   margin: 0;
   background-color: black;
-  font-family: 'DDC Hardware Condensed';
+  /* font-family: 'DDC Hardware Condensed'; */
+  font-family: 'Exo 2', sans-serif;
   color: white;
   /* cursor: none; */
 }
@@ -154,7 +158,8 @@ html, body, #root, .App {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'DDC Hardware';
+  /* font-family: 'DDC Hardware'; */
+  font-family: 'Exo 2', sans-serif;
   animation: blink-animation 1.5s linear infinite;
 }
 
@@ -198,7 +203,7 @@ html, body, #root, .App {
 
 .Splash-button:hover {
   background-color: black;
-  color: white; 
+  color: white;
   cursor: pointer;
 }
 

@@ -17,6 +17,8 @@ export class PatrolEnemy extends Phaser.Sprite {
   }
 
   update() {
+    // I did this on my own. Here's another take:
+    // https://gamemechanicexplorer.com/#homingmissiles-1
     this.game.physics.arcade.moveToObject(this, this.game.player, this.movementSpeed)
     let degreesBetween = toDegrees(this.game.physics.arcade.angleBetween(this, this.game.player))
     if (degreesBetween < 0) {
