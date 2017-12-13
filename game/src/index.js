@@ -81,7 +81,6 @@ class App extends React.Component {
         this.initializeGameOnSurface()
       }
       this.game.paused = false
-      window.document.querySelector('#gamebefore').style.display = 'unset'
     }, 250)
   }
 
@@ -91,7 +90,6 @@ class App extends React.Component {
     }
     this.setState({ isStarted: false })
     this.game.paused = true
-    window.document.querySelector('#gamebefore').style.display = 'none'
   }
 
   initializeGameOnSurface() {
@@ -199,10 +197,11 @@ class App extends React.Component {
   }
 
   render() {
-    return null
-//     return (
-//       <div className="App">
-//         {
+
+    return (
+      <div className="App" foo={this}/>
+    )
+        // {
 //           this.state.isStarted ? null
 //           :
 //           <div className="Splash">

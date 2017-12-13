@@ -2,6 +2,8 @@ import _ from 'lodash'
 import PlayerShip from './PlayerShip'
 import { Enemy } from './Enemy'
 import Asteroid from './Asteroid'
+import Doors from './Doors'
+import { setTimeout } from 'core-js/library/web/timers';
 
 export default class Main extends Phaser.State {
   init() {
@@ -88,6 +90,7 @@ export default class Main extends Phaser.State {
     this.load.audio('shield', 'assets/sounds/shield.wav')
     this.load.audio('damaged', 'assets/sounds/damaged.wav')
     this.load.audio('collide', 'assets/sounds/collide.wav')
+    this.load.audio('gameover', 'assets/sounds/gameover.wav')
   }
 
   create() {
@@ -144,6 +147,9 @@ export default class Main extends Phaser.State {
       this.spawnEnemy(this.maxY * i / numStartingEnemies + (this.maxY / numStartingEnemies / 2))
     })
 
+    // Doors
+    this.doors = this.game.add.existing(new Doors(this.game))
+
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20
     const asteroidTimer = this.game.time.create()
@@ -158,11 +164,10 @@ export default class Main extends Phaser.State {
     enemyTimer.start()
 
     // Sound FX
-    this.doorsOpenFx = this.game.add.audio('doors_open')
-    this.doorsCloseFx = this.game.add.audio('doors_close')
     this.shieldFx = this.game.add.audio('shield')
     this.damagedFx = this.game.add.audio('damaged')
     this.collideFx = this.game.add.audio('collide')
+    this.gameoverFx = this.game.add.audio('gameover')
 
     // Input
     this.game.input.keyboard
@@ -188,10 +193,6 @@ export default class Main extends Phaser.State {
       this.player.maxHealth = health
       this.player.health = health
     }
-    // Doors
-    this.doorLeft = this.add.sprite(0, 0, 'door-left')
-    // this.doorLeft.bringToTop()
-    this.doorRight = this.add.sprite(0, 0, 'door-right')
   }
 
   spawnEnemy(yInitial) {
@@ -370,39 +371,22 @@ export default class Main extends Phaser.State {
 
   startGame() {
     this.game.paused = false
-    const gbi = window.document.querySelector('.GameBeforeInner')
-    gbi.classList.add('hidden')
-    const afterTransition = () => {
-      this.doorsOpenFx.play()
-      window.document.querySelectorAll('.Door').forEach(door => {
-        door.classList.add('opened')
-      })
+    this.doors.open(() => {
       this.gameState = 'start'
       this.game.server.notifyGameState(this.gameState)
       this.game.server.notifyReady()
-    }
-    gbi.addEventListener('transitionend', afterTransition.bind(this), false)
+    })
   }
 
   endGame() {
     this.gameState = 'over'
     this.game.server.notifyGameState(this.gameState)
-    this.game.paused = true
     this.recentlyEnded = true
-    window.setTimeout(() => this.recentlyEnded = false, 7500)
-    window.document.querySelector('#doorsclosesound').play()
-    window.document.querySelectorAll('.Door').forEach(door => {
-      door.classList.remove('opened')
+    this.doors.close(() => {
+      this.gameoverFx.play()
     })
-    const door = window.document.querySelectorAll('.Door')[0]
-    door.addEventListener('transitionend', () => {
-      window.document.querySelector('.GameOver-score').innerText = `Score: ${this.game.score}`
-      setTimeout(() => {
-        window.document.querySelector('.GameOverInner').classList.remove('hidden')
-        setTimeout(() => window.document.querySelector('.GameOver-cta').style.visibility = 'visible', 3300)
-      }, 4300)
-    }, false)
-    window.document.querySelector('#gameoversound').play()
+
+    window.setTimeout(() => this.recentlyEnded = false, 7500)
   }
 
   checkAndNotifyIfGameEnded() {
