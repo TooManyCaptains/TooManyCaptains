@@ -1,9 +1,10 @@
 import _ from 'lodash'
-import PlayerShip from './PlayerShip'
-import { Enemy } from './Enemy'
-import Asteroid from './Asteroid'
-import Doors from './Doors'
-import { StartScreen, EndScreen } from './Screens'
+import PlayerShip from '../entities/PlayerShip'
+import { Enemy } from '../entities/Enemy'
+import Asteroid from '../entities/Asteroid'
+import Doors from '../interface/Doors'
+import { StartScreen, EndScreen } from '../interface/Screens'
+import HUD from '../interface/HUD'
 
 export default class Main extends Phaser.State {
   init() {
@@ -15,82 +16,26 @@ export default class Main extends Phaser.State {
     this.gameState = 'before'
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
-    this.game.stage.disableVisibilityChange = true
 
     // XXX: Periodically notify controller about state, since its not persisted
     setInterval(() => this.game.server.notifyGameState(this.gameState), 250)
   }
 
   preload() {
-    this.load.image('background', 'assets/background.png')
-    this.load.image('planet', 'assets/planet.png')
-    this.load.spritesheet('player', 'assets/player-ship.png', 200, 120)
-    this.load.image('bullet', 'assets/bullets/beam_Y.png')
-
-    this.load.image('beam_B', 'assets/bullets/beam_B.png')
-    this.load.image('beam_Y', 'assets/bullets/beam_Y.png')
-    this.load.image('beam_R', 'assets/bullets/beam_R.png')
-
-    this.load.image('bullet_B', 'assets/bullets/bullet_B.png')
-    this.load.image('bullet_BY', 'assets/bullets/bullet_BY.png')
-    this.load.image('bullet_BRY', 'assets/bullets/bullet_BRY.png')
-    this.load.image('bullet_BR', 'assets/bullets/bullet_BR.png')
-    this.load.image('bullet_R', 'assets/bullets/bullet_R.png')
-    this.load.image('bullet_RY', 'assets/bullets/bullet_RY.png')
-    this.load.image('bullet_Y', 'assets/bullets/bullet_Y.png')
-
-    this.load.image('bullet_shoot_B', 'assets/bullets/bullet_shoot_B.png')
-    this.load.image('bullet_shoot_BY', 'assets/bullets/bullet_shoot_BY.png')
-    this.load.image('bullet_shoot_BRY', 'assets/bullets/bullet_shoot_BRY.png')
-    this.load.image('bullet_shoot_BR', 'assets/bullets/bullet_shoot_BR.png')
-    this.load.image('bullet_shoot_R', 'assets/bullets/bullet_shoot_R.png')
-    this.load.image('bullet_shoot_RY', 'assets/bullets/bullet_shoot_RY.png')
-    this.load.image('bullet_shoot_Y', 'assets/bullets/bullet_shoot_Y.png')
-
-    this.load.image('shield_B', 'assets/shields/shield_B.png')
-    this.load.image('shield_BY', 'assets/shields/shield_YB.png')
-    this.load.image('shield_BR', 'assets/shields/shield_RB.png')
-    this.load.image('shield_BRY', 'assets/shields/shield_RYB.png')
-    this.load.image('shield_R', 'assets/shields/shield_R.png')
-    this.load.image('shield_RY', 'assets/shields/shield_RY.png')
-    this.load.image('shield_Y', 'assets/shields/shield_Y.png')
-
-    this.load.image('weapon-sight', 'assets/weapon-sight.png')
-
-    this.load.spritesheet('explosion', 'assets/explosion.png', 160, 160)
+    this.load.spritesheet('player', 'assets/sprites/player-ship.png', 200, 120)
+    this.load.spritesheet('explosion', 'assets/sprites/explosion.png', 160, 160)
 
     const enemyWidth = 150
     const enemyHeight = 65
-    this.load.spritesheet('enemy_RR', 'assets/enemies/enemy_RR.png', enemyWidth, enemyHeight)
-    this.load.spritesheet('enemy_RY', 'assets/enemies/enemy_RY.png', enemyWidth, enemyHeight)
-    this.load.spritesheet('enemy_RB', 'assets/enemies/enemy_RB.png', enemyWidth, enemyHeight)
-    this.load.spritesheet('enemy_YR', 'assets/enemies/enemy_YR.png', enemyWidth, enemyHeight)
-    this.load.spritesheet('enemy_YY', 'assets/enemies/enemy_YY.png', enemyWidth, enemyHeight)
-    this.load.spritesheet('enemy_YB', 'assets/enemies/enemy_YB.png', enemyWidth, enemyHeight)
-    this.load.spritesheet('enemy_BR', 'assets/enemies/enemy_BR.png', enemyWidth, enemyHeight)
-    this.load.spritesheet('enemy_BY', 'assets/enemies/enemy_BY.png', enemyWidth, enemyHeight)
-    this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', enemyWidth, enemyHeight)
-
-
-    this.load.image('logo', 'assets/logo.png')
-    this.load.image('gameover-text', 'assets/gameover-text.png')
-    this.load.image('red-button', 'assets/red-button.png')
-    this.load.image('asteroid', 'assets/asteroid.png')
-
-    this.load.image('door-left', 'assets/door-left.png')
-    this.load.image('door-right', 'assets/door-right.png')
-
-    this.load.audio('shoot', 'assets/sounds/shoot.wav')
-    this.load.audio('move_slow', 'assets/sounds/move_slow.wav')
-    this.load.audio('move_fast', 'assets/sounds/move_fast.wav')
-    this.load.audio('charging', 'assets/sounds/charging.wav')
-    this.load.audio('doors_open', 'assets/sounds/doors_open.wav')
-    this.load.audio('doors_close', 'assets/sounds/doors_close.wav')
-    this.load.audio('explosion', 'assets/sounds/explosion.wav')
-    this.load.audio('shield', 'assets/sounds/shield.wav')
-    this.load.audio('damaged', 'assets/sounds/damaged.wav')
-    this.load.audio('collide', 'assets/sounds/collide.wav')
-    this.load.audio('gameover', 'assets/sounds/gameover.wav')
+    this.load.spritesheet('enemy_RR', 'assets/sprites/enemy_RR.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_RY', 'assets/sprites/enemy_RY.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_RB', 'assets/sprites/enemy_RB.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_YR', 'assets/sprites/enemy_YR.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_YY', 'assets/sprites/enemy_YY.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_YB', 'assets/sprites/enemy_YB.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_BR', 'assets/sprites/enemy_BR.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_BY', 'assets/sprites/enemy_BY.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_BB', 'assets/sprites/enemy_BB.png', enemyWidth, enemyHeight)
   }
 
   create() {
@@ -99,12 +44,16 @@ export default class Main extends Phaser.State {
     this.background.autoScroll(-10, 0)
 
     // Planet
+    const planetMask = this.game.add.graphics(0, 0)
+    planetMask.beginFill(0xff0000)
+    planetMask.drawRect(0, 0, this.game.width, this.game.height / 2)
     this.planet = this.add.sprite(this.game.width, this.game.height / 4, 'planet')
     this.planet.anchor.setTo(0.5, 0.5)
-    this.planet.scale.set(this.game.scaleFactor, this.game.scaleFactor)
+    this.planet.mask = planetMask
     this.game.physics.enable(this.planet, Phaser.Physics.ARCADE)
-    this.planet.update = () => { this.planet.angle -= 0.05 }
-
+    this.planet.update = () => {
+      this.planet.angle -= 0.05
+    }
 
     // Score text
     const rectWidth = 260 * this.game.scaleFactor
@@ -147,9 +96,13 @@ export default class Main extends Phaser.State {
       this.spawnEnemy(this.maxY * i / numStartingEnemies + (this.maxY / numStartingEnemies / 2))
     })
 
+    // Panels for HUD
+    this.game.add.existing(new HUD(this.game))
+
     // Doors
     this.doors = this.game.add.existing(new Doors(this.game))
 
+    // Screen
     this.screen = this.game.add.existing(new StartScreen(this.game))
 
     // Periodically spawn an asteroid
@@ -386,7 +339,7 @@ export default class Main extends Phaser.State {
     this.recentlyEnded = true
     this.game.physics.paused = true
     this.doors.close(() => {
-      this.screen = this.game.add.existing(new EndScreen(this.game, this.score))
+      this.screen = this.game.add.existing(new EndScreen(this.game))
       this.gameoverFx.play()
     })
 

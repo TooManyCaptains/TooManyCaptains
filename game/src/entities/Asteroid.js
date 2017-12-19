@@ -1,4 +1,3 @@
-
 export default class Asteroid extends Phaser.Sprite {
   constructor(game, x, y) {
     super(game, x, y, 'asteroid')

@@ -74,8 +74,6 @@ export class Enemy extends Phaser.Sprite {
     // Hitbox size adjustment
     this.body.setSize(102, 38, 13.5, 12.5)
 
-    // // Fire when created
-    // this.fire()
     this.explosionFx = this.game.add.audio('explosion')
   }
 
@@ -105,13 +103,6 @@ export class Enemy extends Phaser.Sprite {
     } else if (this.y + this.height > this.game.height / 2) {
       this.body.velocity.y = -this.verticalDriftSpeed
     }
-    // if (Math.random() < 0.0005) {
-    //   if (this.y > this.game.height / 2) {
-    //     this.body.velocity.y = -this.verticalDriftSpeed
-    //   } else {
-    //     this.body.velocity.y = this.verticalDriftSpeed
-    //   }
-    // }
   }
 
   fire() {

@@ -11,7 +11,7 @@ export default class Doors extends Phaser.Group {
     this.closeFx = this.game.add.audio('doors_close')
 
     // Animation
-    this.durationMillis = 1700
+    this.durationMillis = game.config.skip ? 1 : 1700
     this.easing = Phaser.Easing.Quadratic.InOut
   }
 

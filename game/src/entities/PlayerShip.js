@@ -175,11 +175,6 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   update() {
-    if (this.health !== this.prevHealth) {
-      this.game.onHullStrengthChanged(this.health)
-      this.prevHealth = this.health
-    }
-
     // Shield
     this.shield.x = this.x
     this.shield.y = this.y
