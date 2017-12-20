@@ -53,13 +53,6 @@ export class EndScreen extends Phaser.Group {
   constructor(game) {
     super(game)
 
-    // <div class="GameOverInner hidden">
-    //   <div class="GameOver-score">Score: 4582</div>
-    //   <img class="GameOver-title"  src="./assets/gameover-text.png"/>
-    //   <div class="GameInner-buttontext GameOver-cta">
-    //   </div>
-    // </div>
-
     // Score
     const x = this.game.world.centerX
     const y = this.game.world.centerY * 0.5
@@ -69,7 +62,11 @@ export class EndScreen extends Phaser.Group {
     // "Game over" text
     this.gameOverText = this.create(this.game.world.centerX, this.game.world.centerY, 'gameover-text')
     this.gameOverText.anchor.setTo(0.5, 0.5)
-    setTimeout(this.addResetInstructions.bind(this), 4000)
+
+    this.game.time.create(true)
+      .add(4000, this.addResetInstructions.bind(this))
+      .timer
+      .start()
   }
 
   addResetInstructions() {

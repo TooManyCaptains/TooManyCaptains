@@ -10,12 +10,8 @@ export default class Main extends Phaser.State {
   init() {
     this.game.renderer.renderSession.roundPixels = true
     this.physics.startSystem(Phaser.Physics.ARCADE)
-    this.maxDistance = 3000
-    this.minutesToPlanet = 3
     this.recentlyEnded = false
     this.gameState = 'before'
-    this.distanceRemaining = this.maxDistance
-    this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
 
     // XXX: Periodically notify controller about state, since its not persisted
     setInterval(() => this.game.server.notifyGameState(this.gameState), 250)
@@ -24,7 +20,6 @@ export default class Main extends Phaser.State {
   preload() {
     this.load.spritesheet('player', 'assets/sprites/player-ship.png', 200, 120)
     this.load.spritesheet('explosion', 'assets/sprites/explosion.png', 160, 160)
-
     const enemyWidth = 150
     const enemyHeight = 65
     this.load.spritesheet('enemy_RR', 'assets/sprites/enemy_RR.png', enemyWidth, enemyHeight)
@@ -36,6 +31,7 @@ export default class Main extends Phaser.State {
     this.load.spritesheet('enemy_BR', 'assets/sprites/enemy_BR.png', enemyWidth, enemyHeight)
     this.load.spritesheet('enemy_BY', 'assets/sprites/enemy_BY.png', enemyWidth, enemyHeight)
     this.load.spritesheet('enemy_BB', 'assets/sprites/enemy_BB.png', enemyWidth, enemyHeight)
+    this.doors = this.game.add.existing(new Doors(this.game))
   }
 
   create() {
@@ -99,11 +95,8 @@ export default class Main extends Phaser.State {
     // Panels for HUD
     this.game.add.existing(new HUD(this.game))
 
-    // Doors
-    this.doors = this.game.add.existing(new Doors(this.game))
-
-    // Screen
-    this.screen = this.game.add.existing(new StartScreen(this.game))
+    // // Screen
+    // this.screen = this.game.add.existing(new StartScreen(this.game))
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20
@@ -139,15 +132,14 @@ export default class Main extends Phaser.State {
 
     this.game.server.notifyGameState(this.gameState)
 
-    if (this.game.config.skip) {
-      this.startGame()
-    }
-
     if (this.game.config.invulnerable) {
       const health = 100 * 1000
       this.player.maxHealth = health
       this.player.health = health
     }
+
+    this.game.world.bringToTop(this.doors)
+    this.startGame()
   }
 
   spawnEnemy(yInitial) {
@@ -209,27 +201,23 @@ export default class Main extends Phaser.State {
   }
 
   onFire(state) {
-    if (this.gameState === 'before') {
-      this.startGame.call(this)
-    } else if (this.gameState === 'over' && !this.recentlyEnded) {
-      window.location.reload()
-    } else if (this.gameState === 'start' && this.player) {
+    // if (this.gameState === 'before') {
+    //   this.startGame.call(this)
+    // } else if (this.gameState === 'over' && !this.recentlyEnded) {
+    //   window.location.reload()
+    // } else if (this.gameState === 'start' && this.player) {
       if (state === 'start') {
         this.player.startChargingWeapon.call(this.player)
       } else if (state === 'stop') {
         this.player.stopChargingWeaponAndFireIfPossible()
       }
-    }
+    // }
   }
 
   update() {
     // Update game play time
     this.game.playTimeMS = this.game.time.now - this.game.time.pauseDuration
 
-    // Update distance travelled
-    // const distanceTravelled = this.game.playTimeMS / this.msPerDistanceUnit
-    // this.distanceRemaining = _.round(Math.max(0, this.maxDistance - distanceTravelled))
-    // this.distanceText.text = `${this.distanceRemaining} KM`
     this.scoreText.text = `SCORE: ${this.game.score}`
 
     // Kill sprites marked for killing
@@ -325,7 +313,7 @@ export default class Main extends Phaser.State {
   }
 
   startGame() {
-    this.screen.destroy(true, true)
+    // this.screen.destroy(true, true)
     this.doors.open(() => {
       this.gameState = 'start'
       this.game.server.notifyGameState(this.gameState)
@@ -339,7 +327,7 @@ export default class Main extends Phaser.State {
     this.recentlyEnded = true
     this.game.physics.paused = true
     this.doors.close(() => {
-      this.screen = this.game.add.existing(new EndScreen(this.game))
+      this.game.state.start('After')
       this.gameoverFx.play()
     })
 

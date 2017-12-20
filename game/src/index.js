@@ -2,7 +2,9 @@ import _ from 'lodash'
 import Stats from 'stats.js'
 import Main from './states/Main'
 import Boot from './states/Boot'
+import Before from './states/Before'
 import Preload from './states/Preload'
+import After from './states/After'
 import './index.css'
 import GameServer from './GameServer'
 
@@ -39,7 +41,9 @@ class Game extends Phaser.Game {
     super(1920, 1080, Phaser.CANVAS, 'surface')
     this.state.add('Boot', Boot, false)
     this.state.add('Preload', Preload, false)
+    this.state.add('Before', Before, false)
     this.state.add('Main', Main, false)
+    this.state.add('After', After, false)
 
     this.config = getConfig()
     this.scaleFactor = 1
@@ -58,8 +62,15 @@ class Game extends Phaser.Game {
     const gameMainState = this.state.states.Main
     this.server.socket.on('move-up', data => gameMainState.onMoveUp(data))
     this.server.socket.on('move-down', data => gameMainState.onMoveDown(data))
-    this.server.socket.on('fire', data => gameMainState.onFire(data))
-
+    this.server.socket.on('fire', data => {
+      if (this.state.current === 'Before' && data === 'stop') {
+        this.state.start('Main')
+      } else if (this.state.current === 'After' && data === 'stop') {
+        this.state.start('Main')
+      } else if (this.state.current === 'Main') {
+        gameMainState.onFire(data)
+      }
+    })
     this.server.socket.on('weapons', data => gameMainState.onWeaponsChanged(data))
     this.server.socket.on('shields', data => gameMainState.onShieldsChanged(data))
     this.server.socket.on('propulsion', data => gameMainState.onPropulsionChanged(data))

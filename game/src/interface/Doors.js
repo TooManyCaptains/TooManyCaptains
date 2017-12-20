@@ -1,10 +1,19 @@
 export default class Doors extends Phaser.Group {
-  constructor(game) {
+  constructor(game, isInitiallyOpened = false) {
     super(game)
 
+    const lipSize = 95
+    this.leftOpenX = -this.game.width / 2 - lipSize
+    this.rightOpenX = this.game.width
+
     // Sprites
-    this.doorLeft = this.create(0, -1, 'door-left')
-    this.doorRight = this.create(this.game.width / 2, 0, 'door-right')
+    if (isInitiallyOpened) {
+      this.doorLeft = this.create(this.leftOpenX, -1, 'door-left')
+      this.doorRight = this.create(this.rightOpenX, 0, 'door-right')
+    } else {
+      this.doorLeft = this.create(0, -1, 'door-left')
+      this.doorRight = this.create(this.game.width / 2, 0, 'door-right')
+    }
 
     // Sounds
     this.openFx = this.game.add.audio('doors_open')
@@ -17,11 +26,10 @@ export default class Doors extends Phaser.Group {
 
   open(callback) {
     this.openFx.play()
-    const lipSize = 95
     this.game.add.tween(this.doorLeft.position)
-      .to({ x: -this.game.width / 2 - lipSize }, this.durationMillis, this.easing, true)
+      .to({ x: this.leftOpenX }, this.durationMillis, this.easing, true)
     const animation = this.game.add.tween(this.doorRight.position)
-      .to({ x: this.game.width }, this.durationMillis, this.easing, true)
+      .to({ x: this.rightOpenX }, this.durationMillis, this.easing, true)
     animation.onComplete.add(callback)
   }
 
