@@ -1,5 +1,3 @@
-import { clamp } from 'lodash'
-
 const baseStyle = {
   font: 'Exo 2',
   fontSize: 48,
@@ -29,7 +27,13 @@ export default class Panel extends Phaser.Group {
     text.setTextBounds(0, padding, width, bannerHeight)
 
     if (descriptionText) {
-      const desc = game.add.text(0, padding + bannerHeight, descriptionText, { ...baseStyle, fontSize: 34 }, this)
+      const desc = game.add.text(
+        0,
+        padding + bannerHeight,
+        descriptionText,
+        { ...baseStyle, fontSize: 34 },
+        this,
+      )
       desc.setTextBounds(0, 0, width, 100)
     }
   }

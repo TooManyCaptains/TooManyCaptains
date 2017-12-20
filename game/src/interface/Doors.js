@@ -1,5 +1,5 @@
 export default class Doors extends Phaser.Group {
-  constructor(game, isInitiallyOpened = false) {
+  constructor(game) {
     super(game)
 
     const lipSize = 95
@@ -7,13 +7,8 @@ export default class Doors extends Phaser.Group {
     this.rightOpenX = this.game.width
 
     // Sprites
-    if (isInitiallyOpened) {
-      this.doorLeft = this.create(this.leftOpenX, -1, 'door-left')
-      this.doorRight = this.create(this.rightOpenX, 0, 'door-right')
-    } else {
-      this.doorLeft = this.create(0, -1, 'door-left')
-      this.doorRight = this.create(this.game.width / 2, 0, 'door-right')
-    }
+    this.doorLeft = this.create(0, -1, 'door-left')
+    this.doorRight = this.create(this.game.width / 2, 0, 'door-right')
 
     // Sounds
     this.openFx = this.game.add.audio('doors_open')

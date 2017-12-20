@@ -45,20 +45,20 @@ class Game extends Phaser.Game {
     this.state.add('Main', Main, false)
     this.state.add('After', After, false)
 
-    this.config = getConfig()
+    this.params = getConfig()
     this.scaleFactor = 1
 
     // Kick things off with the boot state.
     this.state.start('Boot')
     this.bindServerEvents()
 
-    if (this.config.debug) {
+    if (this.params.debug) {
       this.setupPerformanceStatistics()
     }
   }
 
   bindServerEvents() {
-    this.server = new GameServer(this.config.serverURL)
+    this.server = new GameServer(this.params.serverURL)
     const gameMainState = this.state.states.Main
     this.server.socket.on('move-up', data => gameMainState.onMoveUp(data))
     this.server.socket.on('move-down', data => gameMainState.onMoveDown(data))

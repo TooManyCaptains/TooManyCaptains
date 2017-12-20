@@ -5,5 +5,7 @@ export default class Boot extends Phaser.State {
   create() {
     this.doors = this.game.add.existing(new Doors(this.game))
     this.screen = this.game.add.existing(new EndScreen(this.game))
+    this.gameoverFx = this.game.add.audio('gameover')
+    this.gameoverFx.play()
   }
 }

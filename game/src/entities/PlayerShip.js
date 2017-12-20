@@ -3,15 +3,13 @@ import { PlayerWeapon } from './Weapon'
 import HealthBar from './HealthBar'
 
 export default class PlayerShip extends Phaser.Sprite {
-  constructor(game) {
-    super(game, 125 * game.scaleFactor, game.height / 4, 'player')
+  constructor(game, x, y) {
+    super(game, x, y, 'player')
     this.animations.add('move')
     this.animations.play('move', 20, true)
 
-    game.physics.enable(this, Phaser.Physics.ARCADE)
+    this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.anchor.setTo(0.5, 0.5)
-
-    this.scale.set(this.game.scaleFactor * 1, this.game.scaleFactor)
 
     // Set hitbox size
     this.body.setSize(165.4, 63.2, 25.8, 28.4)
@@ -38,9 +36,7 @@ export default class PlayerShip extends Phaser.Sprite {
     // Weapons
     this.weapon = null
     this.timeChargingStarted = 0
-    const x = this.x + this.width / 2
-    const y = this.y
-    this.growingBullet = this.game.add.sprite(x, y)
+    this.growingBullet = this.game.add.sprite(this.x + this.width / 2, this.y)
     this.growingBullet.anchor.setTo(0.5, 0.5)
     this.growingBullet.update = () => {
       const scale = this.game.scaleFactor * 0.25 * (1 + this.weaponCharge * 1.5)

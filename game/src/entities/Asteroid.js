@@ -12,10 +12,8 @@ export default class Asteroid extends Phaser.Sprite {
 
     const randScale = 1 + Math.random() / 2
 
-    const scale = this.game.scaleFactor / 1.6 * randScale
+    const scale = 0.6 * randScale
     this.scale.set(scale, scale)
-
-    this.y = Math.min(this.game.height / 2 - this.height / 2, this.y + this.height / 2)
 
     this.body.setSize(140, 145, 33.5, 30)
     this.sendToBack()
