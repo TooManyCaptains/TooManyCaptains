@@ -3,7 +3,7 @@ export default class Doors extends Phaser.Group {
     super(game)
 
     // Sprites
-    this.doorLeft = this.create(0, 0, 'door-left')
+    this.doorLeft = this.create(0, -1, 'door-left')
     this.doorRight = this.create(this.game.width / 2, 0, 'door-right')
 
     // Sounds
