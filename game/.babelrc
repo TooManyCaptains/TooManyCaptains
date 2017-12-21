@@ -1,4 +1,3 @@
 {
-  "plugins": ["transform-react-jsx"],
   "presets": ["stage-2"]
 }

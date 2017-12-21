@@ -1,14 +1,5 @@
-@font-face {
-  font-family: 'Exo 2';
-  src: url('https://fonts.googleapis.com/css?family=Exo+2:700,800,900');
-  font-weight: normal;
-  font-style: normal;
-}
-
 html, body {
   margin: 0;
-  font-family: 'Exo 2', sans-serif;
-  color: white;
   height: 100%;
 }
 
