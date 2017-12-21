@@ -2,7 +2,6 @@ import _ from 'lodash'
 
 import PlayerShip from './PlayerShip'
 import { Enemy } from '../entities/Enemy'
-
 import Asteroid from './Asteroid'
 
 export default class Board extends Phaser.Group {
@@ -161,7 +160,7 @@ export default class Board extends Phaser.Group {
     this.game.physics.arcade.overlap(
       this.enemies,
       this.player,
-      (enemy, player) => {
+      (player, enemy) => {
         enemy.destroy()
         player.getHurtTint()
         player.damage(enemy.collisionDamage)

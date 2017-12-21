@@ -1,14 +1,14 @@
 import React from 'react'
 import { isEqual } from 'lodash'
 
-import ColorChartNone from './images/attri_None.png'
-import ColorChartR from './images/attri_R.png'
-import ColorChartB from './images/attri_B.png'
-import ColorChartY from './images/attri_Y.png'
-import ColorChartBR from './images/attri_RB.png'
-import ColorChartBY from './images/attri_BY.png'
-import ColorChartRY from './images/attri_RY.png'
-import ColorChartBRY from './images/attri_RYB.png'
+// import ColorChartNone from './images/attri_None.png'
+// import ColorChartR from './images/attri_R.png'
+// import ColorChartB from './images/attri_B.png'
+// import ColorChartY from './images/attri_Y.png'
+// import ColorChartBR from './images/attri_RB.png'
+// import ColorChartBY from './images/attri_BY.png'
+// import ColorChartRY from './images/attri_RY.png'
+// import ColorChartBRY from './images/attri_RYB.png'
 
 const colorChartMap = [
   {

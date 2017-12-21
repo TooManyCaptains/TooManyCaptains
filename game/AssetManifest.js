@@ -41,6 +41,15 @@ const AssetManifest = {
     'shield_R.png',
     'shield_RY.png',
     'shield_Y.png',
+
+    'attri_None.png',
+    'attri_R.png',
+    'attri_B.png',
+    'attri_Y.png',
+    'attri_BR.png',
+    'attri_BY.png',
+    'attri_RY.png',
+    'attri_BRY.png',
   ],
   sprites: [],
   audio: [

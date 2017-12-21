@@ -34,6 +34,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.healthBar = new HealthBar(this)
 
     // Weapons
+    this.weaponColors = []
     this.weapon = null
     this.timeChargingStarted = 0
     this.growingBullet = this.game.add.sprite(this.x + this.width / 2, this.y)
@@ -80,6 +81,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
   setWeapons(colors) {
     colors.sort()
+    this.weaponColors = colors
     const colorToWeaponType = color => color[0].toUpperCase()
     if (colors.length === 0) {
       this.weapon = null

@@ -34,7 +34,7 @@ export default class Main extends Phaser.State {
     this.player = this.board.player
 
     // Panels for HUD
-    this.hud = new HUD(this.game)
+    this.hud = new HUD(this.game, 0, this.game.height / 2, this.game.width, this.game.height / 2)
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20
