@@ -12,7 +12,6 @@ export class PatrolEnemy extends Phaser.Sprite {
     this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
 
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
-    this.body.collideWorldBounds = true
     this.movementSpeed = 5
   }
 
@@ -59,14 +58,14 @@ export class Enemy extends Phaser.Sprite {
     this.fireTimer.loop(baseFiringRate + (baseFiringRate * Math.random()), () => this.fire())
     this.fireTimer.start()
 
-    // Death
-    this.events.onKilled.add(this.onKilled.bind(this), this)
     this.collisionDamage = 35
 
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
-    this.body.collideWorldBounds = true
-    this.movementSpeed = 10
+    // this.body.collideWorldBounds = true
+    this.outOfBoundsKill = true
+    this.checkWorldBounds = true
+    this.movementSpeed = 300
     this.verticalDriftSpeed = 2.5
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
@@ -77,23 +76,17 @@ export class Enemy extends Phaser.Sprite {
     this.explosionFx = this.game.add.audio('explosion')
   }
 
-  onKilled() {
-    this.game.score += 150
-    this.fireTimer.stop()
-    this.createExplosion()
-    this.explosionFx.play()
-  }
-
   getHurtTint() {
     this.tint = 0xff0000
     setTimeout(() => this.tint = 0xffffff, 150)
   }
 
-  createExplosion() {
+  explode() {
     this.exp = this.game.add.sprite(this.x, this.y, 'explosion')
     this.exp.anchor.setTo(0.5, 0.5)
     this.exp.animations.add('explosion')
     this.exp.play('explosion', 30, false, true)
+    this.explosionFx.play()
   }
 
   update() {
