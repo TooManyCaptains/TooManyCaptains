@@ -2,7 +2,7 @@ export default class Doors extends Phaser.Group {
   constructor(game) {
     super(game)
 
-    const lipSize = 95
+    const lipSize = 100
     this.leftOpenX = -this.game.width / 2 - lipSize
     this.rightOpenX = this.game.width
 

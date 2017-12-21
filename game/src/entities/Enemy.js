@@ -66,8 +66,8 @@ export class Enemy extends Phaser.Sprite {
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
-    this.movementSpeed = 5
-    this.verticalDriftSpeed = this.movementSpeed / 2
+    this.movementSpeed = 10
+    this.verticalDriftSpeed = 2.5
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
 
@@ -100,7 +100,7 @@ export class Enemy extends Phaser.Sprite {
     // Drift vertically
     if (this.y - this.height < 0) {
       this.body.velocity.y = this.verticalDriftSpeed
-    } else if (this.y + this.height > this.game.height / 2) {
+    } else if (this.bottom > this.parent.maxY) {
       this.body.velocity.y = -this.verticalDriftSpeed
     }
   }

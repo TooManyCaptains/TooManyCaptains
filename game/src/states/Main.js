@@ -30,7 +30,7 @@ export default class Main extends Phaser.State {
 
   create() {
     // Add the game board
-    this.board = new Board(this.game, 0, 0, this.game.width, this.game.height / 2)
+    this.board = new Board(this.game, this.game.width, this.game.height / 2)
     this.player = this.board.player
 
     // Panels for HUD
@@ -63,7 +63,7 @@ export default class Main extends Phaser.State {
 
     this.game.server.notifyGameState(this.gameState)
 
-    if (this.game.config.invulnerable) {
+    if (this.game.params.invulnerable) {
       const health = 100 * 1000
       this.player.maxHealth = health
       this.player.health = health

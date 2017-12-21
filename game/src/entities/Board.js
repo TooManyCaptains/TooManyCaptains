@@ -6,7 +6,7 @@ import { Enemy } from '../entities/Enemy'
 import Asteroid from './Asteroid'
 
 export default class Board extends Phaser.Group {
-  constructor(game, x, y, width, height) {
+  constructor(game, width, height) {
     super(game)
 
     // Sound FX
@@ -93,13 +93,12 @@ export default class Board extends Phaser.Group {
   spawnAsteroid() {
     const x = this.maxX
     const y = this.maxY * Math.random()
-    const asteroid = this.add(new Asteroid(this.game, x, y))
-    asteroid.sendToBack()
-    this.background.sendToBack()
+    const asteroid = this.addAt(new Asteroid(this.game, x, y), 1)
     this.asteroids.push(asteroid)
   }
 
   update() {
+    super.update()
     this.scoreText.text = `SCORE: ${this.game.score}`
 
     // Kill sprites marked for killing
