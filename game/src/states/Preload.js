@@ -44,5 +44,17 @@ export default class Preload extends Phaser.State {
       '...',
       baseStyle,
     )
+
+    this.dotsCur = 0
+    this.dotsMax = 3
+    this.game.time.create()
+      .loop(250, this.updateDots, this)
+      .timer
+      .start()
+  }
+
+  updateDots() {
+    this.text.setText('.'.repeat(this.dotsCur))
+    this.dotsCur = (this.dotsCur % this.dotsMax) + 1
   }
 }
