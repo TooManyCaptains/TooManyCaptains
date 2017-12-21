@@ -77,14 +77,16 @@ export default class Board extends Phaser.Group {
     this.enemies = new Phaser.Group(this.game, undefined, 'enemies')
     const numStartingEnemies = 3
     _.times(numStartingEnemies, i => {
-      this.spawnEnemy(height * i / numStartingEnemies + (height / numStartingEnemies))
+      this.spawnEnemy(height / numStartingEnemies * (i + 1) - (height / numStartingEnemies / 2))
     })
     this.add(this.enemies)
   }
 
-  spawnEnemy() {
+  spawnEnemy(y) {
     const x = this.maxX
-    const y = this.maxY * Math.random()
+    if (y === undefined) {
+      y = this.maxY * Math.random()
+    }
     const colors = 'RYB'.split('')
     const allEnemyTypes = _.flatten(colors.map(a => colors.map(b => a + b)))
     const randomEnemyType = _.sample(allEnemyTypes)
