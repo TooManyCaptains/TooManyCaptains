@@ -9,7 +9,7 @@ const baseStyle = {
 
 
 export default class Panel extends Phaser.Group {
-  constructor(game, width, height, nameText, descriptionText = 'EFFECTIVE AGAINST') {
+  constructor(game, width, height, nameText = '', descriptionText = '') {
     super(game)
     const padding = 25
     const frame = game.add.graphics(0, 0, this)

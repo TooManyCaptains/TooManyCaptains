@@ -61,13 +61,66 @@ class ShieldsPanel extends Panel {
   }
 }
 
+class PropulsionPanel extends Panel {
+  constructor(game, width, height) {
+    super(game, width, height, 'PROPULSION')
+
+    this.chart = this.create(this.centerX, this.centerY)
+    this.chart.anchor.setTo(0.5, 0.33)
+
+    this.level = 0
+    this.setTextureForLevel()
+  }
+
+  update() {
+    const newLevel = this.game.player.propulsionLevel
+    // If shield colors changed, update the color chart
+    if (this.level !== newLevel) {
+      this.level = newLevel
+      this.setTextureForLevel()
+    }
+    super.update()
+  }
+
+  setTextureForLevel() {
+    this.chart.loadTexture(`propulsion-${this.level}`)
+  }
+}
+
+class RepairsPanel extends Panel {
+  constructor(game, width, height) {
+    super(game, width, height, 'REPAIRS')
+
+    this.chart = this.create(this.centerX, this.centerY)
+    this.chart.anchor.setTo(0.5, 0.34)
+    this.chart.scale.setTo(1.2, 1.2)
+
+    this.level = 0
+    this.setTextureForLevel()
+  }
+
+  update() {
+    const newLevel = this.game.player.repairLevel
+    // If shield colors changed, update the color chart
+    if (this.level !== newLevel) {
+      this.level = newLevel
+      this.setTextureForLevel()
+    }
+    super.update()
+  }
+
+  setTextureForLevel() {
+    this.chart.loadTexture(`repair-${this.level}`)
+  }
+}
+
 export default class HUD extends Phaser.Group {
   constructor(game, x, y, width, height) {
     super(game)
     this.x = x
     this.y = y
     const hudPadding = width * 0.025
-    const panels = [WeaponsPanel, ShieldsPanel]
+    const panels = [WeaponsPanel, ShieldsPanel, PropulsionPanel, RepairsPanel]
     panels.forEach((Klass, i) => {
       const panel = new Klass(this.game, width * 0.22, height * 0.8)
       panel.x = (panel.width + hudPadding) * i + hudPadding

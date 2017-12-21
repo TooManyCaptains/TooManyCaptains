@@ -50,6 +50,15 @@ const AssetManifest = {
     'attri_BY.png',
     'attri_RY.png',
     'attri_BRY.png',
+
+    'propulsion-0.png',
+    'propulsion-1.png',
+    'propulsion-2.png',
+
+    'repair-0.png',
+    'repair-1.png',
+    'repair-2.png',
+    'repair-3.png',
   ],
   sprites: [],
   audio: [

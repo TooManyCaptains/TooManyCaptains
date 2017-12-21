@@ -52,9 +52,13 @@ export default class PlayerShip extends Phaser.Sprite {
     this.chargingFx = this.game.add.audio('charging')
 
     // Repairs
+    this.repairLevel = 0
     this.repairPercentagePerSecond = 0
     this.repairIntervalMsec = 250
-    setInterval(this.onRepair.bind(this), this.repairIntervalMsec)
+    this.game.time.create()
+      .loop(this.repairIntervalMsec, this.onRepair, this)
+      .timer
+      .start()
   }
 
   get weaponCharge() {
@@ -168,6 +172,7 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   setRepairLevel(level) {
+    this.repairLevel = level
     const repairSpeedMap = [0, 0.015, 0.025, 0.065]
     this.repairPercentagePerSecond = repairSpeedMap[level]
   }
