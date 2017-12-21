@@ -18,6 +18,10 @@ export default class Board extends Phaser.Group {
     this.background = this.game.add.tileSprite(0, 0, width, height, 'background', undefined, this)
     this.background.autoScroll(-10, 0)
 
+    // Asteroids
+    this.asteroids = new Phaser.Group(this.game, undefined, 'asteroids')
+    this.add(this.asteroids)
+
     // Planet
     this.planet = this.game.add.sprite(width, height / 2, 'planet', undefined, this)
     this.planet.anchor.setTo(0.5, 0.5)
@@ -70,14 +74,12 @@ export default class Board extends Phaser.Group {
     this.game.player = this.player
 
     // Add starting enemies
+    this.enemies = new Phaser.Group(this.game, undefined, 'enemies')
     const numStartingEnemies = 3
-    this.enemies = []
     _.times(numStartingEnemies, i => {
       this.spawnEnemy(height * i / numStartingEnemies + (height / numStartingEnemies))
     })
-
-    // Asteroids
-    this.asteroids = []
+    this.add(this.enemies)
   }
 
   spawnEnemy() {
@@ -86,25 +88,18 @@ export default class Board extends Phaser.Group {
     const colors = 'RYB'.split('')
     const allEnemyTypes = _.flatten(colors.map(a => colors.map(b => a + b)))
     const randomEnemyType = _.sample(allEnemyTypes)
-    const enemy = this.add(new Enemy(this.game, x, y, ...randomEnemyType))
-    this.enemies.push(enemy)
+    this.enemies.add(new Enemy(this.game, x, y, ...randomEnemyType))
   }
 
   spawnAsteroid() {
     const x = this.maxX
     const y = this.maxY * Math.random()
-    const asteroid = this.addAt(new Asteroid(this.game, x, y), 1)
-    this.asteroids.push(asteroid)
+    this.asteroids.add(new Asteroid(this.game, x, y))
   }
 
   update() {
     super.update()
     this.scoreText.text = `SCORE: ${this.game.score}`
-
-    // Kill sprites marked for killing
-    this.children
-      .filter(child => child.kill_in_next_tick)
-      .map(child => child.kill())
 
     // Player <-> enemy bullet collision
     this.enemies.forEach(enemy => this.game.physics.arcade.overlap(
@@ -167,7 +162,7 @@ export default class Board extends Phaser.Group {
       enemy,
       this.player,
       (e, player) => {
-        enemy.kill_in_next_tick = true
+        enemy.destroy()
         player.getHurtTint()
         player.damage(enemy.collisionDamage)
       },
@@ -180,7 +175,7 @@ export default class Board extends Phaser.Group {
       asteroid,
       this.player,
       (e, player) => {
-        asteroid.kill_in_next_tick = true
+        asteroid.destroy()
         player.getHurtTint()
         player.damage(asteroid.collisionDamage)
         this.collideFx.play()
