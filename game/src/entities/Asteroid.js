@@ -8,6 +8,8 @@ export default class Asteroid extends Phaser.Sprite {
     this.anchor.setTo(0.5, 0.5)
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.movementSpeed = 90
+    this.outOfBoundsKill = true
+    this.checkWorldBounds = true
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * (Math.random() / 5))
 
     const randScale = 1 + Math.random() / 2
@@ -20,11 +22,9 @@ export default class Asteroid extends Phaser.Sprite {
     this.body.angularVelocity = -30
   }
 
-  update() {
-    if (this.x <= 0) {
-      this.game.score += 250
-      this.destroy()
-    }
+  kill() {
+    this.game.score += 250
+    super.kill()
   }
 
   // createExplosion() {

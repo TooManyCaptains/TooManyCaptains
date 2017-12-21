@@ -100,7 +100,7 @@ export class Enemy extends Phaser.Sprite {
     // Drift vertically
     if (this.y - this.height < 0) {
       this.body.velocity.y = this.verticalDriftSpeed
-    } else if (this.bottom > this.parent.maxY) {
+    } else if (this.bottom > this.parent.parent.maxY) {
       this.body.velocity.y = -this.verticalDriftSpeed
     }
   }
