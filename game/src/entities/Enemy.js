@@ -65,8 +65,9 @@ export class Enemy extends Phaser.Sprite {
     // this.body.collideWorldBounds = true
     this.outOfBoundsKill = true
     this.checkWorldBounds = true
-    this.movementSpeed = 300
+    this.movementSpeed = 10
     this.verticalDriftSpeed = 2.5
+    this.body.bounce.set(1)
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
 
