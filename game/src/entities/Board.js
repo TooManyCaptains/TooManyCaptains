@@ -119,8 +119,6 @@ export default class Board extends Phaser.Group {
         }
         bullet.kill()
       },
-      null,
-      this,
     ))
 
     // Planet <-> enemy bullet collision
@@ -131,17 +129,15 @@ export default class Board extends Phaser.Group {
         (planet, bullet) => {
           bullet.kill()
         },
-        null,
-        this,
       )
     }
 
     // Enemy <-> player bullet collision
     if (this.player.weapon) {
-      this.enemies.forEach(enemy => this.game.physics.arcade.overlap(
-        enemy,
+      this.game.physics.arcade.overlap(
+        this.enemies,
         this.player.weapon,
-        (e, bullet) => {
+        (enemy, bullet) => {
           const playerBulletCanHurtEnemy = bullet.color.includes(enemy.type)
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
@@ -156,36 +152,33 @@ export default class Board extends Phaser.Group {
           }
           bullet.kill()
         },
-        null,
-        this,
-      ))
+      )
     }
 
     // Enemy <-> player ship (no shield) collision
-    this.enemies.forEach(enemy => this.game.physics.arcade.overlap(
-      enemy,
+    this.game.physics.arcade.overlap(
+      this.enemies,
       this.player,
-      (e, player) => {
+      (enemy, player) => {
         enemy.destroy()
         player.getHurtTint()
         player.damage(enemy.collisionDamage)
       },
-      null,
-      this,
-    ))
+    )
+
+    // Enemy <-> enemy collision
+    this.game.physics.arcade.collide(this.enemies, this.enemies)
 
     // Player <-> asteroid collision
-    this.asteroids.forEach(asteroid => this.game.physics.arcade.overlap(
-      asteroid,
+    this.game.physics.arcade.overlap(
+      this.asteroids,
       this.player,
-      (e, player) => {
+      (player, asteroid) => {
         asteroid.destroy()
         player.getHurtTint()
         player.damage(asteroid.collisionDamage)
         this.collideFx.play()
       },
-      null,
-      this,
-    ))
+    )
   }
 }
