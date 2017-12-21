@@ -144,7 +144,7 @@ export default class Board extends Phaser.Group {
           if (playerBulletCanHurtEnemy) {
             enemy.getHurtTint()
             enemy.damage(bullet.damage)
-            if (!enemy.isAlive) {
+            if (!enemy.alive) {
               enemy.explode()
               this.game.score += 150
             }
