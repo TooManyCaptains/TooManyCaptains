@@ -12,11 +12,12 @@ export class PatrolEnemy extends Phaser.Sprite {
     this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
 
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
-    this.body.collideWorldBounds = true
     this.movementSpeed = 5
   }
 
   update() {
+    // I did this on my own. Here's another take:
+    // https://gamemechanicexplorer.com/#homingmissiles-1
     this.game.physics.arcade.moveToObject(this, this.game.player, this.movementSpeed)
     let degreesBetween = toDegrees(this.game.physics.arcade.angleBetween(this, this.game.player))
     if (degreesBetween < 0) {
@@ -57,31 +58,23 @@ export class Enemy extends Phaser.Sprite {
     this.fireTimer.loop(baseFiringRate + (baseFiringRate * Math.random()), () => this.fire())
     this.fireTimer.start()
 
-    // Death
-    this.events.onKilled.add(this.onKilled.bind(this), this)
     this.collisionDamage = 35
 
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
-    this.body.collideWorldBounds = true
-    this.movementSpeed = 5
-    this.verticalDriftSpeed = this.movementSpeed / 2
+    // this.body.collideWorldBounds = true
+    this.outOfBoundsKill = true
+    this.checkWorldBounds = true
+    this.movementSpeed = 10
+    this.verticalDriftSpeed = 2.5
+    this.body.bounce.set(1)
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
 
     // Hitbox size adjustment
     this.body.setSize(102, 38, 13.5, 12.5)
 
-    // // Fire when created
-    // this.fire()
     this.explosionFx = this.game.add.audio('explosion')
-  }
-
-  onKilled() {
-    this.game.score += 150
-    this.fireTimer.stop()
-    this.createExplosion()
-    this.explosionFx.play()
   }
 
   getHurtTint() {
@@ -89,27 +82,21 @@ export class Enemy extends Phaser.Sprite {
     setTimeout(() => this.tint = 0xffffff, 150)
   }
 
-  createExplosion() {
+  explode() {
     this.exp = this.game.add.sprite(this.x, this.y, 'explosion')
     this.exp.anchor.setTo(0.5, 0.5)
     this.exp.animations.add('explosion')
     this.exp.play('explosion', 30, false, true)
+    this.explosionFx.play()
   }
 
   update() {
     // Drift vertically
     if (this.y - this.height < 0) {
       this.body.velocity.y = this.verticalDriftSpeed
-    } else if (this.y + this.height > this.game.height) {
+    } else if (this.bottom > this.parent.parent.maxY) {
       this.body.velocity.y = -this.verticalDriftSpeed
     }
-    // if (Math.random() < 0.0005) {
-    //   if (this.y > this.game.height / 2) {
-    //     this.body.velocity.y = -this.verticalDriftSpeed
-    //   } else {
-    //     this.body.velocity.y = this.verticalDriftSpeed
-    //   }
-    // }
   }
 
   fire() {

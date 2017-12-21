@@ -58,7 +58,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!phaser-webpack-loader)/,
         loader: 'babel-loader',
         include: path.join(__dirname, 'src'),
       },
@@ -67,6 +67,13 @@ module.exports = {
         loader: 'file-loader',
         options: {
           name: 'fonts/[name].[ext]',
+        },
+      },
+      {
+        test: /\.(ogg|mp3|wav|mpe?g)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'audio/[name].[ext]',
         },
       },
       {
@@ -92,6 +99,11 @@ module.exports = {
   },
 
   resolve: {
-    alias: { phaser, pixi, p2 },
+    alias: {
+      phaser,
+      pixi,
+      p2,
+      assets: path.join(__dirname, './assets'),
+    },
   },
 }

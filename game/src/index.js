@@ -1,11 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
 import _ from 'lodash'
-
 import Stats from 'stats.js'
-
-import HUD from './HUD'
-import Main from './Main'
+import Main from './states/Main'
+import Boot from './states/Boot'
+import Before from './states/Before'
+import Preload from './states/Preload'
+import After from './states/After'
 import './index.css'
 import GameServer from './GameServer'
 
@@ -20,169 +19,64 @@ function getUrlParams(search) {
   return params
 }
 
-class App extends React.Component {
-  constructor(props) {
-    super(props)
+function getConfig() {
+  const urlParams = getUrlParams(window.location.search)
 
-    const urlParams = getUrlParams(window.location.search)
-
-    this.state = {
-      isStarted: false,
-      isOnValidDisplay: false,
-      stats: {
-        hullStrength: 100,
-        weapons: [],
-        shields: [],
-        propulsion: 0,
-        repairs: 0,
-        communications: false,
-      },
-      config: {
-        debug: _.has(urlParams, 'debug'),
-        skip: _.has(urlParams, 'skip'),
-        invulnerable: _.has(urlParams, 'invuln'),
-      },
-    }
+  const config = {
+    debug: _.has(urlParams, 'debug'),
+    skip: _.has(urlParams, 'skip'),
+    invulnerable: _.has(urlParams, 'invuln'),
+    local: _.has(urlParams, 'local'),
   }
-
-  componentDidMount() {
-    this.checkDisplay()
-    window.setInterval(() => this.checkDisplay(), 250)
-    if (this.state.config.debug) {
-      this.start()
-    }
+  if (config.local) {
+    config.serverURL = 'http://localhost:9000'
+  } else {
+    config.serverURL = 'http://server.toomanycaptains.com'
   }
+  return config
+}
 
-  checkDisplay() {
-    const isOnValidDisplay = window.screen.height === 1080 && window.screen.width === 1920
-    if (this.state.isStarted && (!isOnValidDisplay || !window.document.webkitIsFullScreen)) {
-      this.setState({ isOnValidDisplay })
-      this.unstart()
-    } else {
-      this.setState({ isOnValidDisplay })
-    }
-  }
+class Game extends Phaser.Game {
+  constructor() {
+    super(1920, 1080, Phaser.CANVAS, 'surface')
+    this.state.add('Boot', Boot, false)
+    this.state.add('Preload', Preload, false)
+    this.state.add('Before', Before, false)
+    this.state.add('Main', Main, false)
+    this.state.add('After', After, false)
 
-  start() {
-    const root = window.document.querySelector('html')
-    if (root.webkitRequestFullScreen) {
-      root.webkitRequestFullScreen()
-    } else if (window.document.mozRequestFullScreen) {
-      root.mozRequestFullScreen()
-    } else if (window.document.requestFullscreen) {
-      root.requestFullscreen()
-    } else {
-      alert('sorry, your browser doesn\'t support the fullscreen API :(')
-      return
-    }
-    window.setTimeout(() => {
-      this.setState({ isStarted: true })
-      if (!this.game) {
-        this.initializeGameOnSurface()
-      }
-      this.game.paused = false
-      window.document.querySelector('#gamebefore').style.display = 'unset'
-    }, 250)
-  }
+    this.params = getConfig()
+    this.scaleFactor = 1
 
-  unstart() {
-    if (this.state.config.debug) {
-      return
-    }
-    this.setState({ isStarted: false })
-    this.game.paused = true
-    window.document.querySelector('#gamebefore').style.display = 'none'
-  }
+    // Kick things off with the boot state.
+    this.state.start('Boot')
+    this.bindServerEvents()
 
-  initializeGameOnSurface() {
-    const UI_HEIGHT_PX = window.innerHeight * 0.5
-    this.game = new Phaser.Game(
-      window.innerWidth,
-      window.innerHeight - UI_HEIGHT_PX,
-      Phaser.CANVAS,
-      'surface',
-    )
-    this.game.state.add('Main', Main, false)
-    this.game.state.start('Main')
-    this.game.server = new GameServer()
-    this.game.config = _.cloneDeep(this.state.config)
-    const nativeHeight = 1080
-
-    this.game.scaleFactor = window.innerHeight / nativeHeight
-
-    const gameMainState = this.game.state.states.Main
-
-    // Server events
-    this.game.server.socket.on('move-up', data => gameMainState.onMoveUp(data))
-    this.game.server.socket.on('move-down', data => gameMainState.onMoveDown(data))
-    this.game.server.socket.on('fire', data => gameMainState.onFire(data))
-
-    // Two callbacks for each server event.
-    // The first is for react, and second for phaser.
-    this.game.server.socket.on('weapons', data => {
-      this.onWeaponsChanged(data)
-      gameMainState.onWeaponsChanged(data)
-    })
-    this.game.server.socket.on('shields', data => {
-      this.onShieldsChanged(data)
-      gameMainState.onShieldsChanged(data)
-    })
-    this.game.server.socket.on('propulsion', data => {
-      this.onPropulsionChanged(data)
-      gameMainState.onPropulsionChanged(data)
-    })
-    this.game.server.socket.on('repairs', data => {
-      this.onRepairsChanged(data)
-      gameMainState.onRepairsChanged(data)
-    })
-    this.game.server.socket.on('communications', data => {
-      this.onCommunicationsChanged(data)
-      gameMainState.onCommunicationsChanged(data)
-    })
-
-    this.game.server.socket.emit('frontend-connected', {})
-
-    this.game.onHullStrengthChanged = this.onHullStrengthChanged.bind(this)
-
-    if (this.state.config.debug) {
+    if (this.params.debug) {
       this.setupPerformanceStatistics()
     }
   }
 
-  onHullStrengthChanged(hullStrength) {
-    const stats = _.cloneDeep(this.state.stats)
-    stats.hullStrength = hullStrength
-    this.setState({ stats })
-  }
+  bindServerEvents() {
+    this.server = new GameServer(this.params.serverURL)
+    const gameMainState = this.state.states.Main
+    this.server.socket.on('move-up', data => gameMainState.onMoveUp(data))
+    this.server.socket.on('move-down', data => gameMainState.onMoveDown(data))
+    this.server.socket.on('fire', data => {
+      if (this.state.current === 'Before' && data === 'stop') {
+        this.state.start('Main')
+      } else if (this.state.current === 'After' && data === 'stop') {
+        this.state.start('Main')
+      } else if (this.state.current === 'Main') {
+        gameMainState.onFire(data)
+      }
+    })
+    this.server.socket.on('weapons', data => gameMainState.onWeaponsChanged(data))
+    this.server.socket.on('shields', data => gameMainState.onShieldsChanged(data))
+    this.server.socket.on('propulsion', data => gameMainState.onPropulsionChanged(data))
+    this.server.socket.on('repairs', data => gameMainState.onRepairsChanged(data))
 
-  onWeaponsChanged(weapons) {
-    const stats = _.cloneDeep(this.state.stats)
-    stats.weapons = weapons
-    this.setState({ stats })
-  }
-
-  onShieldsChanged(shields) {
-    const stats = _.cloneDeep(this.state.stats)
-    stats.shields = shields
-    this.setState({ stats })
-  }
-
-  onPropulsionChanged(propulsion) {
-    const stats = _.cloneDeep(this.state.stats)
-    stats.propulsion = propulsion
-    this.setState({ stats })
-  }
-
-  onRepairsChanged(repairs) {
-    const stats = _.cloneDeep(this.state.stats)
-    stats.repairs = repairs
-    this.setState({ stats })
-  }
-
-  onCommunicationsChanged(communications) {
-    const stats = _.cloneDeep(this.state.stats)
-    stats.communications = communications
-    this.setState({ stats })
+    this.server.socket.emit('frontend-connected', {})
   }
 
   setupPerformanceStatistics() {
@@ -191,40 +85,13 @@ class App extends React.Component {
     document.body.appendChild(stats.dom)
 
     // Monkey-patch the update loop so we can track the timing.
-    const updateLoop = this.game.update
-    this.game.update = (...args) => {
+    const updateLoop = this.update
+    this.update = (...args) => {
       stats.begin()
-      updateLoop.apply(this.game, args)
+      updateLoop.apply(this, args)
       stats.end()
     }
   }
-
-  render() {
-    return (
-      <div className="App">
-        {
-          this.state.isStarted ? null
-          :
-          <div className="Splash">
-            {
-              this.state.isOnValidDisplay ?
-              <div className="Splash-button" onClick={() => this.start()}>
-               {this.game ? 'RESUME' : 'PLAY'}
-              </div>
-              :
-              <div className="Splash-instructions">{`Hey, bad news. This game only works on 1920x1080 resolution displays.
-
-Unfortunately, this browser window is on a ${window.screen.width}x${window.screen.height} resolution display.
-
-To fix this problem, please plug your comptuer into an external monitor or TV that's 1080p.`}
-              </div>
-            }
-          </div>
-        }
-        <HUD {...this.state.stats}/>
-      </div>
-    )
-  }
 }
 
-ReactDOM.render(<App/>, document.getElementById('UI'))
+new Game()

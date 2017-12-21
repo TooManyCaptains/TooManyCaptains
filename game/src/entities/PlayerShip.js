@@ -3,15 +3,13 @@ import { PlayerWeapon } from './Weapon'
 import HealthBar from './HealthBar'
 
 export default class PlayerShip extends Phaser.Sprite {
-  constructor(game) {
-    super(game, 125 * game.scaleFactor, game.height / 2, 'player')
+  constructor(game, x, y) {
+    super(game, x, y, 'player-ship')
     this.animations.add('move')
     this.animations.play('move', 20, true)
 
-    game.physics.enable(this, Phaser.Physics.ARCADE)
+    this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.anchor.setTo(0.5, 0.5)
-
-    this.scale.set(this.game.scaleFactor * 1, this.game.scaleFactor)
 
     // Set hitbox size
     this.body.setSize(165.4, 63.2, 25.8, 28.4)
@@ -36,11 +34,10 @@ export default class PlayerShip extends Phaser.Sprite {
     this.healthBar = new HealthBar(this)
 
     // Weapons
+    this.weaponColors = []
     this.weapon = null
     this.timeChargingStarted = 0
-    const x = this.x + this.width / 2
-    const y = this.y
-    this.growingBullet = this.game.add.sprite(x, y)
+    this.growingBullet = this.game.add.sprite(this.x + this.width / 2, this.y)
     this.growingBullet.anchor.setTo(0.5, 0.5)
     this.growingBullet.update = () => {
       const scale = this.game.scaleFactor * 0.25 * (1 + this.weaponCharge * 1.5)
@@ -55,9 +52,13 @@ export default class PlayerShip extends Phaser.Sprite {
     this.chargingFx = this.game.add.audio('charging')
 
     // Repairs
+    this.repairLevel = 0
     this.repairPercentagePerSecond = 0
     this.repairIntervalMsec = 250
-    setInterval(this.onRepair.bind(this), this.repairIntervalMsec)
+    this.game.time.create()
+      .loop(this.repairIntervalMsec, this.onRepair, this)
+      .timer
+      .start()
   }
 
   get weaponCharge() {
@@ -84,6 +85,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
   setWeapons(colors) {
     colors.sort()
+    this.weaponColors = colors
     const colorToWeaponType = color => color[0].toUpperCase()
     if (colors.length === 0) {
       this.weapon = null
@@ -170,16 +172,12 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   setRepairLevel(level) {
+    this.repairLevel = level
     const repairSpeedMap = [0, 0.015, 0.025, 0.065]
     this.repairPercentagePerSecond = repairSpeedMap[level]
   }
 
   update() {
-    if (this.health !== this.prevHealth) {
-      this.game.onHullStrengthChanged(this.health)
-      this.prevHealth = this.health
-    }
-
     // Shield
     this.shield.x = this.x
     this.shield.y = this.y
