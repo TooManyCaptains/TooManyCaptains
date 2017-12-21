@@ -12,7 +12,7 @@ export default class Main extends Phaser.State {
   }
 
   preload() {
-    this.load.spritesheet('player', 'assets/sprites/player-ship.png', 200, 120)
+    this.load.spritesheet('player-ship', 'assets/sprites/player-ship.png', 200, 120)
     this.load.spritesheet('explosion', 'assets/sprites/explosion.png', 160, 160)
     const enemyWidth = 150
     const enemyHeight = 65
