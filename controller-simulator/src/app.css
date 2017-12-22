@@ -1,12 +1,8 @@
-@font-face {
-  font-family: 'DDC Hardware';
-  src: url('fonts/ddc-regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-}
-
 html, body, #root, .App {
   height: 100%;
+  font-family: 'Exo 2';
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .App {
@@ -18,7 +14,6 @@ html, body, #root, .App {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'DDC Hardware';
   user-select: none;
 }
 
