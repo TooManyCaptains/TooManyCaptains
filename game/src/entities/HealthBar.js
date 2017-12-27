@@ -4,6 +4,11 @@ export default class HealthBar {
     this.width = this.ship.width * 0.5
     this.height = 15 * ship.game.scaleFactor
 
+    if (this.ship.key === 'player-ship') {
+      this.height *= 1.3
+      this.width *= 1.3
+    }
+
     this.outline = ship.game.add.graphics()
     this.outline.beginFill(0xffffff, 1)
     this.outline.drawRoundedRect(0, 0, this.width, this.height, 50)
@@ -15,10 +20,11 @@ export default class HealthBar {
   }
 
   update() {
-    const x = this.ship.centerX - this.width * 0.7
+    let x = this.ship.centerX - this.width * 0.7
     let y = this.ship.y - this.ship.height * 0.85
-    if (this.ship.key === 'player') {
-      y = this.ship.y - this.ship.height * 0.5
+    if (this.ship.key === 'player-ship') {
+      x = this.ship.centerX - this.width * 0.5
+      y = this.ship.y - this.ship.height * 0.6
     }
     this.bar.x = x
     this.bar.y = y
