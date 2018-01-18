@@ -22,6 +22,7 @@ const LightController_1 = require("./LightController");
         }
     }
     function sendPacket(packet) {
+        console.log(JSON.stringify(packet, null, 2));
         updatePanelLights();
         client.sendPacket(packet);
     }

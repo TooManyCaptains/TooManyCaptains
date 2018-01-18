@@ -63,8 +63,7 @@ class Game extends Phaser.Game {
     // XXX: FIXME
     const that = this
     this.server.socket.on('packet', packet => {
-      console.log(packet)
-      if (packet.kind === 'wiring') {
+      if (packet.kind === 'wiring' && that.state.current === 'Main') {
         if (packet.subsystem === 'weapons') {
           gameMainState.onWeaponsChanged(packet.wires)
         } else if (packet.subsystem === 'shields') {
@@ -75,7 +74,7 @@ class Game extends Phaser.Game {
           gameMainState.onRepairsChanged(packet.wires)
         }
       }
-      else if (packet.kind === 'move') {
+      else if (packet.kind === 'move' && that.state.current === 'Main') {
         if (packet.state === 'released') {
           gameMainState.onMoveStop()
         } else if (packet.direction === 'up') {
@@ -85,7 +84,6 @@ class Game extends Phaser.Game {
         }
       }
       else if (packet.kind === 'fire') {
-        // debugger;
         if (that.state.current === 'Before' && packet.state === 'released') {
           that.state.start('Main')
         } else if (that.state.current === 'After' && packet.state === 'released') {

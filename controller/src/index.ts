@@ -24,6 +24,7 @@ import { LightController } from './LightController'
   }
 
   function sendPacket(packet: Packet) {
+    console.log(JSON.stringify(packet, null, 2))
     updatePanelLights()
     client.sendPacket(packet)
   }
