@@ -61,6 +61,17 @@ export default class Main extends Phaser.State {
       .addKey(Phaser.Keyboard.K)
       .onDown.add(() => this.player.kill(), this)
 
+    // Key cards
+    this.curCardSequence = []
+    this.game.input.keyboard.addCallbacks(this, ({ key }) => {
+      if ('0123456789'.indexOf(key) !== -1) {
+        this.curCardSequence.push(key)
+      } else if (key === 'Enter' && this.curCardSequence.length > 0) {
+        this.onNewCardSequence(this.curCardSequence.join(''))
+        this.curCardSequence = []
+      }
+    })
+
     this.game.server.notifyGameState(this.gameState)
 
     if (this.game.params.invulnerable) {
@@ -70,6 +81,15 @@ export default class Main extends Phaser.State {
     }
 
     this.startGame()
+  }
+
+  onNewCardSequence(sequence) {
+    if (sequence === '11') {
+      console.log('captain #1')
+    }
+    else if (sequence === '22') {
+      console.log('captain #2')
+    }
   }
 
   onMoveUp(data) {

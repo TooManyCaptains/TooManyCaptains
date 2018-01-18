@@ -1,5 +1,5 @@
-import { GameState, Color } from '../../common/types'
-export { GameState, Color }
+import { GameState, Color, Packet, Subsystem, ButtonState } from '../../common/types'
+export { GameState, Color, Packet, ButtonState }
 
 export type WireColor = Color
 
@@ -26,13 +26,12 @@ export interface Light {
 }
 
 export abstract class Panel {
-  public readonly name: string
+  public readonly name: Subsystem
   public readonly pins: Pin[] = []
   public lights: Light[] = []
   public readonly lightIndicies: LightIndex[] = []
   public readonly buttonLightPins: Pin[] = []
   public abstract update(colorPositions: ColorPosition[], gameState: GameState): void
-  public abstract toData(colorPositions: ColorPosition[]): any
 }
 
 export interface ColorPosition {
@@ -44,17 +43,9 @@ export interface Connection extends ColorPosition {
   panel: Panel | null
 }
 
-export interface Event {
-  name: string
-  data: object
-}
-
-export type ButtonState = 'pressed' | 'released'
-
 export interface Button {
-  name: string
+  name: 'up' | 'down' | 'fire'
   pin: Pin
-  toData: (buttonState: ButtonState) => any
 }
 
 export interface Press {

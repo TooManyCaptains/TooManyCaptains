@@ -8,10 +8,6 @@ class WeaponsPanel extends Panel {
   public readonly lightIndicies = [0, 1, 2]
   public readonly buttonLightPins = [24]
 
-  public toData(colorPositions: ColorPosition[]) {
-    return _.map(colorPositions, 'color')
-  }
-
   public update(colorPositions: ColorPosition[], gameState: GameState): void {
     const isButtonLit = true
     _.forEach(this.buttonLightPins, pin => {
@@ -32,10 +28,6 @@ class ShieldsPanel extends Panel {
   public readonly pins = [21, 23, 19] //
   public readonly lightIndicies = [5, 4, 3] // LEDs were installed backwards
 
-  public toData(colorPositions: ColorPosition[]) {
-    return _.map(colorPositions, 'color')
-  }
-
   public update(colorPositions: ColorPosition[]): void {
     this.lights = colorPositions
       .filter(({position}) => position !==  null)
@@ -52,12 +44,9 @@ class PropulsionPanel extends Panel {
   public readonly lightIndicies = [6, 7]
   public readonly buttonLightPins = [26, 28]
 
-  public toData(colorPositions: ColorPosition[]) {
-    return colorPositions.length
-  }
-
   public update(colorPositions: ColorPosition[], gameState: GameState) {
-    const isButtonLit = colorPositions.length > 0 && gameState === 'start'
+    // XXX: hello
+    const isButtonLit = colorPositions.length > 0 && gameState === 'wait_for_players'
     _.forEach(this.buttonLightPins, pin => {
       rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW)
     })
@@ -74,10 +63,6 @@ class RepairsPanel extends Panel {
   public readonly pins = [27, 29, 31]
   public readonly lightIndicies = [10, 9, 8] // LEDs were installed backwards
 
-  public toData(colorPositions: ColorPosition[]) {
-    return colorPositions.length
-  }
-
   public update(colorPositions: ColorPosition[]): void {
     this.lights = _.times(colorPositions.length, i => ({
       index: this.lightIndicies[i],
@@ -86,29 +71,25 @@ class RepairsPanel extends Panel {
   }
 }
 
-class CommunicationsPanel extends Panel {
-  public readonly name = 'communications'
-  public readonly pins = [37]
-  public readonly lightIndicies = [11]
+// class CommunicationsPanel extends Panel {
+//   public readonly name = 'communications'
+//   public readonly pins = [37]
+//   public readonly lightIndicies = [11]
 
-  public toData(colorPositions: ColorPosition[]) {
-    return colorPositions.length > 0
-  }
-
-  public update(colorPositions: ColorPosition[]): void {
-    this.lights = _.times(colorPositions.length, i => ({
-      index: this.lightIndicies[i],
-      color: LightColor.red,
-    }))
-  }
-}
+//   public update(colorPositions: ColorPosition[]): void {
+//     this.lights = _.times(colorPositions.length, i => ({
+//       index: this.lightIndicies[i],
+//       color: LightColor.red,
+//     }))
+//   }
+// }
 
 const panels: Panel[] = [
   new WeaponsPanel(),
   new ShieldsPanel(),
   new PropulsionPanel(),
   new RepairsPanel(),
-  new CommunicationsPanel(),
+  // new CommunicationsPanel(),
 ]
 
 export { panels }
