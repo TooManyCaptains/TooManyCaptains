@@ -28,10 +28,10 @@ import { LightController } from './LightController'
   const client = new Client(url, onPacket)
 
   // Create a panel controller to manage plugging and unplugging wires into panels
-  const panelController = new PanelController(panels, client.sendPacket, () => gameState)
+  const panelController = new PanelController(panels, client.sendPacket.bind(client), () => gameState)
 
   // Create a button controller to manage button presses
-  const buttonController = new ButtonController(buttons, client.sendPacket, () => gameState)
+  const buttonController = new ButtonController(buttons, client.sendPacket.bind(client), () => gameState)
 
   // Create a light controller for the wire/panel LEDs
   const numLights = flatten(panels.map(p => p.lightIndicies)).length
