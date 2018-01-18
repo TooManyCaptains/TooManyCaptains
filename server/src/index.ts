@@ -24,7 +24,9 @@ io.on('connection', socket => {
   })
 })
 
-new Scanner(packet => io.emit('packet', packet))
+if (!process.env.PORT) {
+  new Scanner(packet => io.emit('packet', packet))
+}
 
 const port = process.env.PORT || 9000
 
