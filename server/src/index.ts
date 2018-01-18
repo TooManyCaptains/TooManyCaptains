@@ -1,7 +1,7 @@
 import * as express from 'express'
 import * as http from 'http'
 import * as socketIo from 'socket.io'
-import Scanner from './scanner'
+// import Scanner from './scanner'
 const app = express()
 const server = http.createServer(app)
 const io = socketIo(server)
@@ -24,9 +24,7 @@ io.on('connection', socket => {
   })
 })
 
-if (!process.env.PORT) {
-  new Scanner(packet => io.emit('packet', packet))
-}
+// new Scanner(packet => io.emit('packet', packet))
 
 const port = process.env.PORT || 9000
 

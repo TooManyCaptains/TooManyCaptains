@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
-const scanner_1 = require("./scanner");
+// import Scanner from './scanner'
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
@@ -21,9 +21,7 @@ io.on('connection', socket => {
         console.log('🔌  disconnected');
     });
 });
-if (!process.env.PORT) {
-    new scanner_1.default(packet => io.emit('packet', packet));
-}
+// new Scanner(packet => io.emit('packet', packet))
 const port = process.env.PORT || 9000;
 server.listen(port, () => {
     console.log(`👾  Serving on port ${port}`);
