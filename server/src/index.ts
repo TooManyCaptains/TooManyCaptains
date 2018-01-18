@@ -1,6 +1,7 @@
 import * as express from 'express'
 import * as http from 'http'
 import * as socketIo from 'socket.io'
+import * as scanner from './scanner'
 const app = express()
 const server = http.createServer(app)
 const io = socketIo(server)
@@ -27,6 +28,9 @@ io.on('connection', socket => {
 })
 
 const port = process.env.PORT || 9000
+
+scanner.subscribe()
+
 server.listen(port, () => {
   console.log(`👾  Serving on port ${port}`)
 })
