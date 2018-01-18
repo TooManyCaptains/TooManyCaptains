@@ -94,13 +94,9 @@ export default class Board extends Phaser.Group {
 
   spawnAsteroid() {
     const x = this.maxX
-<<<<<<< HEAD
-    const y = this.maxY * Math.random()
-=======
     // XXX: Shouldn't use hard-coded consants for asteroid size.
     // Should be based on the asteroid's intrinsic size.
     const y = ((this.maxY - 100) * Math.random()) + 50
->>>>>>> 941e3f4649c66241c43168523aa914bce9699aa2
     this.asteroids.add(new Asteroid(this.game, x, y))
   }
 

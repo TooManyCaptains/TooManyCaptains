@@ -5,10 +5,10 @@ import HUD from '../interface/HUD'
 export default class Main extends Phaser.State {
   init() {
     this.recentlyEnded = false
-    this.gameState = 'before'
+    this.gameState = 'wait_for_players'
 
     // XXX: Periodically notify controller about state, since its not persisted
-    setInterval(() => this.game.server.notifyGameState(this.gameState), 250)
+    // setInterval(() => this.game.server.notifyGameState(this.gameState), 250)
   }
 
   preload() {
@@ -61,17 +61,6 @@ export default class Main extends Phaser.State {
       .addKey(Phaser.Keyboard.K)
       .onDown.add(() => this.player.kill(), this)
 
-    // Key cards
-    this.curCardSequence = []
-    this.game.input.keyboard.addCallbacks(this, ({ key }) => {
-      if ('0123456789'.indexOf(key) !== -1) {
-        this.curCardSequence.push(key)
-      } else if (key === 'Enter' && this.curCardSequence.length > 0) {
-        this.onNewCardSequence(this.curCardSequence.join(''))
-        this.curCardSequence = []
-      }
-    })
-
     this.game.server.notifyGameState(this.gameState)
 
     if (this.game.params.invulnerable) {
@@ -83,29 +72,16 @@ export default class Main extends Phaser.State {
     this.startGame()
   }
 
-  onNewCardSequence(sequence) {
-    if (sequence === '11') {
-      console.log('captain #1')
-    }
-    else if (sequence === '22') {
-      console.log('captain #2')
-    }
+  onMoveUp() {
+    this.player.startMovingUp()
   }
 
-  onMoveUp(data) {
-    if (data === 'start') {
-      this.player.startMovingUp()
-    } else if (data === 'stop') {
-      this.player.stopMoving()
-    }
+  onMoveDown() {
+    this.player.startMovingDown()
   }
 
-  onMoveDown(data) {
-    if (data === 'start') {
-      this.player.startMovingDown()
-    } else if (data === 'stop') {
-      this.player.stopMoving()
-    }
+  onMoveStop() {
+    this.player.stopMoving()
   }
 
   onWeaponsChanged(colors) {
@@ -116,18 +92,18 @@ export default class Main extends Phaser.State {
     this.player.setShields(colors)
   }
 
-  onPropulsionChanged(level) {
-    this.player.setPropulsionLevel(level)
+  onPropulsionChanged(colors) {
+    this.player.setPropulsionLevel(colors.length)
   }
 
-  onRepairsChanged(level) {
-    this.player.setRepairLevel(level)
+  onRepairsChanged(colors) {
+    this.player.setRepairLevel(colors.length)
   }
 
   onFire(state) {
-    if (state === 'start') {
+    if (state === 'pressed') {
       this.player.startChargingWeapon.call(this.player)
-    } else if (state === 'stop') {
+    } else if (state === 'released') {
       this.player.stopChargingWeaponAndFireIfPossible()
     }
   }
@@ -136,7 +112,7 @@ export default class Main extends Phaser.State {
     const isGameEnding = !this.player.alive
 
     // Did the game just end now (i.e. it was previously not ended)?
-    if (isGameEnding && this.gameState === 'start') {
+    if (isGameEnding && this.gameState === 'in_game') {
       this.endGame()
     }
   }
@@ -144,14 +120,14 @@ export default class Main extends Phaser.State {
   startGame() {
     this.game.world.bringToTop(this.doors)
     this.doors.open(() => {
-      this.gameState = 'start'
+      this.gameState = 'in_game'
       this.game.server.notifyGameState(this.gameState)
-      this.game.server.notifyReady()
+      // this.game.server.notifyReady()
     })
   }
 
   endGame() {
-    this.gameState = 'over'
+    this.gameState = 'game_over'
     this.game.server.notifyGameState(this.gameState)
     this.recentlyEnded = true
     this.game.physics.paused = true
