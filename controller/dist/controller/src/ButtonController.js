@@ -31,18 +31,21 @@ class ButtonController {
             return;
         }
         const packets = newPresses.map(buttonPress => {
+            console.log(buttonPress);
             if (buttonPress.button.name === 'fire') {
-                return {
+                const packet = {
                     kind: 'fire',
                     state: buttonPress.state,
                 };
+                return packet;
             }
             else {
-                return {
+                const packet = {
                     kind: 'move',
                     state: buttonPress.state,
                     direction: buttonPress.button.name,
                 };
+                return packet;
             }
         });
         // dispatch packets

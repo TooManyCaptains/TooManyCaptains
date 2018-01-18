@@ -42,17 +42,20 @@ export class ButtonController {
     }
 
     const packets = newPresses.map(buttonPress => {
+      console.log(buttonPress)
       if (buttonPress.button.name === 'fire') {
-        return {
+        const packet: FirePacket = {
           kind: 'fire',
           state: buttonPress.state,
-        } as FirePacket
+        }
+        return packet
       } else {
-        return {
+        const packet: MovePacket = {
           kind: 'move',
           state: buttonPress.state,
           direction: buttonPress.button.name,
-        } as MovePacket
+        }
+        return packet
       }
     })
 
