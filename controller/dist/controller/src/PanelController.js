@@ -93,7 +93,7 @@ class PanelController {
         return {
             kind: 'wiring',
             subsystem: panel.name,
-            wires: [],
+            wires: _.sortBy(colorPositions, 'position').map(p => p.color),
         };
     }
     whereIsWirePluggedIn(pin) {
