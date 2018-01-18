@@ -60,23 +60,42 @@ class Game extends Phaser.Game {
   bindServerEvents() {
     this.server = new GameServer(this.params.serverURL)
     const gameMainState = this.state.states.Main
-    this.server.socket.on('move-up', data => gameMainState.onMoveUp(data))
-    this.server.socket.on('move-down', data => gameMainState.onMoveDown(data))
-    this.server.socket.on('fire', data => {
-      if (this.state.current === 'Before' && data === 'stop') {
-        this.state.start('Main')
-      } else if (this.state.current === 'After' && data === 'stop') {
-        this.state.start('Main')
-      } else if (this.state.current === 'Main') {
-        gameMainState.onFire(data)
+    // XXX: FIXME
+    const that = this
+    this.server.socket.on('packet', packet => {
+      if (packet.kind === 'wiring' && that.state.current === 'Main') {
+        if (packet.subsystem === 'weapons') {
+          gameMainState.onWeaponsChanged(packet.wires)
+        } else if (packet.subsystem === 'shields') {
+          gameMainState.onShieldsChanged(packet.wires)
+        } else if (packet.subsystem === 'propulsion') {
+          gameMainState.onPropulsionChanged(packet.wires)
+        } else if (packet.subsystem === 'repairs') {
+          gameMainState.onRepairsChanged(packet.wires)
+        }
+      }
+      else if (packet.kind === 'move' && that.state.current === 'Main') {
+        if (packet.state === 'released') {
+          gameMainState.onMoveStop()
+        } else if (packet.direction === 'up') {
+          gameMainState.onMoveUp()
+        } else if (packet.direction === 'down') {
+          gameMainState.onMoveDown()
+        }
+      }
+      else if (packet.kind === 'fire') {
+        if (that.state.current === 'Before' && packet.state === 'released') {
+          that.state.start('Main')
+        } else if (that.state.current === 'After' && packet.state === 'released') {
+          that.state.start('Main')
+        } else if (that.state.current === 'Main') {
+          gameMainState.onFire(packet.state)
+        }
+      }
+      else if (packet.kind === 'scan') {
+
       }
     })
-    this.server.socket.on('weapons', data => gameMainState.onWeaponsChanged(data))
-    this.server.socket.on('shields', data => gameMainState.onShieldsChanged(data))
-    this.server.socket.on('propulsion', data => gameMainState.onPropulsionChanged(data))
-    this.server.socket.on('repairs', data => gameMainState.onRepairsChanged(data))
-
-    this.server.socket.emit('frontend-connected', {})
   }
 
   setupPerformanceStatistics() {

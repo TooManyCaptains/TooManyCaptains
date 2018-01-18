@@ -5,7 +5,7 @@ import * as Spinner from 'react-spinkit'
 import { Bay } from './bay'
 import { Wire, wireName } from './types'
 import './app.css'
-import { Packet, Color, Subsystem } from '../../common/types'
+import { Packet, Color, Subsystem, ButtonState } from '../../common/types'
 
 const NUM_WIRES = 3
 const BASE_URL = (() =>
@@ -53,23 +53,23 @@ class App extends React.Component<{}, AppState> {
             name="Weapons"
             numPorts={3}
             wires={this.state.wires}
-            onNewConfiguration={this.onSubsystemWiringChanged.bind(this)}
+            onNewConfiguration={config => this.onSubsystemWiringChanged('weapons', config)}
             onWireAdded={this.onWireAdded.bind(this)}
             onWireRemoved={this.onWireRemoved.bind(this)}
           >
             <div
               className="FireButton"
-              onTouchStart={() => this.fireButton('start')}
-              onTouchEnd={() => this.fireButton('stop')}
-              onMouseDown={() => this.fireButton('start')}
-              onMouseUp={() => this.fireButton('stop')}
+              onTouchStart={() => this.fireButton('pressed')}
+              onTouchEnd={() => this.fireButton('released')}
+              onMouseDown={() => this.fireButton('pressed')}
+              onMouseUp={() => this.fireButton('released')}
             />
           </Bay>
             <Bay
               name="Shields"
               numPorts={3}
               wires={this.state.wires}
-              onNewConfiguration={this.onSubsystemWiringChanged.bind(this)}
+              onNewConfiguration={config => this.onSubsystemWiringChanged('shields', config)}
               onWireAdded={this.onWireAdded.bind(this)}
               onWireRemoved={this.onWireRemoved.bind(this)}
           />
@@ -77,7 +77,7 @@ class App extends React.Component<{}, AppState> {
             name="Propulsion"
             numPorts={2}
             wires={this.state.wires}
-            onNewConfiguration={this.onSubsystemWiringChanged.bind(this)}
+            onNewConfiguration={config => this.onSubsystemWiringChanged('propulsion', config)}
             onWireAdded={this.onWireAdded.bind(this)}
             onWireRemoved={this.onWireRemoved.bind(this)}
           >
@@ -100,7 +100,7 @@ class App extends React.Component<{}, AppState> {
             name="Repairs"
             numPorts={3}
             wires={this.state.wires}
-            onNewConfiguration={this.onSubsystemWiringChanged.bind(this)}
+            onNewConfiguration={config => this.onSubsystemWiringChanged('repairs', config)}
             onWireAdded={this.onWireAdded.bind(this)}
             onWireRemoved={this.onWireRemoved.bind(this)}
           />
@@ -113,8 +113,11 @@ class App extends React.Component<{}, AppState> {
     this.state.socket.emit('packet', packet)
   }
 
-  private fireButton(state: 'start' | 'stop') {
-    this.state.socket.emit('fire', state)
+  private fireButton(state: ButtonState) {
+    this.sendPacket({
+      kind: 'fire',
+      state,
+    })
   }
 
   private setMovement(direction: 'up' | 'down' | 'stop') {
@@ -165,9 +168,11 @@ class App extends React.Component<{}, AppState> {
   }
 
   private onSubsystemWiringChanged(subsystem: Subsystem, wires: Array<Wire | null>) {
+    console.log(wires)
     const colors = wires
       .filter(wire => wire !== null)
       .map(wire => wireName(wire)) as Color[]
+    console.log(colors)
     this.sendPacket({
       kind: 'wiring',
       subsystem,
