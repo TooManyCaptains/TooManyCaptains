@@ -118,7 +118,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   private setMovement(direction: 'up' | 'down' | 'stop') {
-    if (direction === 'up' || direction === 'down') {
+    if (direction === 'up') {
       this.sendPacket({
         kind: 'move',
         direction: 'up',
@@ -131,8 +131,16 @@ class App extends React.Component<{}, AppState> {
         state: 'pressed',
       })
     } else {
-      this.state.socket.emit('move-up', 'stop')
-      this.state.socket.emit('move-down', 'stop')
+      this.sendPacket({
+        kind: 'move',
+        direction: 'up',
+        state: 'released',
+      })
+      this.sendPacket({
+        kind: 'move',
+        direction: 'up',
+        state: 'released',
+      })
     }
   }
 

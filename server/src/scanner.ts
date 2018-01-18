@@ -1,5 +1,5 @@
 import { Device, getDeviceList, on as onUsb, InEndpoint } from 'usb'
-import { Subsystem } from '../../common/types'
+import { Subsystem, ScanPacket, Captain } from '../../common/types'
 
 
 const VENDOR_ID = 65535
@@ -10,21 +10,21 @@ const portToSubsystem : { [port:number] : Subsystem } = {
 	4: 'repairs',
 }
 
-const sequenceToCaptain : { [sequence:number] : number }= {
+const sequenceToCaptain : { [sequence:number] : Captain } = {
 	17728914: 1,
 	1031061722: 2,
 }
 
-function deviceIsCardScanner(device: Device) {
+function deviceIsCardScanner(device: Device): boolean {
 	return device.deviceDescriptor.idVendor === VENDOR_ID
 }
 
-function subsystemForDevice(device: Device) {
+function subsystemForDevice(device: Device): Subsystem {
 	const port = device.portNumbers[device.portNumbers.length - 1]
 	return portToSubsystem[port]
 }
 
-function watchDevice(device: Device) {
+function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
 	if (!deviceIsCardScanner(device)) return
 	const subsystem = subsystemForDevice(device)
 	console.log(`${subsystem} scanner connected`)
@@ -61,8 +61,15 @@ function watchDevice(device: Device) {
 		}
 		// If the enter key was pressed
 		else if (scanCode === 0x28) {
-			const sequence = Number(scanCodes.join(''))
-			console.log(`Captain ${sequenceToCaptain[sequence]} => ${subsystem}`)
+            const sequence = Number(scanCodes.join(''))
+            const captain = sequenceToCaptain[sequence]
+            console.log(`Captain ${captain} => ${subsystem}`)
+            
+            sendPacket({
+                kind: 'scan',
+                subsystem,
+                captain,
+            })
 			scanCodes = []
 		}
 	})
@@ -72,10 +79,13 @@ function watchDevice(device: Device) {
 	})
 }
 
-export function subscribe() {
-	getDeviceList()
-	.filter(deviceIsCardScanner)
-	.forEach(watchDevice)
+export default class Scanner {
 
-	onUsb('attach', device => watchDevice(device))
+    constructor(sendPacket: (p: ScanPacket) => any) {
+        getDeviceList()
+        .filter(deviceIsCardScanner)
+        .forEach(device => watchDevice(device, sendPacket.bind(this)))
+    
+        onUsb('attach', device => watchDevice(device, sendPacket.bind(this)))
+    }
 }
