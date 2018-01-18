@@ -3,33 +3,35 @@ import * as colors from 'colors/safe'
 import { Client } from './client'
 import { panels } from './panels'
 import { buttons } from './buttons'
-import { GameState, Event, LightColor, Light } from './types'
+import { GameState, Packet, LightColor, Light } from './types'
 import { ButtonController } from './ButtonController'
 import { PanelController } from './PanelController'
 import { LightController } from './LightController'
 
 (function main() {
 
-  let gameState: GameState = 'before'
+  let gameState: GameState = 'wait_for_players'
 
-  function onGameStateChanged(state: GameState) {
-    if (state === gameState) {
-      return
+  function onPacket(packet: Packet) {
+    if (packet.kind === 'gamestate') {
+      // Update local copy of game state if different
+      if (packet.state !== gameState) {
+        gameState = packet.state
+        console.info('new game state: ', gameState)
+        updatePanelLights()
+      }
     }
-    console.info('new game state: ', state)
-    gameState = state
-    updatePanelLights()
   }
 
   // Create a client to interact with the server
   const url = process.env.GANGLIA_SERVER_URL || 'http://server.toomanycaptains.com'
-  const client = new Client(url, onGameStateChanged, () => panelController.emitAll())
+  const client = new Client(url, onPacket)
 
   // Create a panel controller to manage plugging and unplugging wires into panels
-  const panelController = new PanelController(panels, onEvent, () => gameState)
+  const panelController = new PanelController(panels, client.sendPacket, () => gameState)
 
   // Create a button controller to manage button presses
-  const buttonController = new ButtonController(buttons, onEvent, () => gameState)
+  const buttonController = new ButtonController(buttons, client.sendPacket, () => gameState)
 
   // Create a light controller for the wire/panel LEDs
   const numLights = flatten(panels.map(p => p.lightIndicies)).length
@@ -38,22 +40,15 @@ import { LightController } from './LightController'
   // Update lights (all at once, since they are daisy-chained via PWM)
   function updatePanelLights() {
     let lights: Light[] = []
-    if (gameState === 'before') {
+    if (gameState === 'wait_for_players') {
       lightController.startFlashingLights(LightColor.green, 6, 100000)
-    } else if (gameState === 'over') {
+    } else if (gameState === 'game_over') {
       lightController.startFlashingLights(LightColor.red)
-    } else if (gameState === 'start') {
+    } else if (gameState === 'in_game') {
       lightController.stopFlashingLights()
       lights = flatten(panelController.panels.map(panel => panel.lights))
       lightController.setLights(lights)
     }
-  }
-
-  // Dispatch event to client and update other state as needed
-  function onEvent(event: Event) {
-    console.info(`${event.name} => ${event.data}`)
-    client.emit(event)
-    updatePanelLights()
   }
 
   console.info(`\n${colors.bold('Wire poll rate')}: ${1000 / panelController.pollRateMsec} Hz`)

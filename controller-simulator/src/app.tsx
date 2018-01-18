@@ -5,6 +5,7 @@ import * as Spinner from 'react-spinkit'
 import { Bay } from './bay'
 import { Wire, wireName } from './types'
 import './app.css'
+import { Packet, Color, Subsystem } from '../../common/types'
 
 const NUM_WIRES = 3
 const BASE_URL = (() =>
@@ -52,7 +53,7 @@ class App extends React.Component<{}, AppState> {
             name="Weapons"
             numPorts={3}
             wires={this.state.wires}
-            onNewConfiguration={this.onNewWeaponsConfiguration.bind(this)}
+            onNewConfiguration={this.onSubsystemWiringChanged.bind(this)}
             onWireAdded={this.onWireAdded.bind(this)}
             onWireRemoved={this.onWireRemoved.bind(this)}
           >
@@ -68,7 +69,7 @@ class App extends React.Component<{}, AppState> {
               name="Shields"
               numPorts={3}
               wires={this.state.wires}
-              onNewConfiguration={this.onNewShieldsConfiguration.bind(this)}
+              onNewConfiguration={this.onSubsystemWiringChanged.bind(this)}
               onWireAdded={this.onWireAdded.bind(this)}
               onWireRemoved={this.onWireRemoved.bind(this)}
           />
@@ -76,7 +77,7 @@ class App extends React.Component<{}, AppState> {
             name="Propulsion"
             numPorts={2}
             wires={this.state.wires}
-            onNewConfiguration={this.onNewPropulsionConfiguration.bind(this)}
+            onNewConfiguration={this.onSubsystemWiringChanged.bind(this)}
             onWireAdded={this.onWireAdded.bind(this)}
             onWireRemoved={this.onWireRemoved.bind(this)}
           >
@@ -99,7 +100,7 @@ class App extends React.Component<{}, AppState> {
             name="Repairs"
             numPorts={3}
             wires={this.state.wires}
-            onNewConfiguration={this.onNewRepairsConfiguration.bind(this)}
+            onNewConfiguration={this.onSubsystemWiringChanged.bind(this)}
             onWireAdded={this.onWireAdded.bind(this)}
             onWireRemoved={this.onWireRemoved.bind(this)}
           />
@@ -108,12 +109,8 @@ class App extends React.Component<{}, AppState> {
     )
   }
 
-  private setWeaponColors(colors: string[]) {
-    this.state.socket.emit('weapons', colors)
-  }
-
-  private setShieldColors(colors: string[]) {
-    this.state.socket.emit('shields', colors)
+  private sendPacket(packet: Packet) {
+    this.state.socket.emit('packet', packet)
   }
 
   private fireButton(state: 'start' | 'stop') {
@@ -122,21 +119,29 @@ class App extends React.Component<{}, AppState> {
 
   private setMovement(direction: 'up' | 'down' | 'stop') {
     if (direction === 'up') {
-      this.state.socket.emit('move-up', 'start')
+      this.sendPacket({
+        kind: 'move',
+        direction: 'up',
+        state: 'pressed',
+      })
     } else if (direction === 'down') {
-      this.state.socket.emit('move-down', 'start')
+      this.sendPacket({
+        kind: 'move',
+        direction: 'down',
+        state: 'pressed',
+      })
     } else {
-      this.state.socket.emit('move-up', 'stop')
-      this.state.socket.emit('move-down', 'stop')
+      this.sendPacket({
+        kind: 'move',
+        direction: 'up',
+        state: 'released',
+      })
+      this.sendPacket({
+        kind: 'move',
+        direction: 'up',
+        state: 'released',
+      })
     }
-  }
-
-  private setPropulsionLevel(level: number) {
-    this.state.socket.emit('propulsion', level)
-  }
-
-  private setRepairsLevel(level: number) {
-    this.state.socket.emit('repairs', level)
   }
 
   private onWireAdded(wire: Wire) {
@@ -159,28 +164,15 @@ class App extends React.Component<{}, AppState> {
     this.setState({wires})
   }
 
-  private onNewWeaponsConfiguration(wires: Array<Wire | null>) {
-    const weaponColors = wires
+  private onSubsystemWiringChanged(subsystem: Subsystem, wires: Array<Wire | null>) {
+    const colors = wires
       .filter(wire => wire !== null)
-      .map(wire => wireName(wire))
-    this.setWeaponColors(weaponColors)
-  }
-
-  private onNewShieldsConfiguration(wires: Array<Wire | null>) {
-    const shieldColors = wires
-      .filter(wire => wire !== null)
-      .map(wire => wireName(wire))
-    this.setShieldColors(shieldColors)
-  }
-
-  private onNewPropulsionConfiguration(wires: Array<Wire | null>) {
-    const pluggedInWires = wires.filter(wire => wire !== null).length
-    this.setPropulsionLevel(pluggedInWires)
-  }
-
-  private onNewRepairsConfiguration(wires: Array<Wire | null>) {
-    const level = wires.filter(wire => wire !== null).length
-    return this.setRepairsLevel(level)
+      .map(wire => wireName(wire)) as Color[]
+    this.sendPacket({
+      kind: 'wiring',
+      subsystem,
+      wires: colors,
+    })
   }
 
 }

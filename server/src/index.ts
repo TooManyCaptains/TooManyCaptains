@@ -1,6 +1,7 @@
 import * as express from 'express'
 import * as http from 'http'
 import * as socketIo from 'socket.io'
+import Scanner from './scanner'
 const app = express()
 const server = http.createServer(app)
 const io = socketIo(server)
@@ -14,32 +15,19 @@ app.use((req, res, next) => {
 
 io.on('connection', socket => {
   console.log('⚡️ connected')
-  const broadcastEvents = [
-    'fire',
-    'move-up',
-    'move-down',
 
-    'weapons',
-    'shields',
-    'repairs',
-    'propulsion',
-    'communications',
-
-    'frontend-ready',
-
-    'state',
-  ]
-  broadcastEvents.map(event => socket.on(event, data => {
-    console.log(event, data)
-    socket.broadcast.emit(event, data)
-  }))
+  // Rebroadcast all packets
+  socket.on('packet', packet => socket.broadcast.emit('packet', packet))
 
   socket.on('disconnect', () => {
     console.log('🔌  disconnected')
   })
 })
 
+new Scanner(packet => io.emit('packet', packet))
+
 const port = process.env.PORT || 9000
+
 server.listen(port, () => {
   console.log(`👾  Serving on port ${port}`)
 })

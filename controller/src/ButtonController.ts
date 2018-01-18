@@ -1,6 +1,7 @@
 import * as rpio from 'rpio'
 import * as _ from 'lodash'
-import { Button, ButtonState, Event, Press, GameState } from './types'
+import { Button, ButtonState, Packet, Press, GameState } from './types'
+import { MovePacket, FirePacket } from '../../common/types'
 
 function isButtonPressed(button: Button): boolean {
   return rpio.read(button.pin) ? true : false
@@ -10,11 +11,11 @@ export class ButtonController {
 
   public readonly pollRateMsec: number = 50
   public readonly buttons: Button[]
-  public readonly onEvent: (event: Event) => void
+  public readonly sendPacket: (packet: Packet) => void
   private prevPresses: Press[] = []
 
-  constructor(buttons: Button[], eventHandler: (event: Event) => void, getGameState: () => GameState) {
-    this.onEvent = eventHandler
+  constructor(buttons: Button[], packetHandler: (packet: Packet) => void, getGameState: () => GameState) {
+    this.sendPacket = packetHandler
     this.buttons = buttons
     this.setup()
 
@@ -40,13 +41,23 @@ export class ButtonController {
       return
     }
 
-    const events = newPresses.map(({button, state}) => ({
-      name: button.name,
-      data: button.toData(state),
-    }))
+    const packets = newPresses.map(buttonPress => {
+      if (buttonPress.button.name === 'fire') {
+        return {
+          kind: 'fire',
+          state: buttonPress.state,
+        } as FirePacket
+      } else {
+        return {
+          kind: 'move',
+          state: buttonPress.state,
+          direction: buttonPress.button.name,
+        } as MovePacket
+      }
+    })
 
-    // dispatch events
-    events.forEach(event => this.onEvent(event))
+    // dispatch packets
+    packets.forEach(packet => this.sendPacket(packet))
 
     this.prevPresses = presses
   }

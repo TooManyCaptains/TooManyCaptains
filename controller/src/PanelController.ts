@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import * as rpio from 'rpio'
-import { WirePin, WireColor, Wire, Panel, ColorPosition, Connection, Event, GameState } from './types'
+import { WirePin, WireColor, Wire, Panel, ColorPosition, Connection, Packet, GameState } from './types'
 
 const wires: Wire = {
   red: 3,
@@ -8,19 +8,19 @@ const wires: Wire = {
   yellow: 7,
 }
 
-type EventHandler = (event: Event) => void
+type PacketHandler = (packet: Packet) => void
 
 export class PanelController {
 
   public readonly pollRateMsec: number = 250
   public readonly panels: Panel[] = []
-  public readonly onEvent: EventHandler
+  public readonly sendPacket: PacketHandler
   private prevConnections: Connection[] = []
   private getGameState: () => GameState
 
-  constructor(panels: Panel[], eventHandler: EventHandler, getGameState: () => GameState) {
+  constructor(panels: Panel[], packetHandler: PacketHandler, getGameState: () => GameState) {
     this.getGameState = getGameState
-    this.onEvent = eventHandler
+    this.sendPacket = packetHandler
     this.panels = panels
     this.setup()
 
@@ -35,9 +35,9 @@ export class PanelController {
         return
       }
       const colorPositions = this.colorPositions(connections, panel)
-      const event = this.eventForPanelWithColorPositions(panel, colorPositions)
+      const packet = this.packetForPanelWithColorPositions(panel, colorPositions)
       panel!.update(colorPositions, this.getGameState())
-      this.onEvent(event)
+      this.sendPacket(packet)
     })
   }
 
@@ -77,7 +77,7 @@ export class PanelController {
       return
     }
 
-    // Dispatch server events and change lights based on new connections
+    // Dispatch server packets and change lights based on new connections
     newConnections.forEach(c => this.processConnection(c, connections))
     this.prevConnections = connections
   }
@@ -100,16 +100,17 @@ export class PanelController {
       panelToUse = previousConnection.panel!
     }
     const colorPositions = this.colorPositions(connections, panelToUse)
-    const event = this.eventForPanelWithColorPositions(panelToUse, colorPositions)
+    const packet = this.packetForPanelWithColorPositions(panelToUse, colorPositions)
     panelToUse.update(colorPositions, this.getGameState())
-    this.onEvent(event)
+    this.sendPacket(packet)
   }
 
   // Create an event based on the panel and wires
-  private eventForPanelWithColorPositions(panel: Panel, colorPositions: ColorPosition[]): Event {
+  private packetForPanelWithColorPositions(panel: Panel, colorPositions: ColorPosition[]): Packet {
     return {
-      name: panel.name,
-      data: panel.toData(colorPositions),
+      kind: 'wiring',
+      subsystem: panel.name,
+      wires: [],
     }
   }
 

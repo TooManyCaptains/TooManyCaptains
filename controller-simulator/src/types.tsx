@@ -7,23 +7,24 @@ export enum Color {
   yellow = 2,
 }
 
-export type Port = {
+export interface Port {
   id: number
   isDisabled: boolean
   wire: Wire | null
 }
 
-export type Wire = {
+export interface Wire {
   color: Color
   inUse: boolean
 }
 
 export function wireName(wire: Wire | null) {
-  if (wire === null) return 'none'
+  if (wire === null) {
+    return 'none'
+  }
   switch (wire.color) {
     case Color.red: return 'red'
     case Color.blue: return 'blue'
     case Color.yellow: return 'yellow'
-    default: return 'invalid'
   }
 }
