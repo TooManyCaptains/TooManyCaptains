@@ -45,8 +45,7 @@ class PropulsionPanel extends Panel {
   public readonly buttonLightPins = [26, 28]
 
   public update(colorPositions: ColorPosition[], gameState: GameState) {
-    // XXX: hello
-    const isButtonLit = colorPositions.length > 0 && gameState === 'wait_for_players'
+    const isButtonLit = colorPositions.length > 0 && gameState === 'in_game'
     _.forEach(this.buttonLightPins, pin => {
       rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW)
     })

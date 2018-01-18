@@ -137,6 +137,7 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   startMovingUp() {
+    console.log(this.propulsionLevel)
     // Can't move up with 0 propulsion
     if (this.propulsionLevel === 0) {
       return

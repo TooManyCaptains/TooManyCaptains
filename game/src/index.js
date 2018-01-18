@@ -95,7 +95,7 @@ class Game extends Phaser.Game {
         }
       }
       else if (packet.kind === 'scan') {
-        
+
       }
     })
   }

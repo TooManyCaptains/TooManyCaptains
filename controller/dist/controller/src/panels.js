@@ -50,8 +50,7 @@ class PropulsionPanel extends types_1.Panel {
         this.buttonLightPins = [26, 28];
     }
     update(colorPositions, gameState) {
-        // XXX: hello
-        const isButtonLit = colorPositions.length > 0 && gameState === 'wait_for_players';
+        const isButtonLit = colorPositions.length > 0 && gameState === 'in_game';
         _.forEach(this.buttonLightPins, pin => {
             rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
         });
