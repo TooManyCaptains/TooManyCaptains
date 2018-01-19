@@ -128,12 +128,57 @@ class SubsystemIcon extends Phaser.Sprite {
   }
 }
 
-class Battery extends Phaser.Sprite {
-  constructor(game, x, y) {
-    super(game, x, y)
-    this.anchor.setTo(0.5, 0.25)
-    this.scale.setTo(0.9, 0.9)
-    this.loadTexture(`battery-red`)
+class Battery extends Phaser.Group {
+  constructor(game) {
+    super(game)
+
+    this.icon = this.game.add.sprite(0, 0, 'battery-red')
+    this.icon.scale.setTo(0.9, 0.9)
+    this.add(this.icon)
+
+    this.text = this.game.add.text(0, 0, '', { ...baseStyle, fontSize: 52 }, this)
+    this.text.setTextBounds(0, 0, this.icon.width - 14, this.icon.height)
+
+    this.maxSeconds = 10
+    this.seconds = 0
+  }
+
+  set seconds(seconds) {
+    const fraction = seconds / this.maxSeconds
+    if (this.bar) {
+      this.remove(this.bar)
+    }
+    this.bar = this.game.add.graphics()
+    this.bar.beginFill(0x999999, 1)
+    const margin = 7
+    this.bar.drawRect(margin, margin, 141 * this.icon.scale.y * fraction, this.icon.height - (2 * margin))
+    this.add(this.bar)
+    if (seconds >= 10) {
+      this.text.setText(`0:${seconds}`)
+    } else {
+      this.text.setText(`0:0${seconds}`)
+    }
+
+    this.bringToTop(this.text)
+
+    if (seconds === 0) {
+      this.blinkTimer = this.game.time.create()
+      this.blinkTimer.loop(650, this.blink, this)
+      this.blinkTimer.start()
+      this.icon.loadTexture('battery-red')
+      this.text.addColor('red', 0)
+    } else {
+      if (this.blinkTimer) {
+        this.blinkTimer.stop(true)
+      }
+      this.alpha = 1
+      this.icon.loadTexture('battery-white')
+      this.text.addColor('white', 0)
+    }
+  }
+
+  blink() {
+    this.alpha = Number(!this.alpha)
   }
 }
 
@@ -143,7 +188,6 @@ class WeaponsPanel extends Panel {
 
     this.colorChart = new ColorChart(game, this.centerX, this.centerY)
     this.add(this.colorChart)
-    this.add(new Battery(game, this.centerX, this.centerY))
     const oldBottom = this.bottom
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask')
     mask.anchor.setTo(0.5, 0.75)
@@ -152,6 +196,12 @@ class WeaponsPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'weapons')
     this.add(icon)
+
+    this.battery = new Battery(game)
+    this.add(this.battery)
+    this.battery.x = 80
+    this.battery.y = 137
+    this.battery.seconds = 10
 
     this.colors = []
   }
@@ -172,7 +222,6 @@ class ShieldsPanel extends Panel {
 
     this.colorChart = new ColorChart(game, this.centerX, this.centerY)
     this.add(this.colorChart)
-    this.add(new Battery(game, this.centerX, this.centerY))
     const oldBottom = this.bottom
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask')
     mask.anchor.setTo(0.5, 0.75)
@@ -180,6 +229,11 @@ class ShieldsPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'shields')
     this.add(icon)
+
+    this.battery = new Battery(game)
+    this.add(this.battery)
+    this.battery.x = 80
+    this.battery.y = 137
 
     this.colors = []
   }
@@ -200,7 +254,6 @@ class PropulsionPanel extends Panel {
 
     this.chart = new PropulsionChart(game, this.centerX, this.centerY)
     this.add(this.chart)
-    this.add(new Battery(game, this.centerX, this.centerY))
     const oldBottom = this.bottom
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask')
     mask.anchor.setTo(0.5, 0.75)
@@ -209,6 +262,11 @@ class PropulsionPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'propulsion')
     this.add(icon)
+
+    this.battery = new Battery(game)
+    this.add(this.battery)
+    this.battery.x = 80
+    this.battery.y = 137
 
     this.propulsionLevel = 0
   }
@@ -227,7 +285,6 @@ class RepairsPanel extends Panel {
 
     this.chart = new RepairsChart(game, this.centerX, this.centerY)
     this.add(this.chart)
-    this.add(new Battery(game, this.centerX, this.centerY))
     const oldBottom = this.bottom
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask')
     mask.anchor.setTo(0.5, 0.75)
@@ -236,6 +293,11 @@ class RepairsPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'repairs')
     this.add(icon)
+
+    this.battery = new Battery(game)
+    this.add(this.battery)
+    this.battery.x = 80
+    this.battery.y = 137
 
     this.colors = []
   }
