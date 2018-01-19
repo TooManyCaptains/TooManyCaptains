@@ -25,9 +25,7 @@ export default class Board extends Phaser.Group {
     this.planet = this.game.add.sprite(width, height / 2, 'planet', undefined, this)
     this.planet.anchor.setTo(0.5, 0.5)
     this.game.physics.enable(this.planet, Phaser.Physics.ARCADE)
-    this.planet.update = () => {
-      this.planet.angle -= 0.05
-    }
+    this.planet.body.angularVelocity = 2
 
     // Mask (overflow)
     const mask = this.game.add.graphics(0, 0, this)

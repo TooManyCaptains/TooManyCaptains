@@ -70,6 +70,7 @@ export default class Main extends Phaser.State {
     }
 
     this.startGame()
+
   }
 
   onMoveUp() {
