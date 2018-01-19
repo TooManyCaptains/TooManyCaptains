@@ -84,6 +84,9 @@ export default class PlayerShip extends Phaser.Sprite {
     const delta = this.batteryDrainPerSecond * (this.batteryDrainTimerFreq / 1000)
     this.batteries = mapValues(this.batteries, charge => Math.max(0, charge - delta))
     this.setShields(this.shieldColors)
+    if (this.batteries.weapons === 0) {
+      this.stopChargingWeaponAndFireIfPossible()
+    }
   }
 
   onRepair() {
@@ -141,7 +144,7 @@ export default class PlayerShip extends Phaser.Sprite {
   stopChargingWeaponAndFireIfPossible() {
     this.chargingFx.stop()
     this.growingBullet.visible = false
-    if (this.weapon) {
+    if (this.weapon && this.batteries.weapons > 0) {
       this.fireWeapon()
     }
   }
