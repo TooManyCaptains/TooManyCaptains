@@ -78,11 +78,11 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
 
 export default class Scanner {
 
-    constructor(sendPacket: (p: ScanPacket) => any) {
-        getDeviceList()
-        .filter(deviceIsCardScanner)
-        .forEach(device => watchDevice(device, sendPacket.bind(this)))
+  constructor(sendPacket: (p: ScanPacket) => any) {
+    getDeviceList()
+    .filter(deviceIsCardScanner)
+    .forEach(device => watchDevice(device, sendPacket.bind(this)))
 
-        onUsb('attach', device => watchDevice(device, sendPacket.bind(this)))
-    }
+    onUsb('attach', device => watchDevice(device, sendPacket.bind(this)))
+  }
 }
