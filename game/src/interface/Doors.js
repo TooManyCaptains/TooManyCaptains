@@ -15,12 +15,14 @@ export default class Doors extends Phaser.Group {
     this.closeFx = this.game.add.audio('doors_close')
 
     // Animation
-    this.durationMillis = game.config.skip ? 1 : 1700
+    this.durationMillis = this.game.params.skip ? 1 : 1700
     this.easing = Phaser.Easing.Quadratic.InOut
   }
 
   open(callback) {
-    this.openFx.play()
+    if (!this.game.params.skip) {
+      this.openFx.play()
+    }
     this.game.add.tween(this.doorLeft.position)
       .to({ x: this.leftOpenX }, this.durationMillis, this.easing, true)
     const animation = this.game.add.tween(this.doorRight.position)

@@ -42,23 +42,22 @@ const AssetManifest = {
     'shield_RY.png',
     'shield_Y.png',
 
-    'attri_None.png',
-    'attri_R.png',
-    'attri_B.png',
-    'attri_Y.png',
-    'attri_BR.png',
-    'attri_BY.png',
-    'attri_RY.png',
-    'attri_BRY.png',
+    'icon-weapons.png',
+    'icon-shields.png',
+    'icon-propulsion.png',
+    'icon-repairs.png',
 
-    'propulsion-0.png',
-    'propulsion-1.png',
-    'propulsion-2.png',
+    'icon-mask.png',
 
-    'repair-0.png',
-    'repair-1.png',
-    'repair-2.png',
-    'repair-3.png',
+    'battery-red.png',
+
+    'ring-BRY.png',
+    'ring-BY.png',
+    'ring-BRY.png',
+    'ring-BR.png',
+    'ring-R.png',
+    'ring-RY.png',
+    'ring-Y.png',
   ],
   sprites: [],
   audio: [
@@ -77,7 +76,7 @@ const AssetManifest = {
   fonts: {
     google: {
       families: [
-        'Exo 2:700,800,900',
+        'Exo 2:600,700,800,900',
       ],
     },
   },
