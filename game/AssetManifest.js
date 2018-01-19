@@ -50,14 +50,18 @@ const AssetManifest = {
     'icon-mask.png',
 
     'battery-red.png',
+    'battery-white.png',
 
-    'ring-BRY.png',
+    'ring-B.png',
     'ring-BY.png',
     'ring-BRY.png',
     'ring-BR.png',
     'ring-R.png',
     'ring-RY.png',
     'ring-Y.png',
+    'ring-propulsion.png',
+    'ring-repairs.png',
+    'ring-none.png',
   ],
   sprites: [],
   audio: [

@@ -29,6 +29,10 @@ export default class Main extends Phaser.State {
   }
 
   create() {
+    // Background
+    this.background = this.game.add.tileSprite(0, 0, this.game.width, 730, 'background', undefined)
+    this.background.autoScroll(-10, 0)
+
     // Add the game board
     this.board = new Board(this.game, this.game.width, 680)
     this.player = this.board.player

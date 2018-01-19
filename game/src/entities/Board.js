@@ -13,10 +13,6 @@ export default class Board extends Phaser.Group {
     this.damagedFx = this.game.add.audio('damaged')
     this.collideFx = this.game.add.audio('collide')
 
-    // Background
-    this.background = this.game.add.tileSprite(0, 0, width, height, 'background', undefined, this)
-    this.background.autoScroll(-10, 0)
-
     // Asteroids
     this.asteroids = new Phaser.Group(this.game, undefined, 'asteroids')
     this.add(this.asteroids)

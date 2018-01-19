@@ -11,7 +11,7 @@ const baseStyle = {
 
 function colorNamesToColorKey(names) {
   const nameToKey = name => name[0].toUpperCase()
-  return names.map(nameToKey, names).join('') || 'None'
+  return names.map(nameToKey, names).join('') || 'none'
 }
 
 class HealthBar {
@@ -55,20 +55,68 @@ class HealthBar {
   }
 }
 
-
 class ColorChart extends Phaser.Sprite {
   constructor(game, x, y, colorNames = []) {
     super(game, x, y)
-    this.setColors(colorNames)
     this.anchor.setTo(0.5, 0.5)
     game.physics.enable(this, Phaser.Physics.ARCADE)
-    this.body.angularVelocity = 75
+    this.setColors(colorNames)
   }
 
   setColors(colorNames = []) {
     const colorKey = colorNamesToColorKey(colorNames)
-    // this.loadTexture(`ring_${colorKey}`)
-    this.loadTexture(`ring-BRY`)
+    if (colorNames.length > 0) {
+      this.body.angularVelocity = 75
+    } else {
+      this.body.angularVelocity = 0
+    }
+    this.loadTexture(`ring-${colorKey}`)
+  }
+}
+
+class PropulsionChart extends Phaser.Sprite {
+  constructor(game, x, y) {
+    super(game, x, y, 'ring-none')
+    this.anchor.setTo(0.5, 0.5)
+    game.physics.enable(this, Phaser.Physics.ARCADE)
+  }
+
+  setLevel(level = 0) {
+    if (level === 0) {
+      this.loadTexture('ring-none')
+      this.body.angularVelocity = 0
+      return
+    }
+    this.loadTexture('ring-propulsion')
+    if (level === 1) {
+      this.body.angularVelocity = 75
+    } else if (level === 2) {
+      this.body.angularVelocity = 300
+    }
+  }
+}
+
+class RepairsChart extends Phaser.Sprite {
+  constructor(game, x, y) {
+    super(game, x, y, 'ring-none')
+    this.anchor.setTo(0.5, 0.5)
+    game.physics.enable(this, Phaser.Physics.ARCADE)
+  }
+
+  setLevel(level = 0) {
+    if (level === 0) {
+      this.loadTexture('ring-none')
+      this.body.angularVelocity = 0
+      return
+    }
+    this.loadTexture('ring-repairs')
+    if (level === 1) {
+      this.body.angularVelocity = 75
+    } else if (level === 2) {
+      this.body.angularVelocity = 300
+    } else if (level === 3) {
+      this.body.angularVelocity = 1000
+    }
   }
 }
 
@@ -128,7 +176,6 @@ class ShieldsPanel extends Panel {
     const oldBottom = this.bottom
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask')
     mask.anchor.setTo(0.5, 0.75)
-    // mask.scale.setTo(1.5, 1.5)
     this.add(mask)
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'shields')
@@ -137,7 +184,7 @@ class ShieldsPanel extends Panel {
     this.colors = []
   }
   update() {
-    const newColors = this.game.player.weaponColors
+    const newColors = this.game.player.shieldColors
     // If shield colors changed, update the color chart
     if (this.colors.length !== newColors.length) {
       this.colors = newColors
@@ -151,8 +198,8 @@ class PropulsionPanel extends Panel {
   constructor(game, parent, width, height) {
     super(game, parent, width, height, 'THRUSTERS')
 
-    this.colorChart = new ColorChart(game, this.centerX, this.centerY)
-    this.add(this.colorChart)
+    this.chart = new PropulsionChart(game, this.centerX, this.centerY)
+    this.add(this.chart)
     this.add(new Battery(game, this.centerX, this.centerY))
     const oldBottom = this.bottom
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask')
@@ -163,14 +210,12 @@ class PropulsionPanel extends Panel {
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'propulsion')
     this.add(icon)
 
-    this.colors = []
+    this.propulsionLevel = 0
   }
   update() {
-    const newColors = this.game.player.weaponColors
-    // If shield colors changed, update the color chart
-    if (this.colors.length !== newColors.length) {
-      this.colors = newColors
-      this.colorChart.setColors(this.colors)
+    if (this.propulsionLevel !== this.game.player.propulsionLevel) {
+      this.propulsionLevel = this.game.player.propulsionLevel
+      this.chart.setLevel(this.propulsionLevel)
     }
     super.update()
   }
@@ -180,8 +225,8 @@ class RepairsPanel extends Panel {
   constructor(game, parent, width, height) {
     super(game, parent, width, height, 'REPAIRS')
 
-    this.colorChart = new ColorChart(game, this.centerX, this.centerY)
-    this.add(this.colorChart)
+    this.chart = new RepairsChart(game, this.centerX, this.centerY)
+    this.add(this.chart)
     this.add(new Battery(game, this.centerX, this.centerY))
     const oldBottom = this.bottom
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask')
@@ -195,11 +240,9 @@ class RepairsPanel extends Panel {
     this.colors = []
   }
   update() {
-    const newColors = this.game.player.weaponColors
-    // If shield colors changed, update the color chart
-    if (this.colors.length !== newColors.length) {
-      this.colors = newColors
-      this.colorChart.setColors(this.colors)
+    if (this.repairLevel !== this.game.player.repairLevel) {
+      this.repairLevel = this.game.player.repairLevel
+      this.chart.setLevel(this.repairLevel)
     }
     super.update()
   }
@@ -251,6 +294,7 @@ class CaptainsLog extends Phaser.Group {
     super(game, parent, 'CaptainsLog')
     const box = game.add.graphics()
     box.lineStyle(2, 0xffffff, 1)
+    box.beginFill(0, 1)
     box.drawRoundedRect(0, 0, width, height, 20)
     this.add(box)
 
