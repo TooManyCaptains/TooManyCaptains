@@ -101,11 +101,15 @@ export default class Main extends Phaser.State {
   }
 
   onMoveUp() {
-    this.player.startMovingUp()
+    if (this.player.batteries.propulsion > 0) {
+      this.player.startMovingUp()
+    }
   }
 
   onMoveDown() {
-    this.player.startMovingDown()
+    if (this.player.batteries.propulsion > 0) {
+      this.player.startMovingDown()
+    }
   }
 
   onMoveStop() {
@@ -129,6 +133,9 @@ export default class Main extends Phaser.State {
   }
 
   onFire(state) {
+    if (this.player.batteries.weapons === 0) {
+      return
+    }
     if (state === 'pressed') {
       this.player.startChargingWeapon.call(this.player)
     } else if (state === 'released') {

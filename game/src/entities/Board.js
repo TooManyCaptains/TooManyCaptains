@@ -106,7 +106,7 @@ export default class Board extends Phaser.Group {
         const playerHasMatchingShield = player.shieldColors
           .some(color => color[0].toUpperCase() === enemy.weaponType)
         // Bullet hits
-        if (player.shieldColors.length === 0 || !playerHasMatchingShield) {
+        if (player.shieldColors.length === 0 || !playerHasMatchingShield || !player.shield.visible) {
           player.damage(enemy.weapon.bulletDamage)
           this.damagedFx.play()
           player.getHurtTint()

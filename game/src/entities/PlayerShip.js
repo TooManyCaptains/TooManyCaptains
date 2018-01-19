@@ -14,6 +14,20 @@ export default class PlayerShip extends Phaser.Sprite {
     // Set hitbox size
     this.body.setSize(165.4, 63.2, 25.8, 28.4)
 
+    // Batteries
+    this.batteries = {
+      weapons: 10,
+      shields: 0,
+      propulsion: 0,
+      repairs: 0,
+    }
+    this.batteryDrainPerSecond = 1
+    this.batteryDrainTimerFreq = 60
+    this.game.time.create()
+      .loop(this.batteryDrainTimerFreq, this.onDrainSubsystemBatteries, this)
+      .timer
+      .start()
+
     // Movement
     this.movementSpeed = 0
     this.body.collideWorldBounds = true
@@ -59,20 +73,6 @@ export default class PlayerShip extends Phaser.Sprite {
       .loop(this.repairIntervalMsec, this.onRepair, this)
       .timer
       .start()
-
-    // Batteries
-    this.batteries = {
-      weapons: 10,
-      shields: 0,
-      propulsion: 0,
-      repairs: 0,
-    }
-    this.batteryDrainPerSecond = 1
-    this.batteryDrainTimerFreq = 50
-    this.game.time.create()
-      .loop(this.batteryDrainTimerFreq, this.onDrainSubsystemBatteries, this)
-      .timer
-      .start()
   }
 
   get weaponCharge() {
@@ -83,9 +83,13 @@ export default class PlayerShip extends Phaser.Sprite {
   onDrainSubsystemBatteries() {
     const delta = this.batteryDrainPerSecond * (this.batteryDrainTimerFreq / 1000)
     this.batteries = mapValues(this.batteries, charge => Math.max(0, charge - delta))
+    this.setShields(this.shieldColors)
   }
 
   onRepair() {
+    if (this.batteries.repairs === 0) {
+      return
+    }
     this.heal((this.repairPercentagePerSecond * this.maxHealth) * (this.repairIntervalMsec / 1000))
   }
 
@@ -96,7 +100,7 @@ export default class PlayerShip extends Phaser.Sprite {
       this.shield.exists = false
       return
     }
-    this.shield.visible = true
+    this.shield.visible = this.batteries.shields > 0
     const colorToWeaponType = color => color[0].toUpperCase()
     const shieldKey = `shield_${colors.map(colorToWeaponType).join('')}`
     this.shield.loadTexture(shieldKey)

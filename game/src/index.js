@@ -107,6 +107,7 @@ class Game extends Phaser.Game {
             captain.charge = 0
             that.player.batteries[packet.subsystem] += 5
           }
+          gameMainState.onShieldsChanged(that.player.shieldColors)
         }
       }
     })
