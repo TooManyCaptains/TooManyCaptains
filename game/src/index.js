@@ -99,7 +99,15 @@ class Game extends Phaser.Game {
         }
       }
       else if (packet.kind === 'scan') {
-
+        if (that.state.current === 'Before') {
+          // TODO
+        } else if (that.state.current === 'Main') {
+          const captain = that.captains.find(({ number }) => number === packet.captain)
+          if (captain.charge === 1) {
+            captain.charge = 0
+            that.player.batteries[packet.subsystem] += 5
+          }
+        }
       }
     })
   }

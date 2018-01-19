@@ -145,15 +145,11 @@ class Battery extends Phaser.Group {
     this.icon.scale.setTo(0.9, 0.9)
     this.add(this.icon)
 
-    this.text = this.game.add.text(0, 0, '', { ...baseStyle, fontSize: 52 }, this)
-    this.text.setTextBounds(0, 0, this.icon.width - 14, this.icon.height)
+    this.text = this.game.add.text(0, 0, '', { ...baseStyle, boundsAlignH: 'left', fontSize: 52 }, this)
+    this.text.setTextBounds(15, 0, this.icon.width - 14, this.icon.height)
 
     this.maxSeconds = 10
     this.seconds = 0
-
-    this.blinkTimer = this.game.time.create()
-    this.blinkTimer.loop(650, this.blink, this)
-    this.blinkTimer.start()
   }
 
   set seconds(seconds) {
@@ -166,15 +162,16 @@ class Battery extends Phaser.Group {
     const margin = 7
     this.bar.drawRect(margin, margin, 141 * this.icon.scale.y * fraction, this.icon.height - (2 * margin))
     this.add(this.bar)
-    if (seconds >= 10) {
-      this.text.setText(`0:${seconds}`)
+    const rounded = Math.ceil(seconds)
+    if (rounded >= 10) {
+      this.text.setText(`0:${rounded}`)
     } else {
-      this.text.setText(`0:0${seconds}`)
+      this.text.setText(`0:0${rounded}`)
     }
 
     this.bringToTop(this.text)
 
-    if (seconds === 0) {
+    if (rounded === 0) {
       this.icon.loadTexture('battery-red')
       this.text.addColor('red', 0)
     } else {
@@ -184,11 +181,11 @@ class Battery extends Phaser.Group {
     }
   }
 
-  blink() {
+  blink(isLow) {
     if (this.seconds === 0) {
       this.alpha = 1
     } else {
-      this.alpha = Number(!this.alpha)
+      this.alpha = Number(isLow)
     }
   }
 }
@@ -216,6 +213,11 @@ class WeaponsPanel extends Panel {
 
     this.colors = []
   }
+
+  blink(isLow) {
+    this.battery.blink(isLow)
+  }
+
   update() {
     // Set battery seconds
     this.battery.seconds = this.game.player.batteries.weapons
@@ -263,6 +265,10 @@ class ShieldsPanel extends Panel {
     }
     super.update()
   }
+
+  blink(isLow) {
+    this.battery.blink(isLow)
+  }
 }
 
 class PropulsionPanel extends Panel {
@@ -287,6 +293,11 @@ class PropulsionPanel extends Panel {
 
     this.propulsionLevel = 0
   }
+
+  blink(isLow) {
+    this.battery.blink(isLow)
+  }
+
   update() {
     // Set battery seconds
     this.battery.seconds = this.game.player.batteries.propulsion
@@ -321,6 +332,11 @@ class RepairsPanel extends Panel {
 
     this.colors = []
   }
+
+  blink(isLow) {
+    this.battery.blink(isLow)
+  }
+
   update() {
     // Set battery seconds
     this.battery.seconds = this.game.player.batteries.repairs
@@ -442,7 +458,6 @@ export default class HUD extends Phaser.Group {
     const sidePadding = 40
     // const healthBar = new HealthBar(this.game)
     // this.add(healthBar)
-    const bottom = this.bottom
     this.panels = [WeaponsPanel, ShieldsPanel, PropulsionPanel, RepairsPanel].map((Klass, i) => {
       const panel = new Klass(this.game, this, 300, 300)
       panel.x = sidePadding + (panel.width + innerPadding) * i
@@ -454,5 +469,19 @@ export default class HUD extends Phaser.Group {
     const captainsLog = new CaptainsLog(this.game, this, 565, 360)
     captainsLog.x = lastPanel.right + innerPadding
     captainsLog.y = innerPadding
+
+    this.blinkTimer = this.game.time.create()
+    this.blinkTimer.loop(650, this.blink, this)
+    this.blinkTimer.start()
+    this.isBlinkLow = true
+  }
+
+  blink() {
+    this.children.forEach(child => {
+      if (child.blink) {
+        child.blink(this.isBlinkLow)
+      }
+    })
+    this.isBlinkLow = !this.isBlinkLow
   }
 }

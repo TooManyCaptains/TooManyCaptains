@@ -1,4 +1,4 @@
-import { clamp } from 'lodash'
+import { clamp, mapValues } from 'lodash'
 import { PlayerWeapon } from './Weapon'
 import HealthBar from './HealthBar'
 
@@ -62,16 +62,27 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Batteries
     this.batteries = {
-      weapons: 0,
+      weapons: 10,
       shields: 0,
       propulsion: 0,
       repairs: 0,
     }
+    this.batteryDrainPerSecond = 1
+    this.batteryDrainTimerFreq = 50
+    this.game.time.create()
+      .loop(this.batteryDrainTimerFreq, this.onDrainSubsystemBatteries, this)
+      .timer
+      .start()
   }
 
   get weaponCharge() {
     const maxCharge = 4000
     return clamp(Date.now() - this.timeChargingStarted, 100, maxCharge) / maxCharge
+  }
+
+  onDrainSubsystemBatteries() {
+    const delta = this.batteryDrainPerSecond * (this.batteryDrainTimerFreq / 1000)
+    this.batteries = mapValues(this.batteries, charge => Math.max(0, charge - delta))
   }
 
   onRepair() {

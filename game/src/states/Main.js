@@ -37,12 +37,21 @@ export default class Main extends Phaser.State {
     this.board = new Board(this.game, this.game.width, 680)
     this.player = this.board.player
 
-    const names = ['AVI', 'DAE', 'KEL', 'ANU', 'EMA', 'LIV']
+    // Captains
+    const names = ['AVI', 'DAE', 'KEL', 'ANU']
     this.game.captains = names.map((name, i) => ({
       name,
       number: i + 1,
       charge: 1,
     }))
+
+    // Recharge captains energy
+    this.captainRechargePerSecond = 0.1
+    this.captainRechargeTimerFreq = 50
+    this.game.time.create()
+      .loop(this.captainRechargeTimerFreq, this.onRechargeCaptains, this)
+      .timer
+      .start()
 
     // Panels for HUD
     this.hud = new HUD(this.game, 0, this.board.bottom, this.game.width, 410)
@@ -81,7 +90,14 @@ export default class Main extends Phaser.State {
     }
 
     this.startGame()
+  }
 
+  onRechargeCaptains() {
+    const delta = this.captainRechargePerSecond * (this.captainRechargeTimerFreq / 1000)
+    this.captains = this.game.captains.map(captain => {
+      captain.charge = Math.min(1, captain.charge + delta)
+      return captain
+    })
   }
 
   onMoveUp() {
