@@ -38,8 +38,9 @@ export default class Main extends Phaser.State {
     this.player = this.board.player
 
     const names = ['AVI', 'DAE', 'KEL', 'ANU', 'EMA', 'LIV']
-    this.game.captains = names.map(name => ({
+    this.game.captains = names.map((name, i) => ({
       name,
+      number: i + 1,
       charge: Math.random(),
     }))
 

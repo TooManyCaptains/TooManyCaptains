@@ -15,7 +15,7 @@ function colorNamesToColorKey(names) {
 }
 
 class HealthBar {
-  constructor(game, parent, width = 100, height = 20, color = 0x30ee02, text = 'YOLO', value = 0) {
+  constructor(game, parent, width = 100, height = 20, color = 0, label = '', value = 0) {
     this.game = game
     this.width = width
     this.height = height
@@ -27,11 +27,10 @@ class HealthBar {
     parent.add(this.outline)
 
     this.bar = game.add.graphics()
-    this.bar.beginFill(color, 1)
-    this.bar.drawRoundedRect(0, 0, this.width, this.height, 25)
+    this.color = color
     parent.add(this.bar)
 
-    this.text = game.add.text(0, 0, text, { ...baseStyle, fontSize: 28, boundsAlignH: 'center', fontWeight: 600, fill: 'black' })
+    this.text = game.add.text(0, 0, label, { ...baseStyle, fontSize: 28, boundsAlignH: 'center', fontWeight: 600, fill: 'black' })
     this.text.setTextBounds(0, 0, this.width, this.height + 2)
     parent.add(this.text)
 
@@ -48,6 +47,16 @@ class HealthBar {
     this.bar.y = y
     this.outline.y = y
     this.text.y = y
+  }
+
+  set color(color) {
+    this.bar.clear()
+    this.bar.beginFill(color, 1)
+    this.bar.drawRoundedRect(0, 0, this.width, this.height, 25)
+  }
+
+  set label(label) {
+    this.text.setText(label)
   }
 
   set value(value) {
@@ -325,7 +334,7 @@ class RepairsPanel extends Panel {
 }
 
 class CaptainEntry extends Phaser.Group {
-  constructor(game, captain, number) {
+  constructor(game, captain) {
     super(game, undefined, 'CaptainEntry')
 
     this.captain = captain
@@ -340,28 +349,33 @@ class CaptainEntry extends Phaser.Group {
     nameText.setTextBounds((circle.width) + 11, 0, 200, 50)
 
     let nudge = -9
-    if (number === 1) {
+    if (captain.number === 1) {
       nudge += 3
-    } else if (number === 3) {
+    } else if (captain.number === 3) {
       nudge += 2
-    } else if (number === 5) {
+    } else if (captain.number === 5) {
       nudge += 1
     }
-    const numberText = this.game.add.text(0, 0, `${number}`, { ...baseStyle, fontSize: 25, boundsAlignH: 'left', fontWeight: 600 }, this)
+    const numberText = this.game.add.text(0, 0, `${captain.number}`, { ...baseStyle, fontSize: 25, boundsAlignH: 'left', fontWeight: 600 }, this)
     numberText.setTextBounds((circle.width / 2) + nudge, 2, 200, 50)
 
-    const yellow = 0xFCEE21
-    const green = 0x7AC943
-    let color = yellow
-    let text = 'RECHARGING'
+    this.healthBar = new HealthBar(this.game, this, 315, 30, 0, '', this.captain.charge)
+    this.healthBar.y = 6
+    this.healthBar.x = 210
+    this.charge = 0
+    this.update()
+  }
 
-    if (captain.charge === 1) {
-      color = green
-      text = 'FULLY CHARGED'
+  update() {
+    const beta = this.game.captains.find(captain => captain.number === this.captain.number)
+    if (this.charge !== beta.charge) {
+      this.charge = beta.charge
+
+      this.healthBar.value = this.captain.charge
+      const fullyCharged = this.captain.charge === 1
+      this.healthBar.color = fullyCharged ? 0x7AC943 : 0xFCEE21
+      this.healthBar.label = fullyCharged ? 'FULLY CHARGED' : 'RECHARGING'
     }
-    const healthBar = new HealthBar(this.game, this, 315, 30, color, text, captain.charge)
-    healthBar.y = 6
-    healthBar.x = 210
   }
 }
 
@@ -415,6 +429,7 @@ class CaptainsLog extends Phaser.Group {
       this.entries = []
       this.addCaptains()
     }
+    super.update()
   }
 }
 
