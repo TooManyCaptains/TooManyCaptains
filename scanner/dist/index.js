@@ -15,7 +15,10 @@ app.use((req, res, next) => {
 io.on('connection', socket => {
     console.log('⚡️ connected');
     // Rebroadcast all packets
-    socket.on('packet', packet => socket.broadcast.emit('packet', packet));
+    socket.on('packet', data => {
+        console.log('packet', data);
+        socket.broadcast.emit('packet', data);
+    });
     socket.on('disconnect', () => {
         console.log('🔌  disconnected');
     });
