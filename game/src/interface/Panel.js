@@ -10,7 +10,6 @@ const baseStyle = {
 export default class Panel extends Phaser.Group {
   constructor(game, parent, width, height, nameText = '') {
     super(game, parent, `panel-${nameText}`)
-    const padding = 125
     const frame = game.add.graphics(0, 0, this)
     frame.lineStyle(2, 0xffffff)
     frame.beginFill(0, 1)

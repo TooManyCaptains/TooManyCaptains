@@ -59,6 +59,14 @@ export default class PlayerShip extends Phaser.Sprite {
       .loop(this.repairIntervalMsec, this.onRepair, this)
       .timer
       .start()
+
+    // Batteries
+    this.batteries = {
+      weapons: 0,
+      shields: 0,
+      propulsion: 0,
+      repairs: 0,
+    }
   }
 
   get weaponCharge() {

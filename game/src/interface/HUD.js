@@ -141,6 +141,10 @@ class Battery extends Phaser.Group {
 
     this.maxSeconds = 10
     this.seconds = 0
+
+    this.blinkTimer = this.game.time.create()
+    this.blinkTimer.loop(650, this.blink, this)
+    this.blinkTimer.start()
   }
 
   set seconds(seconds) {
@@ -162,15 +166,9 @@ class Battery extends Phaser.Group {
     this.bringToTop(this.text)
 
     if (seconds === 0) {
-      this.blinkTimer = this.game.time.create()
-      this.blinkTimer.loop(650, this.blink, this)
-      this.blinkTimer.start()
       this.icon.loadTexture('battery-red')
       this.text.addColor('red', 0)
     } else {
-      if (this.blinkTimer) {
-        this.blinkTimer.stop(true)
-      }
       this.alpha = 1
       this.icon.loadTexture('battery-white')
       this.text.addColor('white', 0)
@@ -178,7 +176,11 @@ class Battery extends Phaser.Group {
   }
 
   blink() {
-    this.alpha = Number(!this.alpha)
+    if (this.seconds === 0) {
+      this.alpha = 1
+    } else {
+      this.alpha = Number(!this.alpha)
+    }
   }
 }
 
@@ -206,6 +208,9 @@ class WeaponsPanel extends Panel {
     this.colors = []
   }
   update() {
+    // Set battery seconds
+    this.battery.seconds = this.game.player.batteries.weapons
+
     const newColors = this.game.player.weaponColors
     // If shield colors changed, update the color chart
     if (this.colors.length !== newColors.length) {
@@ -238,6 +243,9 @@ class ShieldsPanel extends Panel {
     this.colors = []
   }
   update() {
+    // Set battery seconds
+    this.battery.seconds = this.game.player.batteries.shields
+
     const newColors = this.game.player.shieldColors
     // If shield colors changed, update the color chart
     if (this.colors.length !== newColors.length) {
@@ -271,6 +279,9 @@ class PropulsionPanel extends Panel {
     this.propulsionLevel = 0
   }
   update() {
+    // Set battery seconds
+    this.battery.seconds = this.game.player.batteries.propulsion
+
     if (this.propulsionLevel !== this.game.player.propulsionLevel) {
       this.propulsionLevel = this.game.player.propulsionLevel
       this.chart.setLevel(this.propulsionLevel)
@@ -302,6 +313,9 @@ class RepairsPanel extends Panel {
     this.colors = []
   }
   update() {
+    // Set battery seconds
+    this.battery.seconds = this.game.player.batteries.repairs
+
     if (this.repairLevel !== this.game.player.repairLevel) {
       this.repairLevel = this.game.player.repairLevel
       this.chart.setLevel(this.repairLevel)
