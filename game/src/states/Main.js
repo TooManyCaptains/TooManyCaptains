@@ -33,6 +33,12 @@ export default class Main extends Phaser.State {
     this.board = new Board(this.game, this.game.width, 680)
     this.player = this.board.player
 
+    const names = ['AVI', 'DAE', 'KEL', 'ANU', 'EMA', 'LIV']
+    this.game.captains = names.map(name => ({
+      name,
+      charge: Math.random(),
+    }))
+
     // Panels for HUD
     this.hud = new HUD(this.game, 0, this.board.bottom, this.game.width, 410)
 

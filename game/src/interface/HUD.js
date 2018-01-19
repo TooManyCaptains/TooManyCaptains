@@ -15,12 +15,10 @@ function colorNamesToColorKey(names) {
 }
 
 class HealthBar {
-  constructor(game, parent, width = 100, height = 20, color = 0x30ee02, text = 'YOLO', value = 0.75) {
+  constructor(game, parent, width = 100, height = 20, color = 0x30ee02, text = 'YOLO', value = 0) {
     this.game = game
     this.width = width
     this.height = height
-
-    this.value = value
 
     this.outline = game.add.graphics()
     this.outline.beginFill(0x999999, 1)
@@ -31,12 +29,13 @@ class HealthBar {
     this.bar = game.add.graphics()
     this.bar.beginFill(color, 1)
     this.bar.drawRoundedRect(0, 0, this.width, this.height, 25)
-    this.bar.update = this.update.bind(this)
     parent.add(this.bar)
 
     this.text = game.add.text(0, 0, text, { ...baseStyle, fontSize: 28, boundsAlignH: 'center', fontWeight: 600, fill: 'black' })
     this.text.setTextBounds(0, 0, this.width, this.height + 2)
     parent.add(this.text)
+
+    this.value = value
   }
 
   set x(x) {
@@ -51,8 +50,8 @@ class HealthBar {
     this.text.y = y
   }
 
-  update() {
-    this.bar.scale.x = this.value
+  set value(value) {
+    this.bar.scale.x = value
   }
 }
 
@@ -206,6 +205,47 @@ class RepairsPanel extends Panel {
   }
 }
 
+class CaptainEntry extends Phaser.Group {
+  constructor(game, captain, number) {
+    super(game, undefined, 'CaptainEntry')
+
+    this.captain = captain
+
+    const nameTextSize = 30
+    const circle = this.game.add.graphics()
+    const circleSize = 33
+    circle.lineStyle(2, 0xffffff)
+    circle.drawCircle((circleSize / 2), 25, circleSize)
+    this.add(circle)
+    const nameText = this.game.add.text(0, 0, `CAPT. ${captain.name}`, { ...baseStyle, fontSize: nameTextSize, boundsAlignH: 'left', fontWeight: 600 }, this)
+    nameText.setTextBounds((circle.width) + 11, 0, 200, 50)
+
+    let nudge = -9
+    if (number === 1) {
+      nudge += 3
+    } else if (number === 3) {
+      nudge += 2
+    } else if (number === 5) {
+      nudge += 1
+    }
+    const numberText = this.game.add.text(0, 0, `${number}`, { ...baseStyle, fontSize: 25, boundsAlignH: 'left', fontWeight: 600 }, this)
+    numberText.setTextBounds((circle.width / 2) + nudge, 2, 200, 50)
+
+    const yellow = 0xFCEE21
+    const green = 0x7AC943
+    let color = yellow
+    let text = 'RECHARGING'
+
+    if (captain.charge === 1) {
+      color = green
+      text = 'FULLY CHARGED'
+    }
+    const healthBar = new HealthBar(this.game, this, 315, 30, color, text, captain.charge)
+    healthBar.y = 6
+    healthBar.x = 210
+  }
+}
+
 class CaptainsLog extends Phaser.Group {
   constructor(game, parent, width, height) {
     super(game, parent, 'CaptainsLog')
@@ -216,53 +256,45 @@ class CaptainsLog extends Phaser.Group {
 
     const titleTextMargin = 10
 
-    const text = game.add.text(0, 0, `${2} CAPTAINS ONBOARD`, baseStyle, this)
-    text.setTextBounds(0, titleTextMargin, width, 50)
+    this.title = game.add.text(0, 0, '', baseStyle, this)
+    this.title.setTextBounds(0, titleTextMargin, width, 50)
 
     const line = game.add.graphics()
     line.lineStyle(2, 0xffffff, 1)
-    line.drawRect(titleTextMargin * 2, text.bottom + titleTextMargin, width - (titleTextMargin * 4), 1)
+    line.drawRect(titleTextMargin * 2, this.title.bottom + titleTextMargin, width - (titleTextMargin * 4), 1)
     this.add(line)
 
-    const names = ['AVI', 'DAE', 'KEL', 'ANU', 'EMA', 'LIV']
-    const nameTextSize = 30
-    names.forEach((name, i) => {
-      const x = 22
-      const y = 80 + 43 * i
-      const circle = game.add.graphics()
-      const circleSize = 33
-      circle.lineStyle(2, 0xffffff)
-      circle.drawCircle(x + (circleSize / 2), y + 25, circleSize)
-      this.add(circle)
-      const nameText = game.add.text(0, 0, `CAPT. ${name}`, { ...baseStyle, fontSize: nameTextSize, boundsAlignH: 'left', fontWeight: 600 }, this)
-      nameText.setTextBounds(x + (circle.width) + 11, y, 200, 50)
+    this.entries = []
+    this.addCaptains()
+    this.numCaptains = this.game.captains.length
+  }
 
-      const n = i + 1
-
-      let nudge = -9
-      if (n === 1) {
-        nudge += 3
-      } else if (n === 3) {
-        nudge += 2
-      } else if (n === 5) {
-        nudge += 1
-      }
-      const numberText = game.add.text(0, 0, `${n}`, { ...baseStyle, fontSize: 25, boundsAlignH: 'left', fontWeight: 600 }, this)
-      numberText.setTextBounds(x + (circle.width / 2) + nudge, y + 2, 200, 50)
-
-      const yellow = 0xFCEE21
-      const green = 0x7AC943
-      let color = yellow
-      let text = 'RECHARGING'
-
-      if (n === 1) {
-        color = green
-        text = 'FULLY CHARGED'
-      }
-      const healthBar = new HealthBar(this.game, this, 315, 30, color, text)
-      healthBar.y = y + 6
-      healthBar.x = 230
+  addCaptains() {
+    const captains = this.game.captains
+    this.title.setText(`${captains.length} CAPTAINS ONBOARD`)
+    captains.forEach((captain, i) => {
+      const entry = new CaptainEntry(this.game, captain, i + 1)
+      entry.x = 22
+      entry.y = 80 + 43 * i
+      this.add(entry)
+      this.entries.push(entry)
     })
+  }
+
+  update() {
+    if (this.game.captains.length !== this.numCaptains) {
+      this.numCaptains = this.game.captains.length
+      if (this.numCaptains > 6) {
+        alert('ERROR: too many captains!')
+      }
+      this.entries.forEach(entry => {
+        if (entry.name === 'CaptainEntry') {
+          this.removeChild(entry, true)
+        }
+      })
+      this.entries = []
+      this.addCaptains()
+    }
   }
 }
 
