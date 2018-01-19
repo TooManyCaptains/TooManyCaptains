@@ -16,7 +16,10 @@ io.on('connection', socket => {
   console.log('⚡️ connected')
 
   // Rebroadcast all packets
-  socket.on('packet', packet => socket.broadcast.emit('packet', packet))
+  socket.on('packet', packet => {
+    socket.broadcast.emit('packet', packet)
+    console.log(`relaying packet: ${JSON.stringify(packet)}`)
+  })
 
   socket.on('disconnect', () => {
     console.log('🔌  disconnected')

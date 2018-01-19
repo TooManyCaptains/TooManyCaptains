@@ -26,7 +26,7 @@ function subsystemForDevice(device: Device): Subsystem {
 function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
   if (!deviceIsCardScanner(device)) return
   const subsystem = subsystemForDevice(device)
-  console.log(`${subsystem} scanner connected`)
+  console.log(`[Scanner] ${subsystem} connected`)
   device.open()
   const iface = device.interfaces[0]
 
@@ -62,7 +62,6 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
     else if (scanCode === 0x28) {
       const sequence = Number(scanCodes.join(''))
       const captain = sequenceToCaptain[sequence]
-      console.log(`Captain ${captain} => ${subsystem}`)
       sendPacket({
           kind: 'scan',
           subsystem,
@@ -73,7 +72,7 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
   })
 
   endpoint.on('error', error => {
-  console.log(`${subsystem} scanner disconnected`)
+    console.log(`[Scanner] ${subsystem} disconnected`)
   })
 }
 

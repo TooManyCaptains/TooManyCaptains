@@ -22,7 +22,7 @@ function watchDevice(device, sendPacket) {
     if (!deviceIsCardScanner(device))
         return;
     const subsystem = subsystemForDevice(device);
-    console.log(`${subsystem} scanner connected`);
+    console.log(`[Scanner] ${subsystem} connected`);
     device.open();
     const iface = device.interfaces[0];
     // this line is because the RFID reader is recognized as a keyboard when plugged
@@ -48,7 +48,6 @@ function watchDevice(device, sendPacket) {
         else if (scanCode === 0x28) {
             const sequence = Number(scanCodes.join(''));
             const captain = sequenceToCaptain[sequence];
-            console.log(`Captain ${captain} => ${subsystem}`);
             sendPacket({
                 kind: 'scan',
                 subsystem,
@@ -58,7 +57,7 @@ function watchDevice(device, sendPacket) {
         }
     });
     endpoint.on('error', error => {
-        console.log(`${subsystem} scanner disconnected`);
+        console.log(`[Scanner] ${subsystem} disconnected`);
     });
 }
 class Scanner {
