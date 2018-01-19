@@ -60,9 +60,15 @@ class Game extends Phaser.Game {
   bindServerEvents() {
     this.server = new GameServer(this.params.serverURL)
     const gameMainState = this.state.states.Main
+
     // XXX: FIXME
     const that = this
     this.server.socket.on('packet', packet => {
+
+      if (this.params.debug) {
+        console.log(packet)
+      }
+
       if (packet.kind === 'wiring' && that.state.current === 'Main') {
         if (packet.subsystem === 'weapons') {
           gameMainState.onWeaponsChanged(packet.wires)
