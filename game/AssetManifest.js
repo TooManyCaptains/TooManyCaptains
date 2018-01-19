@@ -52,12 +52,12 @@ const AssetManifest = {
     'battery-red.png',
 
     'ring-BRY.png',
-    // 'ring_BY.png',
-    // 'ring_BRY.png',
-    // 'ring_BR.png',
-    // 'ring_R.png',
-    // 'ring_RY.png',
-    // 'ring_Y.png',
+    'ring-BY.png',
+    'ring-BRY.png',
+    'ring-BR.png',
+    'ring-R.png',
+    'ring-RY.png',
+    'ring-Y.png',
   ],
   sprites: [],
   audio: [
@@ -76,7 +76,7 @@ const AssetManifest = {
   fonts: {
     google: {
       families: [
-        'Exo 2:700,800,900',
+        'Exo 2:600,700,800,900',
       ],
     },
   },
