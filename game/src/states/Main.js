@@ -41,7 +41,7 @@ export default class Main extends Phaser.State {
     this.game.captains = names.map((name, i) => ({
       name,
       number: i + 1,
-      charge: Math.random(),
+      charge: 1,
     }))
 
     // Panels for HUD
