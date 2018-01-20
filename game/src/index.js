@@ -105,7 +105,8 @@ class Game extends Phaser.Game {
           const captain = that.captains.find(({ number }) => number === packet.captain)
           if (captain.charge === 1) {
             captain.charge = 0
-            that.player.batteries[packet.subsystem] += 5
+            const value = that.player.batteries[packet.subsystem]
+            that.player.batteries[packet.subsystem] = Math.min(value + 7.5, 15)
           }
           gameMainState.onShieldsChanged(that.player.shieldColors)
         }

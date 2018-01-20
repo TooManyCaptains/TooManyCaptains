@@ -16,7 +16,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Batteries
     this.batteries = {
-      weapons: 10,
+      weapons: 15,
       shields: 0,
       propulsion: 0,
       repairs: 0,

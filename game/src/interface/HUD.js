@@ -156,7 +156,7 @@ class Battery extends Phaser.Group {
     this.text = this.game.add.text(0, 0, '', { ...baseStyle, boundsAlignH: 'left', fontSize: 52 }, this)
     this.text.setTextBounds(15, 0, this.icon.width - 14, this.icon.height)
 
-    this.maxSeconds = 10
+    this.maxSeconds = 15
     this.seconds = 0
   }
 
