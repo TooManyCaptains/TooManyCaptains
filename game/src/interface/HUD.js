@@ -64,6 +64,14 @@ class HealthBar {
   }
 }
 
+class BigHealthBar extends HealthBar {
+  constructor(game, parent, width) {
+    super(game, parent, width, 50, 0x00ff00, 'HEALTH 100%', 1)
+    this.text.fontSize = 40
+    this.text.fontWeight = 800
+  }
+}
+
 class ColorChart extends Phaser.Sprite {
   constructor(game, x, y, colorNames = []) {
     super(game, x, y)
@@ -456,8 +464,6 @@ export default class HUD extends Phaser.Group {
     this.y = y
     const innerPadding = 20
     const sidePadding = 40
-    // const healthBar = new HealthBar(this.game)
-    // this.add(healthBar)
     this.panels = [WeaponsPanel, ShieldsPanel, PropulsionPanel, RepairsPanel].map((Klass, i) => {
       const panel = new Klass(this.game, this, 300, 300)
       panel.x = sidePadding + (panel.width + innerPadding) * i
@@ -474,6 +480,21 @@ export default class HUD extends Phaser.Group {
     this.blinkTimer.loop(650, this.blink, this)
     this.blinkTimer.start()
     this.isBlinkLow = true
+
+    this.healthBar = new BigHealthBar(this.game, this, 1260)
+    this.healthBar.y = 340
+    this.healthBar.x = innerPadding * 2
+    this.bringToTop(this.healthBar)
+  }
+
+  update() {
+    const playerHealth = this.game.player.health
+    if (this.healthBar.value !== playerHealth) {
+      this.healthBar.value = playerHealth / this.game.player.maxHealth
+      const label = playerHealth > 25 ? Math.ceil(playerHealth) : Math.round(playerHealth * 100) / 100
+      this.healthBar.label = `HEALTH ${label}%`
+    }
+    super.update()
   }
 
   blink() {

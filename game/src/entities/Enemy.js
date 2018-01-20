@@ -52,7 +52,7 @@ export class Enemy extends Phaser.Sprite {
 
     // Weapon
     const baseFiringRate = 10000
-    this.bulletDamage = 17.5
+    this.bulletDamage = 12.5
     this.weapon = new Weapon(this, this.bulletDamage, weaponType)
     this.fireTimer = this.game.time.create()
     this.fireTimer.loop(baseFiringRate + (baseFiringRate * Math.random()), () => this.fire())
@@ -65,7 +65,7 @@ export class Enemy extends Phaser.Sprite {
     // this.body.collideWorldBounds = true
     this.outOfBoundsKill = true
     this.checkWorldBounds = true
-    this.movementSpeed = 10
+    this.movementSpeed = 7.5
     this.verticalDriftSpeed = 2.5
     this.body.bounce.set(1)
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
