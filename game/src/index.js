@@ -6,7 +6,7 @@ import Before from './states/Before'
 import Preload from './states/Preload'
 import After from './states/After'
 import './index.css'
-import GameServer from './GameServer'
+import GameServer from './GameServer.ts'
 
 function getUrlParams(search) {
   const hashes = search.slice(search.indexOf('?') + 1).split('&')

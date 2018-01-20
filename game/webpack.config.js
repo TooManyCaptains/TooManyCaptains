@@ -73,6 +73,7 @@ module.exports = {
       { test: /pixi\.js/, use: ['expose-loader?PIXI'] },
       { test: /phaser-split\.js$/, use: ['expose-loader?Phaser'] },
       { test: /p2\.js/, use: ['expose-loader?p2'] },
+      { test: /\.ts$/, loader: 'ts-loader', exclude: '/node_modules/' },
     ],
   },
 
@@ -80,6 +81,7 @@ module.exports = {
     open: true,
     port: 3000,
     compress: true,
+    progress: true,
   },
 
   resolve: {

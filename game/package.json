@@ -4,12 +4,12 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
+    "@types/socket.io-client": "^1.4.32",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-stage-2": "^6.24.1",
     "copy-webpack-plugin": "^4.2.3",
     "css-loader": "^0.28.7",
-    "eslint": "^4.11.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
     "expose-loader": "^0.7.4",
@@ -26,7 +26,11 @@
     "phaser-ce": "^2.9.2",
     "phaser-webpack-loader": "^1.0.2",
     "socket.io-client": "^2.0.4",
-    "stats.js": "^0.17.0"
+    "stats.js": "^0.17.0",
+    "ts-loader": "^3.2.0",
+    "tslint": "^5.9.1",
+    "tslint-loader": "^3.5.3",
+    "typescript": "^2.6.2"
   },
   "scripts": {
     "hack": "webpack-dev-server",
