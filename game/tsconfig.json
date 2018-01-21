@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "es2015",
+    "target": "es6",
+    "lib": ["es2016", "dom"],
+    "sourceMap": true,
+    "allowJs": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": true,
+    "strict": true
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "files": [
+    "./node_modules/phaser-ce/typescript/phaser.d.ts"
+  ],
+  "exclude": [
+    "build",
+    "webpack"
+  ]
+}

@@ -9,7 +9,6 @@
     "babel-preset-stage-2": "^6.24.1",
     "copy-webpack-plugin": "^4.2.3",
     "css-loader": "^0.28.7",
-    "eslint": "^4.11.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
     "expose-loader": "^0.7.4",
@@ -22,11 +21,19 @@
     "webpack-dev-server": "^2.9.4"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.93",
+    "@types/socket.io-client": "^1.4.32",
+    "@types/stats": "^0.16.30",
+    "hard-source-webpack-plugin": "^0.5.16",
     "lodash": "^4.17.4",
     "phaser-ce": "^2.9.2",
     "phaser-webpack-loader": "^1.0.2",
     "socket.io-client": "^2.0.4",
-    "stats.js": "^0.17.0"
+    "stats.js": "^0.17.0",
+    "ts-loader": "^3.2.0",
+    "tslint": "^5.9.1",
+    "tslint-loader": "^3.5.3",
+    "typescript": "^2.6.2"
   },
   "scripts": {
     "hack": "webpack-dev-server",
