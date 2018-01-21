@@ -79,11 +79,9 @@ const AssetManifest = {
   ],
   fonts: {
     google: {
-      families: [
-        'Exo 2:600,700,800,900',
-      ],
+      families: ['Exo 2:600,700,800,900'],
     },
   },
-}
+};
 
-export default AssetManifest
+export default AssetManifest;

@@ -561,7 +561,6 @@ class CaptainsLog extends Phaser.Group {
       this.entries.push(entry);
     });
   }
-
 }
 
 export default class HUD extends Phaser.Group {
