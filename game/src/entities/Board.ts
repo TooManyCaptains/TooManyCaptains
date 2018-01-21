@@ -88,7 +88,7 @@ export default class Board extends Phaser.Group {
     // Score timer
     this.game.score = 0;
     const scoreTimer = this.game.time.create();
-    scoreTimer.loop(250, () => (this.game.score += 1));
+    scoreTimer.loop(250, this.onScoreTimer, this);
     scoreTimer.start();
 
     // Player ship
@@ -216,5 +216,10 @@ export default class Board extends Phaser.Group {
         this.collideFx.play();
       },
     );
+  }
+
+  private onScoreTimer() {
+    this.game.score += 1;
+    this.scoreText.text = `SCORE: ${this.game.score}`;
   }
 }
