@@ -11,7 +11,7 @@ const p2 = path.join(phaserModule, 'build/custom/p2.js')
 module.exports = {
 
   entry: {
-    app: './src/index.js',
+    app: './src/index.ts',
     vendor: ['pixi', 'p2', 'phaser'],
   },
 
@@ -85,6 +85,7 @@ module.exports = {
   },
 
   resolve: {
+    extensions: ['.ts', '.js', '.json'],
     alias: {
       phaser,
       pixi,
