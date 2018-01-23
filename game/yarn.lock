@@ -6,6 +6,10 @@
   version "4.14.93"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.93.tgz#a6d2a1e1601a3c29196f38ef1990b68a9afa1e1c"
 
+"@types/node@*", "@types/node@^9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.3.0.tgz#3a129cda7c4e5df2409702626892cb4b96546dd5"
+
 "@types/socket.io-client@^1.4.32":
   version "1.4.32"
   resolved "https://registry.yarnpkg.com/@types/socket.io-client/-/socket.io-client-1.4.32.tgz#988a65a0386c274b1c22a55377fab6a30789ac14"
@@ -13,6 +17,32 @@
 "@types/stats@^0.16.30":
   version "0.16.30"
   resolved "https://registry.yarnpkg.com/@types/stats/-/stats-0.16.30.tgz#deb5fa6e59c6d67bd6e0f61a51ef630a83a84ce9"
+
+"@types/strip-bom@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/strip-bom/-/strip-bom-3.0.0.tgz#14a8ec3956c2e81edb7520790aecf21c290aebd2"
+
+"@types/strip-json-comments@0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
+
+"@types/tapable@*":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-0.2.4.tgz#8181a228da46185439300e600c5ae3b3b3982585"
+
+"@types/uglify-js@*":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@types/uglify-js/-/uglify-js-2.6.30.tgz#257d2b6dd86673d60da476680fba90f2e30c6eef"
+  dependencies:
+    source-map "^0.6.1"
+
+"@types/webpack@^3.8.3":
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-3.8.3.tgz#92501a9c7e41a560aa9b354345768b7348d80764"
+  dependencies:
+    "@types/node" "*"
+    "@types/tapable" "*"
+    "@types/uglify-js" "*"
 
 abbrev@1:
   version "1.1.1"
@@ -181,6 +211,10 @@ array-unique@^0.2.1:
 arraybuffer.slice@0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/arraybuffer.slice/-/arraybuffer.slice-0.0.6.tgz#f33b2159f0532a3f3107a272c0ccfbd1ad2979ca"
+
+arrify@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
 
 asn1.js@^4.0.0:
   version "4.9.2"
@@ -1800,7 +1834,7 @@ detect-node@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/detect-node/-/detect-node-2.0.3.tgz#a2033c09cc8e158d37748fbde7507832bd6ce127"
 
-diff@^3.2.0:
+diff@^3.1.0, diff@^3.2.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.4.0.tgz#b1d85507daf3964828de54b37d0d73ba67dda56c"
 
@@ -2861,6 +2895,12 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
+homedir-polyfill@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/homedir-polyfill/-/homedir-polyfill-1.0.1.tgz#4c2bbc8a758998feebf5ed68580f76d46768b4bc"
+  dependencies:
+    parse-passwd "^1.0.0"
+
 hosted-git-info@^2.1.4:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.5.0.tgz#6d60e34b3abbc8313062c3b798ef8d901a07af3c"
@@ -3713,6 +3753,10 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
+make-error@^1.1.1:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.2.tgz#8762ffad2444dd8ff1f7c819629fa28e24fea1c4"
+
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
@@ -4231,6 +4275,10 @@ parse-json@^2.1.0, parse-json@^2.2.0:
   resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-2.2.0.tgz#f480f40434ef80741f8469099f8dea18f55a4dc9"
   dependencies:
     error-ex "^1.2.0"
+
+parse-passwd@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/parse-passwd/-/parse-passwd-1.0.0.tgz#6d5b934a456993b23d37f40a382d6f1666a8e5c6"
 
 parseqs@0.0.5:
   version "0.0.5"
@@ -5254,11 +5302,17 @@ source-map-support@^0.4.15:
   dependencies:
     source-map "^0.5.6"
 
+source-map-support@^0.5.0:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.2.tgz#1a6297fd5b2e762b39688c7fc91233b60984f0a5"
+  dependencies:
+    source-map "^0.6.0"
+
 source-map@0.5.x, source-map@^0.5.3, source-map@^0.5.6, source-map@~0.5.1:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
 
-source-map@^0.6.1, source-map@~0.6.1:
+source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
@@ -5475,7 +5529,7 @@ strip-indent@^1.0.1:
   dependencies:
     get-stdin "^4.0.1"
 
-strip-json-comments@~2.0.1:
+strip-json-comments@^2.0.0, strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
 
@@ -5671,6 +5725,30 @@ ts-loader@^3.2.0:
     enhanced-resolve "^3.0.0"
     loader-utils "^1.0.2"
     semver "^5.0.1"
+
+ts-node@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-4.1.0.tgz#36d9529c7b90bb993306c408cd07f7743de20712"
+  dependencies:
+    arrify "^1.0.0"
+    chalk "^2.3.0"
+    diff "^3.1.0"
+    make-error "^1.1.1"
+    minimist "^1.2.0"
+    mkdirp "^0.5.1"
+    source-map-support "^0.5.0"
+    tsconfig "^7.0.0"
+    v8flags "^3.0.0"
+    yn "^2.0.0"
+
+tsconfig@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/tsconfig/-/tsconfig-7.0.0.tgz#84538875a4dc216e5c4a5432b3a4dec3d54e91b7"
+  dependencies:
+    "@types/strip-bom" "^3.0.0"
+    "@types/strip-json-comments" "0.0.30"
+    strip-bom "^3.0.0"
+    strip-json-comments "^2.0.0"
 
 tslib@^1.8.0, tslib@^1.8.1:
   version "1.9.0"
@@ -5904,6 +5982,12 @@ uuid@^2.0.1, uuid@^2.0.2:
 uuid@^3.0.0, uuid@^3.0.1:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.1.0.tgz#3dd3d3e790abc24d7b0d3a034ffababe28ebbc04"
+
+v8flags@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/v8flags/-/v8flags-3.0.1.tgz#dce8fc379c17d9f2c9e9ed78d89ce00052b1b76b"
+  dependencies:
+    homedir-polyfill "^1.0.1"
 
 vali-date@^1.0.0:
   version "1.0.0"
@@ -6278,3 +6362,7 @@ yauzl@^2.2.1:
 yeast@0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
+
+yn@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/yn/-/yn-2.0.0.tgz#e5adabc8acf408f6385fc76495684c88e6af689a"

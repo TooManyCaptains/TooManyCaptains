@@ -1,11 +1,10 @@
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+import * as webpack from 'webpack';
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
+import * as UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import * as CopyWebpackPlugin from 'copy-webpack-plugin';
+import * as HardSourceWebpackPlugin from 'hard-source-webpack-plugin';
 
-
-const baseConfig = require('./webpack.base');
+import baseConfig from './webpack.base';
 
 baseConfig.plugins = [
   new webpack.optimize.CommonsChunkPlugin({

@@ -1,6 +1,6 @@
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import * as path from 'path';
+import * as webpack from 'webpack';
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 
 // Phaser webpack config
 const phaserModule = path.join(__dirname, '/node_modules/phaser-ce/');
@@ -8,7 +8,7 @@ const phaser = path.join(phaserModule, 'build/custom/phaser-split.js');
 const pixi = path.join(phaserModule, 'build/custom/pixi.js');
 const p2 = path.join(phaserModule, 'build/custom/p2.js');
 
-module.exports = {
+export default {
   entry: {
     app: './src/index.ts',
     vendor: ['pixi', 'p2', 'phaser'],
@@ -87,4 +87,6 @@ module.exports = {
       assets: path.join(__dirname, './assets'),
     },
   },
+
+  devServer: {},
 };
