@@ -1,4 +1,7 @@
-html, body, #root, .App {
+html,
+body,
+#root,
+.App {
   height: 100%;
   font-family: 'Exo 2';
   text-transform: uppercase;
@@ -74,7 +77,7 @@ html, body, #root, .App {
 }
 
 .Wire-red {
-  background-color: #FF4136;
+  background-color: #ff4136;
 }
 
 .Wire-orange {
@@ -86,11 +89,11 @@ html, body, #root, .App {
 }
 
 .Wire-green {
-  background-color: #2ECC40;
+  background-color: #2ecc40;
 }
 
 .Wire-blue {
-  background-color: #0074D9;
+  background-color: #0074d9;
 }
 
 .Wire-purple {
@@ -145,7 +148,6 @@ html, body, #root, .App {
 
 .Port-status-recharging {
   animation: blink-blue steps(1, start) 250ms infinite;
-
 }
 
 @keyframes blink-blue {

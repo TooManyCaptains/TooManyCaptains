@@ -1,5 +1,5 @@
 export type Color = 'blue' | 'red' | 'yellow'
-export type Subsystem = 'weapons' | 'shields' | 'repairs' | 'propulsion'
+export type Subsystem = 'weapons' | 'shields' | 'thrusters' | 'repairs'
 export type GameState = 'wait_for_players' | 'in_game' | 'game_over'
 export type ButtonState = 'pressed' | 'released'
 export type Captain = 1 | 2 | 3 | 4 | 5 | 6

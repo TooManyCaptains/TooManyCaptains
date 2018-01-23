@@ -22,7 +22,7 @@ export default class PlayerShip extends Phaser.Sprite {
   public weapon: PlayerWeapon | null;
   public weaponColors: Color[];
   public healthBar: HealthBar;
-  public propulsionLevel: number;
+  public thrustersLevel: number;
   public batteryDrainTimerFreq: number;
   public shield: Phaser.Sprite;
   public shieldColors: Color[] = [];
@@ -46,7 +46,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.batteries = {
       weapons: 15,
       shields: 0,
-      propulsion: 0,
+      thrusters: 0,
       repairs: 0,
     };
     this.batteryDrainPerSecond = 1;
@@ -59,7 +59,7 @@ export default class PlayerShip extends Phaser.Sprite {
     // Movement
     this.movementSpeed = 0;
     this.body.collideWorldBounds = true;
-    this.propulsionLevel = 0;
+    this.thrustersLevel = 0;
 
     // Shields
     this.shield = game.add.sprite(this.x, this.y, 'shield_R');
@@ -167,27 +167,27 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   public startMovingDown() {
-    // Can't move up with 0 propulsion
-    if (this.propulsionLevel === 0) {
+    // Can't move up with 0 thrusters
+    if (this.thrustersLevel === 0) {
       return;
     }
     this.body.velocity.y = this.movementSpeed;
-    if (this.propulsionLevel === 1) {
+    if (this.thrustersLevel === 1) {
       this.moveFastFx.play();
-    } else if (this.propulsionLevel === 2) {
+    } else if (this.thrustersLevel === 2) {
       this.moveSlowFx.play();
     }
   }
 
   public startMovingUp() {
-    // Can't move up with 0 propulsion
-    if (this.propulsionLevel === 0) {
+    // Can't move with 0 thrusters
+    if (this.thrustersLevel === 0) {
       return;
     }
     this.body.velocity.y = -this.movementSpeed;
-    if (this.propulsionLevel === 1) {
+    if (this.thrustersLevel === 1) {
       this.moveFastFx.play();
-    } else if (this.propulsionLevel === 2) {
+    } else if (this.thrustersLevel === 2) {
       this.moveSlowFx.play();
     }
   }
@@ -205,8 +205,8 @@ export default class PlayerShip extends Phaser.Sprite {
     setTimeout(() => clearInterval(h), 500);
   }
 
-  public setPropulsionLevel(level: number) {
-    this.propulsionLevel = level;
+  public setthrustersLevel(level: number) {
+    this.thrustersLevel = level;
     const levelSpeedMap = [0, 25, 100];
     this.movementSpeed = levelSpeedMap[level];
     if (this.movementSpeed === 0) {

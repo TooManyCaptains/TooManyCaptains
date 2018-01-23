@@ -9,8 +9,6 @@ function colorNamesToColorKey(names: string[]) {
   return names.map(nameToKey, names).join('') || 'none';
 }
 
-console.log(baseStyle)
-
 class HealthBar {
   public game: Game;
   public text: Phaser.Text;
@@ -119,7 +117,7 @@ class ColorChart extends Phaser.Sprite {
   }
 }
 
-class PropulsionChart extends Phaser.Sprite {
+class ThrustersChart extends Phaser.Sprite {
   constructor(game: Game, x: number, y: number) {
     super(game, x, y, 'ring-none');
     this.anchor.setTo(0.5, 0.5);
@@ -132,7 +130,7 @@ class PropulsionChart extends Phaser.Sprite {
       this.body.angularVelocity = 0;
       return;
     }
-    this.loadTexture('ring-propulsion');
+    this.loadTexture('ring-Thrusters');
     if (level === 1) {
       this.body.angularVelocity = 75;
     } else if (level === 2) {
@@ -334,16 +332,16 @@ class ShieldsPanel extends Panel {
   }
 }
 
-class PropulsionPanel extends Panel {
+class ThrustersPanel extends Panel {
   public game: Game;
-  private chart: PropulsionChart;
+  private chart: ThrustersChart;
   private battery: Battery;
-  private propulsionLevel = 0;
+  private thrustersLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'THRUSTERS');
 
-    this.chart = new PropulsionChart(game, this.centerX, this.centerY);
+    this.chart = new ThrustersChart(game, this.centerX, this.centerY);
     this.add(this.chart);
     const oldBottom = this.bottom;
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
@@ -351,7 +349,7 @@ class PropulsionPanel extends Panel {
     // mask.scale.setTo(1.5, 1.5)
     this.add(mask);
 
-    const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'propulsion');
+    const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'thrusters');
     this.add(icon);
 
     this.battery = new Battery(game);
@@ -366,11 +364,11 @@ class PropulsionPanel extends Panel {
 
   public update() {
     // Set battery seconds
-    this.battery.seconds = this.game.player.batteries.propulsion;
+    this.battery.seconds = this.game.player.batteries.thrusters;
 
-    if (this.propulsionLevel !== this.game.player.propulsionLevel) {
-      this.propulsionLevel = this.game.player.propulsionLevel;
-      this.chart.setLevel(this.propulsionLevel);
+    if (this.thrustersLevel !== this.game.player.thrustersLevel) {
+      this.thrustersLevel = this.game.player.thrustersLevel;
+      this.chart.setLevel(this.thrustersLevel);
     }
     super.update();
   }
@@ -378,7 +376,7 @@ class PropulsionPanel extends Panel {
 
 class RepairsPanel extends Panel {
   public game: Game;
-  private chart: PropulsionChart;
+  private chart: ThrustersChart;
   private battery: Battery;
   private repairLevel = 0;
 
@@ -577,7 +575,7 @@ export default class HUD extends Phaser.Group {
     this.panels = [
       WeaponsPanel,
       ShieldsPanel,
-      PropulsionPanel,
+      ThrustersPanel,
       RepairsPanel,
     ].map((Klass, i) => {
       const panel = new Klass(this.game, this, 300, 300);

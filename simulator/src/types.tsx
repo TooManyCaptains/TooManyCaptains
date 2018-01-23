@@ -1,6 +1,3 @@
-import { GameState } from '../../common/types'
-export { GameState }
-
 export enum Color {
   red = 0,
   blue = 1,
@@ -8,23 +5,26 @@ export enum Color {
 }
 
 export interface Port {
-  id: number
-  isDisabled: boolean
-  wire: Wire | null
+  id: number;
+  isDisabled: boolean;
+  wire: Wire | null;
 }
 
 export interface Wire {
-  color: Color
-  inUse: boolean
+  color: Color;
+  inUse: boolean;
 }
 
 export function wireName(wire: Wire | null) {
   if (wire === null) {
-    return 'none'
+    return 'none';
   }
   switch (wire.color) {
-    case Color.red: return 'red'
-    case Color.blue: return 'blue'
-    case Color.yellow: return 'yellow'
+    case Color.red:
+      return 'red';
+    case Color.blue:
+      return 'blue';
+    case Color.yellow:
+      return 'yellow';
   }
 }

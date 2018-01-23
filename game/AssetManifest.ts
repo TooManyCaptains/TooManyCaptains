@@ -44,7 +44,7 @@ const AssetManifest = {
 
     'icon-weapons.png',
     'icon-shields.png',
-    'icon-propulsion.png',
+    'icon-thrusters.png',
     'icon-repairs.png',
 
     'icon-mask.png',
@@ -59,7 +59,7 @@ const AssetManifest = {
     'ring-R.png',
     'ring-RY.png',
     'ring-Y.png',
-    'ring-propulsion.png',
+    'ring-thrusters.png',
     'ring-repairs.png',
     'ring-none.png',
   ],

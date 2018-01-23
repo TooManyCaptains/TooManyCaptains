@@ -157,13 +157,13 @@ export default class Main extends Phaser.State {
   }
 
   public onMoveUp() {
-    if (this.player.batteries.propulsion > 0) {
+    if (this.player.batteries.thrusters > 0) {
       this.player.startMovingUp();
     }
   }
 
   public onMoveDown() {
-    if (this.player.batteries.propulsion > 0) {
+    if (this.player.batteries.thrusters > 0) {
       this.player.startMovingDown();
     }
   }
@@ -180,8 +180,8 @@ export default class Main extends Phaser.State {
     this.player.setShields(colors);
   }
 
-  public onPropulsionChanged(colors: Color[]) {
-    this.player.setPropulsionLevel(colors.length);
+  public onthrustersChanged(colors: Color[]) {
+    this.player.setthrustersLevel(colors.length);
   }
 
   public onRepairsChanged(colors: Color[]) {
