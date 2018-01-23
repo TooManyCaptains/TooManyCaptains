@@ -2,8 +2,12 @@
 
 1. Install Node.JS and [yarn](https://yarnpkg.com/en/): `brew install yarn`
 
-2. `yarn install`
+2. Install project dependencies: `yarn install`
 
-## Hacking
+## Developing locally
 
-1. `yarn start`
+1. `yarn hack`
+
+## Deploying a new version live
+
+1. `yarn deploy`
