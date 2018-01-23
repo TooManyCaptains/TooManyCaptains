@@ -2,20 +2,14 @@ import Panel from './Panel';
 import { Game } from '../index';
 import { Subsystem, Color } from '../../../common/types';
 import { Captain } from '../types';
-
-const baseStyle = {
-  font: 'Exo 2',
-  fontSize: 40,
-  fill: 'white',
-  fontWeight: 800,
-  boundsAlignH: 'center',
-  boundsAlignV: 'middle',
-};
+import { baseStyle } from './Styles';
 
 function colorNamesToColorKey(names: string[]) {
   const nameToKey = (name: string) => name[0].toUpperCase();
   return names.map(nameToKey, names).join('') || 'none';
 }
+
+console.log(baseStyle)
 
 class HealthBar {
   public game: Game;
@@ -196,7 +190,11 @@ class Battery extends Phaser.Group {
       0,
       0,
       '',
-      { ...baseStyle, boundsAlignH: 'left', fontSize: 52 },
+      {
+        ...baseStyle,
+        boundsAlignH: 'left',
+        fontSize: 52,
+      },
       this,
     );
     this.text.setTextBounds(15, 0, this.icon.width - 14, this.icon.height);
@@ -516,7 +514,7 @@ class CaptainsLog extends Phaser.Group {
 
     const titleTextMargin = 10;
 
-    this.title = game.add.text(0, 0, '', baseStyle, this);
+    this.title = game.add.text(0, 0, '', {...baseStyle, fontSize: 40} , this);
     this.title.setTextBounds(0, titleTextMargin, width, 50);
 
     const line = game.add.graphics();
@@ -533,6 +531,7 @@ class CaptainsLog extends Phaser.Group {
     this.addCaptains();
     this.numCaptains = this.game.captains.length;
   }
+
   public update() {
     if (this.game.captains.length !== this.numCaptains) {
       this.numCaptains = this.game.captains.length;

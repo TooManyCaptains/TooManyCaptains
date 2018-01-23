@@ -1,13 +1,7 @@
 import WebpackLoader from 'phaser-webpack-loader';
 import AssetManifest from '../../AssetManifest';
 import { Game } from '../index';
-
-const baseStyle = {
-  font: 'Exo 2',
-  fontSize: 110,
-  fill: 'white',
-  fontWeight: 900,
-};
+import { baseStyle } from '../interface/Styles';
 
 /**
  * Preload the game and display the loading screen.
@@ -49,7 +43,7 @@ export default class Preload extends Phaser.State {
       this.game.world.centerX,
       this.game.world.centerY,
       '...',
-      baseStyle,
+      { ...baseStyle, fontSize: 110, fontWeight: 900 },
     );
 
     this.dotsCur = 0;

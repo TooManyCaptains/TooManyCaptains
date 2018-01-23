@@ -1,11 +1,5 @@
 import { Game } from '../index';
-
-const baseStyle = {
-  font: 'Exo 2',
-  fontSize: 110,
-  fill: 'white',
-  fontWeight: 900,
-};
+import { baseStyle } from './Styles';
 
 class BlinkingButtonLabel extends Phaser.Group {
   constructor(game: Game, x: number, y: number, actionText: string) {
@@ -16,7 +10,7 @@ class BlinkingButtonLabel extends Phaser.Group {
       x,
       y,
       `PRESS          TO ${actionText}`,
-      baseStyle,
+      {...baseStyle, fontSize: 110, fontWeight: 900},
     );
     text.anchor.setTo(0.5, 0.5);
     const button = this.game.add.sprite(x - buttonOffset, y, 'red-button');
@@ -70,7 +64,7 @@ export class EndScreen extends Phaser.Group {
       x,
       y,
       `SCORE: ${this.game.score}`,
-      baseStyle,
+      {...baseStyle, fontSize: 110},
     );
     text.anchor.setTo(0.5, 0.5);
 
