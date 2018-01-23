@@ -101,7 +101,6 @@ class Bullet extends Phaser.Sprite {
   public color: string;
   private strength = 0;
 
-
   constructor(game: Game, key: string) {
     super(game, 0, 0, key);
     this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;

@@ -62,13 +62,7 @@ export default class Board extends Phaser.Group {
     );
     graphics.lineStyle(2, 0x000000, 1);
     graphics.beginFill(0xffffff);
-    graphics.drawRoundedRect(
-      0,
-      0,
-      rectWidth,
-      rectHeight,
-      37.5,
-    );
+    graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 37.5);
     this.scoreText = this.game.add.text(
       width - rectWidth - rectOffsetFromEdge + offsetLeft,
       height / 2 - rectHeight / 2 + offsetTop,
@@ -128,34 +122,35 @@ export default class Board extends Phaser.Group {
 
   public update() {
     super.update();
-    this.scoreText.text = `SCORE: ${this.game.score}`;
 
     // Player <-> enemy bullet collision
-    this.enemies.forEach((enemy: Enemy) =>
-      this.game.physics.arcade.overlap(
-        enemy.weapon,
-        this.player,
-        (player: PlayerShip, bullet: Weapon) => {
-          const playerHasMatchingShield = player.shieldColors.some(
-            color => color[0].toUpperCase() === enemy.weaponType,
-          );
-          // Bullet hits
-          if (
-            player.shieldColors.length === 0 ||
-            !playerHasMatchingShield ||
-            !player.shield.visible
-          ) {
-            player.damage(enemy.weapon.bulletDamage);
-            this.damagedFx.play();
-            player.getHurtTint();
-          } else {
-            player.damage(enemy.weapon.bulletDamage * 0.05);
-            this.shieldFx.play();
-          }
-          bullet.kill();
-        },
-      )
-    , undefined);
+    this.enemies.forEach(
+      (enemy: Enemy) =>
+        this.game.physics.arcade.overlap(
+          enemy.weapon,
+          this.player,
+          (player: PlayerShip, bullet: Weapon) => {
+            const playerHasMatchingShield = player.shieldColors.some(
+              color => color[0].toUpperCase() === enemy.weaponType,
+            );
+            // Bullet hits
+            if (
+              player.shieldColors.length === 0 ||
+              !playerHasMatchingShield ||
+              !player.shield.visible
+            ) {
+              player.damage(enemy.weapon.bulletDamage);
+              this.damagedFx.play();
+              player.getHurtTint();
+            } else {
+              player.damage(enemy.weapon.bulletDamage * 0.05);
+              this.shieldFx.play();
+            }
+            bullet.kill();
+          },
+        ),
+      undefined,
+    );
 
     // Planet <-> enemy bullet collision
     if (this.player.weapon) {
@@ -174,7 +169,9 @@ export default class Board extends Phaser.Group {
         this.enemies,
         this.player.weapon,
         (enemy: Enemy, weapon: Weapon) => {
-          const playerBulletCanHurtEnemy = weapon.bulletColor.includes(enemy.shipType);
+          const playerBulletCanHurtEnemy = weapon.bulletColor.includes(
+            enemy.shipType,
+          );
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
             enemy.getHurtTint();
