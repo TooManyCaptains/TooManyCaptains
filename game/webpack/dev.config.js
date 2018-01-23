@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const baseConfig = require('./webpack.base');
+const baseConfig = require('./base.config');
 
 baseConfig.plugins = [
   new webpack.optimize.CommonsChunkPlugin({

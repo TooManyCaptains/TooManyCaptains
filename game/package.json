@@ -36,8 +36,8 @@
     "typescript": "^2.6.2"
   },
   "scripts": {
-    "hack": "webpack-dev-server",
-    "build-prod": "webpack --config webpack.production.config.js",
+    "hack": "webpack-dev-server --config webpack/dev.config.js",
+    "build-prod": "webpack --config webpack/prod.config.js",
     "deploy": "npm run build-prod && surge dist play.toomanycaptains.com"
   }
 }

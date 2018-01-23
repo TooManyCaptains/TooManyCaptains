@@ -3,20 +3,22 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // Phaser webpack config
-const phaserModule = path.join(__dirname, '/node_modules/phaser-ce/');
-const phaser = path.join(phaserModule, 'build/custom/phaser-split.js');
-const pixi = path.join(phaserModule, 'build/custom/pixi.js');
-const p2 = path.join(phaserModule, 'build/custom/p2.js');
+const phaserModule = path.join(__dirname, '../node_modules/phaser-ce/');
+const phaser = path.join(phaserModule, './build/custom/phaser-split.js');
+const pixi = path.join(phaserModule, './build/custom/pixi.js');
+const p2 = path.join(phaserModule, './build/custom/p2.js');
+
+const src = path.join(__dirname, '../src')
 
 module.exports = {
   entry: {
-    app: './src/index.ts',
+    app: `${src}/index.ts`,
     vendor: ['pixi', 'p2', 'phaser'],
   },
 
   output: {
     filename: 'bundle.js',
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname + '../dist'),
   },
 
   devtool: 'cheap-module-source-map',
@@ -39,7 +41,7 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules\/(?!phaser-webpack-loader)/,
         loader: 'babel-loader',
-        include: path.join(__dirname, 'src'),
+        include: src,
       },
       {
         test: /\.(ttf|eot|woff|woff2)$/,
@@ -84,7 +86,7 @@ module.exports = {
       phaser,
       pixi,
       p2,
-      assets: path.join(__dirname, './assets'),
+      assets: path.join(__dirname, '../assets'),
     },
   },
 };

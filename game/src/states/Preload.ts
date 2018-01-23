@@ -1,5 +1,5 @@
 import WebpackLoader from 'phaser-webpack-loader';
-import AssetManifest from '../../AssetManifest';
+import AssetManifest from '../AssetManifest';
 import { Game } from '../index';
 import { baseStyle } from '../interface/Styles';
 
