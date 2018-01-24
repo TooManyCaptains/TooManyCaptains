@@ -132,7 +132,7 @@ export default class Main extends Phaser.State {
     );
     enemyTimer.start();
 
-    // Input
+    // Keyboard shortcuts (for debugging)
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.E)
       .onDown.add(() => this.board.spawnEnemy(), this);
@@ -144,6 +144,14 @@ export default class Main extends Phaser.State {
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.K)
       .onDown.add(() => this.player.kill(), this);
+
+    this.game.input.keyboard
+    .addKey(Phaser.Keyboard.D)
+    .onDown.add(() => this.player.damage(5), this);
+
+    this.game.input.keyboard
+    .addKey(Phaser.Keyboard.S)
+    .onDown.add(() => this.game.captains = this.game.captains.map(captain => ({...captain, charge: 0}), this));
 
     this.game.server.notifyGameState(this.gameState);
 
