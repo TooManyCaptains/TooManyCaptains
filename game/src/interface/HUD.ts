@@ -14,8 +14,9 @@ class HealthBar {
   public text: Phaser.Text;
   private width: number;
   private height: number;
-  private outline: Phaser.Graphics;
   private bar: Phaser.Graphics;
+  private barMask: Phaser.Graphics;
+  private background: Phaser.Graphics;
 
   constructor(
     game: Game,
@@ -30,21 +31,26 @@ class HealthBar {
     this.width = width;
     this.height = height;
 
-    this.outline = game.add.graphics();
-    this.outline.beginFill(0x999999, 1);
-    const border = 0;
-    this.outline.drawRoundedRect(
-      border,
-      border,
-      this.width + border,
-      this.height + border,
+    this.background = game.add.graphics();
+    this.background.beginFill(0x999999, 1);
+    this.background.drawRoundedRect(
+      0,
+      0,
+      this.width,
+      this.height,
       25,
     );
-    parent.add(this.outline);
 
     this.bar = game.add.graphics();
+    this.bar.beginFill(color, 1);
+
+    this.barMask = game.add.graphics();
+
     this.color = color;
+
+    parent.add(this.background);
     parent.add(this.bar);
+    parent.add(this.barMask);
 
     this.text = game.add.text(0, 0, label, {
       ...baseStyle,
@@ -56,25 +62,37 @@ class HealthBar {
     this.text.setTextBounds(0, 0, this.width, this.height + 2);
     parent.add(this.text);
 
+    this.bar.mask = this.barMask;
     this.value = value;
   }
 
   set x(x: number) {
+    this.barMask.x = x;
     this.bar.x = x;
-    this.outline.x = x;
     this.text.x = x;
+    this.background.x = x;
   }
 
   set y(y: number) {
+    this.barMask.y = y;
     this.bar.y = y;
-    this.outline.y = y;
     this.text.y = y;
+    this.background.y = y;
   }
 
   set color(color: number) {
     this.bar.clear();
     this.bar.beginFill(color, 1);
-    this.bar.drawRoundedRect(0, 0, this.width, this.height, 25);
+    this.bar.drawRoundedRect(
+      0,
+      0,
+      this.width,
+      this.height,
+      25,
+    );
+    this.barMask.clear();
+    this.barMask.beginFill(color, 1);
+    this.barMask.drawRect(0, 0, this.width, this.height);
   }
 
   set label(label: string) {
@@ -82,7 +100,7 @@ class HealthBar {
   }
 
   set value(value: number) {
-    this.bar.scale.x = value;
+    this.barMask.scale.x = value;
   }
 }
 
@@ -479,15 +497,14 @@ class CaptainEntry extends Phaser.Group {
   }
 
   public update() {
-    const beta = this.game.captains.find(
+    const updatedCaptain = this.game.captains.find(
       captain => captain.number === this.captain.number,
     );
-    if (beta === undefined) {
-      throw new Error('captain not found');
+    if (updatedCaptain === undefined) {
+      throw new Error(`[CaptainEntry] captain not found with number: ${this.captain.number}`);
     }
-    if (this.charge !== beta.charge) {
-      this.charge = beta.charge;
-
+    if (this.charge !== updatedCaptain.charge) {
+      this.captain = updatedCaptain;
       this.healthBar.value = this.captain.charge;
       const fullyCharged = this.captain.charge === 1;
       this.healthBar.color = fullyCharged ? 0x7ac943 : 0xfcee21;
@@ -512,7 +529,7 @@ class CaptainsLog extends Phaser.Group {
 
     const titleTextMargin = 10;
 
-    this.title = game.add.text(0, 0, '', {...baseStyle, fontSize: 40} , this);
+    this.title = game.add.text(0, 0, '', { ...baseStyle, fontSize: 40 }, this);
     this.title.setTextBounds(0, titleTextMargin, width, 50);
 
     const line = game.add.graphics();
