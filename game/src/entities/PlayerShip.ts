@@ -2,13 +2,14 @@ import { Subsystem, Color } from './../../../common/types';
 import { clamp, mapValues } from 'lodash';
 import { PlayerWeapon } from './Weapon';
 import HealthBar from './HealthBar';
-import { Game } from 'phaser-ce';
+import { Game } from '../index';
 
 function colorNameToLetter(color: Color): string {
   return color[0].toUpperCase();
 }
 
 export default class PlayerShip extends Phaser.Sprite {
+  public game: Game;
   public weaponDamage: any;
   public repairIntervalMsec: number;
   public repairPercentagePerSecond: number;
@@ -43,11 +44,12 @@ export default class PlayerShip extends Phaser.Sprite {
     this.body.setSize(165.4, 63.2, 25.8, 28.4);
 
     // Batteries
+    const baseSecs = this.game.params.noCards ? Infinity : 0;
     this.batteries = {
-      weapons: 15,
-      shields: 0,
-      thrusters: 0,
-      repairs: 0,
+      weapons: baseSecs + 15,
+      shields: baseSecs,
+      thrusters: baseSecs,
+      repairs: baseSecs,
     };
     this.batteryDrainPerSecond = 1;
     this.batteryDrainTimerFreq = 60;

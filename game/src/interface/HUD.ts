@@ -220,7 +220,7 @@ class Battery extends Phaser.Group {
   }
 
   set seconds(seconds: number) {
-    const fraction = seconds / this.maxSeconds;
+    const fraction = Math.min(seconds / this.maxSeconds, 1);
     if (this.bar) {
       this.remove(this.bar);
     }
@@ -235,7 +235,9 @@ class Battery extends Phaser.Group {
     );
     this.add(this.bar);
     const rounded = Math.ceil(seconds);
-    if (rounded >= 10) {
+    if (rounded === Infinity) {
+      this.text.setText('   ∞');
+    } else if (rounded >= 10) {
       this.text.setText(`0:${rounded}`);
     } else {
       this.text.setText(`0:0${rounded}`);

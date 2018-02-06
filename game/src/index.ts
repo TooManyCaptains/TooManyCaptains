@@ -28,6 +28,7 @@ interface Config {
   invulnerable: boolean;
   local: boolean;
   serverURL: string;
+  noCards: boolean;
 }
 
 function getConfig() {
@@ -38,6 +39,7 @@ function getConfig() {
     skip: _.has(urlParams, 'skip'),
     invulnerable: _.has(urlParams, 'invuln'),
     local: _.has(urlParams, 'local'),
+    noCards: _.has(urlParams, 'nocards'),
     serverURL: 'http://server.toomanycaptains.com',
   };
   if (config.local) {
