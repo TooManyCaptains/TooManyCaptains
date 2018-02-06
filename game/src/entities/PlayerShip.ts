@@ -207,7 +207,7 @@ export default class PlayerShip extends Phaser.Sprite {
     setTimeout(() => clearInterval(h), 500);
   }
 
-  public setthrustersLevel(level: number) {
+  public setThrustersLevel(level: number) {
     this.thrustersLevel = level;
     const levelSpeedMap = [0, 25, 100];
     this.movementSpeed = levelSpeedMap[level];

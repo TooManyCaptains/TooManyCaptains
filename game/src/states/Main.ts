@@ -188,8 +188,8 @@ export default class Main extends Phaser.State {
     this.player.setShields(colors);
   }
 
-  public onthrustersChanged(colors: Color[]) {
-    this.player.setthrustersLevel(colors.length);
+  public onThrustersChanged(colors: Color[]) {
+    this.player.setThrustersLevel(colors.length);
   }
 
   public onRepairsChanged(colors: Color[]) {

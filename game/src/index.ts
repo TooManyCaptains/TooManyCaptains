@@ -89,7 +89,7 @@ export class Game extends Phaser.Game {
         } else if (packet.subsystem === 'shields') {
           gameMainState.onShieldsChanged(packet.wires);
         } else if (packet.subsystem === 'thrusters') {
-          gameMainState.onPropulsionChanged(packet.wires);
+          gameMainState.onThrustersChanged(packet.wires);
         } else if (packet.subsystem === 'repairs') {
           gameMainState.onRepairsChanged(packet.wires);
         }

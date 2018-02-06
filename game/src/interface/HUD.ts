@@ -148,7 +148,7 @@ class ThrustersChart extends Phaser.Sprite {
       this.body.angularVelocity = 0;
       return;
     }
-    this.loadTexture('ring-Thrusters');
+    this.loadTexture('ring-thrusters');
     if (level === 1) {
       this.body.angularVelocity = 75;
     } else if (level === 2) {
