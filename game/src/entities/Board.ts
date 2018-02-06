@@ -4,7 +4,7 @@ import PlayerShip from './PlayerShip';
 import { Enemy } from '../entities/Enemy';
 import Asteroid from './Asteroid';
 import { Game } from '../index';
-import { PlayerWeapon, Weapon } from './Weapon';
+import { PlayerWeapon, Weapon, Bullet } from './Weapon';
 
 export default class Board extends Phaser.Group {
   public maxX: number;
@@ -168,14 +168,14 @@ export default class Board extends Phaser.Group {
       this.game.physics.arcade.overlap(
         this.enemies,
         this.player.weapon,
-        (enemy: Enemy, weapon: Weapon) => {
-          const playerBulletCanHurtEnemy = weapon.bulletColor.includes(
+        (enemy: Enemy, bullet: Bullet) => {
+          const playerBulletCanHurtEnemy = bullet.color.includes(
             enemy.shipType,
           );
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
             enemy.getHurtTint();
-            enemy.damage(weapon.bulletDamage);
+            enemy.damage(bullet.strength);
             if (!enemy.alive) {
               enemy.explode();
               this.game.score += 150;
@@ -183,7 +183,7 @@ export default class Board extends Phaser.Group {
           } else {
             this.shieldFx.play();
           }
-          weapon.kill();
+          bullet.kill();
         },
       );
     }
