@@ -32,7 +32,7 @@ function watchDevice(device, sendPacket) {
     iface.claim();
     const endpoint = iface.endpoints[0];
     if (endpoint.direction !== 'in') {
-        throw "invalid endpoint for interface";
+        throw 'invalid endpoint for interface';
     }
     endpoint.startPoll(1, 8);
     let scanCodes = [];
@@ -42,10 +42,13 @@ function watchDevice(device, sendPacket) {
         if (scanCode === 0) {
             return;
         }
-        else if (scanCode >= 0x1E && scanCode <= 0x27) {
-            scanCodes.push(scanCode - 0x1D);
+        else if (scanCode >= 0x1e && scanCode <= 0x27) {
+            // Only push numbers 0-9
+            // https://github.com/abcminiuser/lufa/blob/master/LUFA/Drivers/USB/Class/Common/HIDClassCommon.h#L113
+            scanCodes.push(scanCode - 0x1d);
         }
         else if (scanCode === 0x28) {
+            // If the enter key was pressed
             const sequence = Number(scanCodes.join(''));
             const captain = sequenceToCaptain[sequence];
             sendPacket({
