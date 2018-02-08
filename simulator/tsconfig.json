@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "outDir": "build/dist",
-    "target": "es6",
+    "target": "es5",
+    "baseUrl": ".",
     "lib": ["es2016", "dom"],
     "sourceMap": true,
     "allowJs": false,
