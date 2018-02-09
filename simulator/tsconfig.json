@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "outDir": "build/dist",
+    "module": "esnext",
     "target": "es5",
     "baseUrl": ".",
-    "lib": ["es2016", "dom"],
+    "lib": ["es2017", "dom"],
     "sourceMap": true,
     "allowJs": false,
     "jsx": "react",
@@ -16,12 +17,6 @@
     "noUnusedLocals": true,
     "strict": true,
     "allowSyntheticDefaultImports": true
-
   },
-  "exclude": [
-    "node_modules",
-    "build",
-    "scripts",
-    "webpack"
-  ]
+  "exclude": ["node_modules", "build", "scripts", "webpack"]
 }
