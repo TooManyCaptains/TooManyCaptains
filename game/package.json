@@ -38,6 +38,9 @@
   "scripts": {
     "hack": "webpack-dev-server --config webpack/dev.config.js",
     "build-prod": "webpack --config webpack/prod.config.js",
-    "deploy": "npm run build-prod && surge dist play.toomanycaptains.com"
+    "deploy": "npm run build-prod && surge dist play.toomanycaptains.com",
+    "upload": "npm run build-prod && rsync -Pavz dist/ crew@starship.local:/var/www/html && npm run refresh",
+    "refresh": "ssh crew@starship.local './TooManyCaptains/refresh.sh'",
+    "reboot": "ssh crew@starship.local sudo reboot"
   }
 }
