@@ -24,7 +24,9 @@ function subsystemForDevice(device: Device): Subsystem {
 }
 
 function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
-  if (!deviceIsCardScanner(device)) return;
+  if (!deviceIsCardScanner(device)) {
+    return;
+  }
   const subsystem = subsystemForDevice(device);
   console.log(`[Scanner] ${subsystem} connected`);
   device.open();
@@ -40,7 +42,7 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
   const endpoint = iface.endpoints[0];
 
   if (endpoint.direction !== 'in') {
-    throw 'invalid endpoint for interface';
+    throw Error('invalid endpoint for interface');
   }
 
   (endpoint as InEndpoint).startPoll(1, 8);

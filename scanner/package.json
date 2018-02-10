@@ -21,8 +21,12 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && npm run serve",
-    "serve": "sudo node dist/scanner/src/index.js",
-    "watch": "nodemon -e ts --exec 'npm run start'"
+    "start": "npm run serve",
+    "serve": "node dist/scanner/src/index.js",
+    "watch": "nodemon -e ts --exec 'npm run start'",
+    "docker-build": "npm run build && docker build -t toomanycaptains/scanner .",
+    "docker-run": "ssh crew@starship 'docker stop scanner && docker rm scanner && docker run --privileged -dit --restart unless-stopped -v /dev/bus/usb:/dev/bus/usb --name scanner toomanycaptains/scanner'",
+    "docker-upload": "docker save toomanycaptains/scanner | ssh crew@starship 'docker load'",
+    "upload": "npm run docker-build && npm run docker-upload && npm run docker-run"
   }
 }
