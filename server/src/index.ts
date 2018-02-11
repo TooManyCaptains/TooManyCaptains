@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 });
 
 io.on('connection', socket => {
-  console.log('⚡️ connected');
+  console.log('⚡️  connected');
 
   // Rebroadcast all packets
   socket.on('packet', packet => {
@@ -32,5 +32,5 @@ io.on('connection', socket => {
 const port = process.env.PORT || 9000;
 
 server.listen(port, () => {
-  console.log(`👾  Serving on port ${port}`);
+  console.log(`👾  serving on port ${port}`);
 });

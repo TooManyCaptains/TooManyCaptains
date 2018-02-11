@@ -12,7 +12,7 @@ import PlayerShip from './entities/PlayerShip';
 
 import './index.css';
 
-function getUrlParams(search: string) {
+function getUrlParams(search: string): { [P in string]: string } {
   const hashes = search.slice(search.indexOf('?') + 1).split('&');
   const params = {};
   hashes.forEach(hash => {
@@ -45,6 +45,8 @@ function getConfig() {
   };
   if (config.local) {
     config.serverURL = 'http://localhost:9000';
+  } else if (_.has(urlParams, 'serverURL')) {
+    config.serverURL = urlParams.serverURL;
   }
   return config;
 }
@@ -65,6 +67,7 @@ export class Game extends Phaser.Game {
     this.state.add('After', After, false);
 
     this.params = getConfig();
+    console.log(this.params);
 
     // Kick things off with the boot state.
     this.state.start('Boot');

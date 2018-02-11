@@ -25,8 +25,9 @@
     "serve": "node dist/scanner/src/index.js",
     "watch": "nodemon -e ts --exec 'npm run start'",
     "docker-build": "npm run build && docker build -t toomanycaptains/scanner .",
-    "docker-run": "ssh crew@starship.local 'docker stop scanner ||:&&  docker rm scanner ||:&& docker run --privileged -dit --restart unless-stopped -v /dev/bus/usb:/dev/bus/usb --name scanner toomanycaptains/scanner'",
+    "docker-run": "ssh crew@starship.local 'docker stop scanner ||:&&  docker rm scanner ||:&& docker run --privileged -dit --restart unless-stopped --net=host -v /dev/bus/usb:/dev/bus/usb --name scanner toomanycaptains/scanner'",
     "docker-upload": "docker save toomanycaptains/scanner | ssh crew@starship.local 'docker load'",
-    "upload": "npm run docker-build && npm run docker-upload && npm run docker-run"
+    "upload": "npm run docker-build && npm run docker-upload && npm run docker-run",
+    "logs": "ssh crew@starship.local 'docker logs scanner -f'"
   }
 }
