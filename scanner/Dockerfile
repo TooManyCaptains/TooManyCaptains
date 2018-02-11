@@ -4,16 +4,11 @@ FROM node:9-alpine
 WORKDIR /usr/src/app
 
 # Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
 RUN apk add --no-cache make linux-headers eudev-dev gcc g++ python && \
-  npm install --production && \
+  yarn install --production && \
   apk del make linux-headers gcc g++ python
-
-# If you are building your code for production
-# RUN npm install --only=production
 
 # Bundle app source
 COPY . .
