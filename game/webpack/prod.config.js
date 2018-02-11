@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 
-const baseConfig = require('./webpack.base');
+const baseConfig = require('./base.config');
 
 baseConfig.plugins = [
   new webpack.optimize.CommonsChunkPlugin({

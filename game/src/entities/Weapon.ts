@@ -97,10 +97,9 @@ export class Weapon extends Phaser.Group {
   }
 }
 
-class Bullet extends Phaser.Sprite {
+export class Bullet extends Phaser.Sprite {
   public color: string;
-  private strength = 0;
-
+  public strength = 0;
 
   constructor(game: Game, key: string) {
     super(game, 0, 0, key);

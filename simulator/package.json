@@ -6,9 +6,10 @@
     "lodash": "^4.17.4",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
-    "react-scripts-ts": "2.8.0",
+    "react-scripts-ts": "2.13.0",
     "react-spinkit": "^3.0.0",
-    "socket.io-client": "^2.0.4"
+    "socket.io-client": "^2.0.4",
+    "typescript": "^2.7.1"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -19,13 +20,13 @@
   },
   "devDependencies": {
     "@types/isomorphic-fetch": "^0.0.34",
-    "@types/jest": "^21.1.6",
+    "@types/jest": "^22.1.1",
     "@types/lodash": "^4.14.85",
-    "@types/node": "^8.0.51",
+    "@types/node": "^9.4.0",
     "@types/react": "^16.0.22",
     "@types/react-dom": "^16.0.3",
     "@types/react-spinkit": "^3.0.2",
     "@types/socket.io-client": "^1.4.32",
-    "tslint": "^5.8.0"
+    "tslint": "^5.9.1"
   }
 }

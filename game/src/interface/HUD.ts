@@ -2,15 +2,7 @@ import Panel from './Panel';
 import { Game } from '../index';
 import { Subsystem, Color } from '../../../common/types';
 import { Captain } from '../types';
-
-const baseStyle = {
-  font: 'Exo 2',
-  fontSize: 40,
-  fill: 'white',
-  fontWeight: 800,
-  boundsAlignH: 'center',
-  boundsAlignV: 'middle',
-};
+import { baseStyle } from './Styles';
 
 function colorNamesToColorKey(names: string[]) {
   const nameToKey = (name: string) => name[0].toUpperCase();
@@ -22,8 +14,9 @@ class HealthBar {
   public text: Phaser.Text;
   private width: number;
   private height: number;
-  private outline: Phaser.Graphics;
   private bar: Phaser.Graphics;
+  private barMask: Phaser.Graphics;
+  private background: Phaser.Graphics;
 
   constructor(
     game: Game,
@@ -38,21 +31,26 @@ class HealthBar {
     this.width = width;
     this.height = height;
 
-    this.outline = game.add.graphics();
-    this.outline.beginFill(0x999999, 1);
-    const border = 0;
-    this.outline.drawRoundedRect(
-      border,
-      border,
-      this.width + border,
-      this.height + border,
+    this.background = game.add.graphics();
+    this.background.beginFill(0x999999, 1);
+    this.background.drawRoundedRect(
+      0,
+      0,
+      this.width,
+      this.height,
       25,
     );
-    parent.add(this.outline);
 
     this.bar = game.add.graphics();
+    this.bar.beginFill(color, 1);
+
+    this.barMask = game.add.graphics();
+
     this.color = color;
+
+    parent.add(this.background);
     parent.add(this.bar);
+    parent.add(this.barMask);
 
     this.text = game.add.text(0, 0, label, {
       ...baseStyle,
@@ -64,25 +62,37 @@ class HealthBar {
     this.text.setTextBounds(0, 0, this.width, this.height + 2);
     parent.add(this.text);
 
+    this.bar.mask = this.barMask;
     this.value = value;
   }
 
   set x(x: number) {
+    this.barMask.x = x;
     this.bar.x = x;
-    this.outline.x = x;
     this.text.x = x;
+    this.background.x = x;
   }
 
   set y(y: number) {
+    this.barMask.y = y;
     this.bar.y = y;
-    this.outline.y = y;
     this.text.y = y;
+    this.background.y = y;
   }
 
   set color(color: number) {
     this.bar.clear();
     this.bar.beginFill(color, 1);
-    this.bar.drawRoundedRect(0, 0, this.width, this.height, 25);
+    this.bar.drawRoundedRect(
+      0,
+      0,
+      this.width,
+      this.height,
+      25,
+    );
+    this.barMask.clear();
+    this.barMask.beginFill(color, 1);
+    this.barMask.drawRect(0, 0, this.width, this.height);
   }
 
   set label(label: string) {
@@ -90,7 +100,7 @@ class HealthBar {
   }
 
   set value(value: number) {
-    this.bar.scale.x = value;
+    this.barMask.scale.x = value;
   }
 }
 
@@ -125,7 +135,7 @@ class ColorChart extends Phaser.Sprite {
   }
 }
 
-class PropulsionChart extends Phaser.Sprite {
+class ThrustersChart extends Phaser.Sprite {
   constructor(game: Game, x: number, y: number) {
     super(game, x, y, 'ring-none');
     this.anchor.setTo(0.5, 0.5);
@@ -138,7 +148,7 @@ class PropulsionChart extends Phaser.Sprite {
       this.body.angularVelocity = 0;
       return;
     }
-    this.loadTexture('ring-propulsion');
+    this.loadTexture('ring-thrusters');
     if (level === 1) {
       this.body.angularVelocity = 75;
     } else if (level === 2) {
@@ -196,7 +206,11 @@ class Battery extends Phaser.Group {
       0,
       0,
       '',
-      { ...baseStyle, boundsAlignH: 'left', fontSize: 52 },
+      {
+        ...baseStyle,
+        boundsAlignH: 'left',
+        fontSize: 52,
+      },
       this,
     );
     this.text.setTextBounds(15, 0, this.icon.width - 14, this.icon.height);
@@ -206,7 +220,7 @@ class Battery extends Phaser.Group {
   }
 
   set seconds(seconds: number) {
-    const fraction = seconds / this.maxSeconds;
+    const fraction = Math.min(seconds / this.maxSeconds, 1);
     if (this.bar) {
       this.remove(this.bar);
     }
@@ -221,7 +235,9 @@ class Battery extends Phaser.Group {
     );
     this.add(this.bar);
     const rounded = Math.ceil(seconds);
-    if (rounded >= 10) {
+    if (rounded === Infinity) {
+      this.text.setText('   ∞');
+    } else if (rounded >= 10) {
       this.text.setText(`0:${rounded}`);
     } else {
       this.text.setText(`0:0${rounded}`);
@@ -336,16 +352,16 @@ class ShieldsPanel extends Panel {
   }
 }
 
-class PropulsionPanel extends Panel {
+class ThrustersPanel extends Panel {
   public game: Game;
-  private chart: PropulsionChart;
+  private chart: ThrustersChart;
   private battery: Battery;
-  private propulsionLevel = 0;
+  private thrustersLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'THRUSTERS');
 
-    this.chart = new PropulsionChart(game, this.centerX, this.centerY);
+    this.chart = new ThrustersChart(game, this.centerX, this.centerY);
     this.add(this.chart);
     const oldBottom = this.bottom;
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
@@ -353,7 +369,7 @@ class PropulsionPanel extends Panel {
     // mask.scale.setTo(1.5, 1.5)
     this.add(mask);
 
-    const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'propulsion');
+    const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'thrusters');
     this.add(icon);
 
     this.battery = new Battery(game);
@@ -368,11 +384,11 @@ class PropulsionPanel extends Panel {
 
   public update() {
     // Set battery seconds
-    this.battery.seconds = this.game.player.batteries.propulsion;
+    this.battery.seconds = this.game.player.batteries.thrusters;
 
-    if (this.propulsionLevel !== this.game.player.propulsionLevel) {
-      this.propulsionLevel = this.game.player.propulsionLevel;
-      this.chart.setLevel(this.propulsionLevel);
+    if (this.thrustersLevel !== this.game.player.thrustersLevel) {
+      this.thrustersLevel = this.game.player.thrustersLevel;
+      this.chart.setLevel(this.thrustersLevel);
     }
     super.update();
   }
@@ -380,7 +396,7 @@ class PropulsionPanel extends Panel {
 
 class RepairsPanel extends Panel {
   public game: Game;
-  private chart: PropulsionChart;
+  private chart: ThrustersChart;
   private battery: Battery;
   private repairLevel = 0;
 
@@ -483,15 +499,14 @@ class CaptainEntry extends Phaser.Group {
   }
 
   public update() {
-    const beta = this.game.captains.find(
+    const updatedCaptain = this.game.captains.find(
       captain => captain.number === this.captain.number,
     );
-    if (beta === undefined) {
-      throw new Error('captain not found');
+    if (updatedCaptain === undefined) {
+      throw new Error(`[CaptainEntry] captain not found with number: ${this.captain.number}`);
     }
-    if (this.charge !== beta.charge) {
-      this.charge = beta.charge;
-
+    if (this.charge !== updatedCaptain.charge) {
+      this.captain = updatedCaptain;
       this.healthBar.value = this.captain.charge;
       const fullyCharged = this.captain.charge === 1;
       this.healthBar.color = fullyCharged ? 0x7ac943 : 0xfcee21;
@@ -516,7 +531,7 @@ class CaptainsLog extends Phaser.Group {
 
     const titleTextMargin = 10;
 
-    this.title = game.add.text(0, 0, '', baseStyle, this);
+    this.title = game.add.text(0, 0, '', { ...baseStyle, fontSize: 40 }, this);
     this.title.setTextBounds(0, titleTextMargin, width, 50);
 
     const line = game.add.graphics();
@@ -533,6 +548,7 @@ class CaptainsLog extends Phaser.Group {
     this.addCaptains();
     this.numCaptains = this.game.captains.length;
   }
+
   public update() {
     if (this.game.captains.length !== this.numCaptains) {
       this.numCaptains = this.game.captains.length;
@@ -578,7 +594,7 @@ export default class HUD extends Phaser.Group {
     this.panels = [
       WeaponsPanel,
       ShieldsPanel,
-      PropulsionPanel,
+      ThrustersPanel,
       RepairsPanel,
     ].map((Klass, i) => {
       const panel = new Klass(this.game, this, 300, 300);

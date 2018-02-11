@@ -28,6 +28,7 @@ interface Config {
   invulnerable: boolean;
   local: boolean;
   serverURL: string;
+  noCards: boolean;
 }
 
 function getConfig() {
@@ -38,6 +39,7 @@ function getConfig() {
     skip: _.has(urlParams, 'skip'),
     invulnerable: _.has(urlParams, 'invuln'),
     local: _.has(urlParams, 'local'),
+    noCards: _.has(urlParams, 'nocards'),
     serverURL: 'http://server.toomanycaptains.com',
   };
   if (config.local) {
@@ -76,24 +78,22 @@ export class Game extends Phaser.Game {
     this.server = new GameServer(this.params.serverURL);
     const gameMainState = this.state.states.Main;
 
-    // XXX: FIXME
-    const that = this;
     this.server.socket.on('packet', (packet: Packet) => {
       if (this.params.debug) {
         console.log(packet);
       }
 
-      if (packet.kind === 'wiring' && that.state.current === 'Main') {
+      if (packet.kind === 'wiring' && this.state.current === 'Main') {
         if (packet.subsystem === 'weapons') {
           gameMainState.onWeaponsChanged(packet.wires);
         } else if (packet.subsystem === 'shields') {
           gameMainState.onShieldsChanged(packet.wires);
-        } else if (packet.subsystem === 'propulsion') {
-          gameMainState.onPropulsionChanged(packet.wires);
+        } else if (packet.subsystem === 'thrusters') {
+          gameMainState.onThrustersChanged(packet.wires);
         } else if (packet.subsystem === 'repairs') {
           gameMainState.onRepairsChanged(packet.wires);
         }
-      } else if (packet.kind === 'move' && that.state.current === 'Main') {
+      } else if (packet.kind === 'move' && this.state.current === 'Main') {
         if (packet.state === 'released') {
           gameMainState.onMoveStop();
         } else if (packet.direction === 'up') {
@@ -102,30 +102,30 @@ export class Game extends Phaser.Game {
           gameMainState.onMoveDown();
         }
       } else if (packet.kind === 'fire') {
-        if (that.state.current === 'Before' && packet.state === 'released') {
-          that.state.start('Main');
+        if (this.state.current === 'Before' && packet.state === 'released') {
+          this.state.start('Main');
         } else if (
-          that.state.current === 'After' &&
+          this.state.current === 'After' &&
           packet.state === 'released'
         ) {
-          that.state.start('Main');
-        } else if (that.state.current === 'Main') {
+          this.state.start('Main');
+        } else if (this.state.current === 'Main') {
           gameMainState.onFire(packet.state);
         }
       } else if (packet.kind === 'scan') {
-        if (that.state.current === 'Before') {
+        if (this.state.current === 'Before') {
           // TODO
-        } else if (that.state.current === 'Main') {
-          const captain = that.captains.find(c => c.number === packet.captain);
+        } else if (this.state.current === 'Main') {
+          const captain = this.captains.find(c => c.number === packet.captain);
           if (!captain) {
             throw Error('captain not in game!');
           }
           if (captain.charge === 1) {
             captain.charge = 0;
-            const value = that.player.batteries[packet.subsystem];
-            that.player.batteries[packet.subsystem] = Math.min(value + 7.5, 15);
+            const value = this.player.batteries[packet.subsystem];
+            this.player.batteries[packet.subsystem] = Math.min(value + 7.5, 15);
           }
-          gameMainState.onShieldsChanged(that.player.shieldColors);
+          gameMainState.onShieldsChanged(this.player.shieldColors);
         }
       }
     });

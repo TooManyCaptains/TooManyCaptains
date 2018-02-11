@@ -1,21 +1,21 @@
 import WebpackLoader from 'phaser-webpack-loader';
-import AssetManifest from '../../AssetManifest';
-
-const baseStyle = {
-  font: 'Exo 2',
-  fontSize: 110,
-  fill: 'white',
-  fontWeight: 900,
-};
+import AssetManifest from '../AssetManifest';
+import { Game } from '../index';
+import { baseStyle } from '../interface/Styles';
 
 /**
  * Preload the game and display the loading screen.
  */
 export default class Preload extends Phaser.State {
+  public game: Game;
+  private text: Phaser.Text;
+  private dotsMax: number;
+  private dotsCur: number;
+
   /**
    * Once loading is complete, switch to the main state.
    */
-  create() {
+  public create() {
     // Determine which postfix to use on the assets based on the DPI.
     const postfix = '';
     // if (window.devicePixelRatio >= 3) {
@@ -43,7 +43,7 @@ export default class Preload extends Phaser.State {
       this.game.world.centerX,
       this.game.world.centerY,
       '...',
-      baseStyle,
+      { ...baseStyle, fontSize: 110, fontWeight: 900 },
     );
 
     this.dotsCur = 0;
@@ -54,7 +54,7 @@ export default class Preload extends Phaser.State {
       .timer.start();
   }
 
-  updateDots() {
+  private updateDots() {
     this.text.setText('.'.repeat(this.dotsCur));
     this.dotsCur = this.dotsCur % this.dotsMax + 1;
   }

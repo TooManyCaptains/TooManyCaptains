@@ -1,4 +1,7 @@
-html, body, #root, .App {
+html,
+body,
+#root,
+.App {
   height: 100%;
   font-family: 'Exo 2';
   text-transform: uppercase;
@@ -13,208 +16,14 @@ html, body, #root, .App {
   color: white;
   display: flex;
   align-items: center;
-  justify-content: center;
   user-select: none;
-}
-
-.Bays {
-  height: 100%;
-  display: flex;
-  justify-content: center;
   flex-direction: column;
 }
 
-.Bay {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-direction: column;
-  margin: 5px;
-  padding: 5px;
-  border: 2px solid white;
-  border-radius: 3px;
-}
-
-.Bay-name {
-  font-size: 18px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  margin-left: 20px;
-  align-self: flex-start;
-}
-
-.Bay-panel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.Bay-ports {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.Wire-icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  flex-wrap: wrap;
-  max-width: 75px;
-}
-
-.Wire-icon {
-  border: 1px solid white;
-  margin: 2.5px;
-  height: 20px;
-  width: 20px;
-  border-radius: 100%;
-  cursor: pointer;
-}
-
-.Wire-red {
-  background-color: #FF4136;
-}
-
-.Wire-orange {
-  background-color: #ff7c0c;
-}
-
-.Wire-yellow {
-  background-color: #e0ba00;
-}
-
-.Wire-green {
-  background-color: #2ECC40;
-}
-
-.Wire-blue {
-  background-color: #0074D9;
-}
-
-.Wire-purple {
-  background-color: #ab20bf;
-}
-
-.Wire-none {
-  background-color: black;
-}
-
-.Port {
-  width: 75px;
-  height: 75px;
-  border-radius: 100%;
-  margin: 10px;
-  margin-bottom: 25px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid #ddd;
-}
-
-.Port-wire-label {
-  color: white;
-}
-
-.Port-status {
-  width: 15px;
-  height: 15px;
-  border-radius: 100%;
-  position: absolute;
-  bottom: -25px;
-}
-
-.Port-status-unplugged {
-  background-color: black;
-}
-
-.Port-status-used {
-  background-color: #18f518;
-}
-
-.Port-status-unused {
-  background-color: yellow;
-}
-
-.Port-status-disabled {
-  background-color: red;
-  animation: blink-red steps(1, start) 1s infinite;
-}
-
-.Port-status-recharging {
-  animation: blink-blue steps(1, start) 250ms infinite;
-
-}
-
-@keyframes blink-blue {
-  0% {
-    background-color: black;
-  }
-  50% {
-    background-color: blue;
-  }
-  100% {
-    background-color: black;
-  }
-}
-
-@keyframes blink-red {
-  0% {
-    background-color: black;
-  }
-  50% {
-    background-color: red;
-  }
-  100% {
-    background-color: black;
-  }
-}
-
-.FireButton {
-  width: 60px;
-  height: 60px;
-  font-size: 20px;
-  border-radius: 100%;
-  margin-top: -10px;
-  margin-left: 25px;
-  margin-right: 25px;
-  background-color: rgb(230, 25, 25);
-  cursor: pointer;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid rgb(172, 0, 0);
-}
-
-.FireButton:active {
-  background-color: rgb(131, 27, 27);
-}
-
-.Propulsion-controls {
-  margin-left: 130px;
-  margin-top: -15px;
-}
-
-.Move {
-  width: 40px;
-  height: 40px;
-  background-color: white;
+.App-toggleMode {
   color: black;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  margin: 7px;
+  padding: 10px;
+  background-color: white;
   cursor: pointer;
-  border: 3px solid white;
-  lect: none;
-}
-
-.Move:active {
-  background-color: black;
-  color: white;
+  border-radius: 0 0 5px 5px;
 }

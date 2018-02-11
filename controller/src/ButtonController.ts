@@ -1,44 +1,57 @@
-import * as rpio from 'rpio'
-import * as _ from 'lodash'
-import { Button, ButtonState, Packet, Press, GameState } from './types'
-import { MovePacket, FirePacket } from '../../common/types'
+import * as rpio from 'rpio';
+import * as _ from 'lodash';
+import { Button, Press } from './types';
+import {
+  MovePacket,
+  FirePacket,
+  Packet,
+  GameState,
+  ButtonState,
+} from '../../common/types';
 
 function isButtonPressed(button: Button): boolean {
-  return rpio.read(button.pin) ? true : false
+  return rpio.read(button.pin) ? true : false;
 }
 
 export class ButtonController {
+  public readonly pollRateMsec: number = 50;
+  public readonly buttons: Button[];
+  public readonly sendPacket: (packet: Packet) => void;
+  private prevPresses: Press[] = [];
 
-  public readonly pollRateMsec: number = 50
-  public readonly buttons: Button[]
-  public readonly sendPacket: (packet: Packet) => void
-  private prevPresses: Press[] = []
-
-  constructor(buttons: Button[], packetHandler: (packet: Packet) => void, getGameState: () => GameState) {
-    this.sendPacket = packetHandler
-    this.buttons = buttons
-    this.setup()
+  constructor(
+    buttons: Button[],
+    packetHandler: (packet: Packet) => void,
+    getGameState: () => GameState,
+  ) {
+    this.sendPacket = packetHandler;
+    this.buttons = buttons;
+    this.setup();
 
     // Get initial pressed (before code started)
-    this.prevPresses = this.getPresses()
+    this.prevPresses = this.getPresses();
     // Begin polling for button connections
-    setInterval(this.poll.bind(this), this.pollRateMsec)
+    setInterval(this.poll.bind(this), this.pollRateMsec);
   }
 
   private setup(): void {
     // Set up button pins for reading
-    this.buttons.forEach(({pin}) => {
-      rpio.open(pin, rpio.INPUT, rpio.PULL_DOWN)
-    })
+    this.buttons.forEach(({ pin }) => {
+      rpio.open(pin, rpio.INPUT, rpio.PULL_DOWN);
+    });
   }
 
   private poll(): void {
-    const presses = this.getPresses()
-    const newPresses: Press[] = _.differenceWith(presses, this.prevPresses, _.isEqual)
+    const presses = this.getPresses();
+    const newPresses: Press[] = _.differenceWith(
+      presses,
+      this.prevPresses,
+      _.isEqual,
+    );
 
     // If there were no new presses, just return early
     if (_.isEmpty(newPresses)) {
-      return
+      return;
     }
 
     const packets = newPresses.map(buttonPress => {
@@ -46,32 +59,31 @@ export class ButtonController {
         const packet: FirePacket = {
           kind: 'fire',
           state: buttonPress.state,
-        }
-        return packet
+        };
+        return packet;
       } else {
         const packet: MovePacket = {
           kind: 'move',
           state: buttonPress.state,
           direction: buttonPress.button.name,
-        }
-        return packet
+        };
+        return packet;
       }
-    })
+    });
 
     // dispatch packets
-    packets.forEach(packet => this.sendPacket(packet))
+    packets.forEach(packet => this.sendPacket(packet));
 
-    this.prevPresses = presses
+    this.prevPresses = presses;
   }
 
   private getPresses(): Press[] {
     return this.buttons.map(button => {
-      const isPressed = isButtonPressed(button)
+      const isPressed = isButtonPressed(button);
       return {
         button,
         state: (isPressed ? 'pressed' : 'released') as ButtonState,
-      }
-    })
+      };
+    });
   }
-
-  }
+}

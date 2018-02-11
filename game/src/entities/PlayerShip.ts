@@ -2,13 +2,14 @@ import { Subsystem, Color } from './../../../common/types';
 import { clamp, mapValues } from 'lodash';
 import { PlayerWeapon } from './Weapon';
 import HealthBar from './HealthBar';
-import { Game } from 'phaser-ce';
+import { Game } from '../index';
 
 function colorNameToLetter(color: Color): string {
   return color[0].toUpperCase();
 }
 
 export default class PlayerShip extends Phaser.Sprite {
+  public game: Game;
   public weaponDamage: any;
   public repairIntervalMsec: number;
   public repairPercentagePerSecond: number;
@@ -22,7 +23,7 @@ export default class PlayerShip extends Phaser.Sprite {
   public weapon: PlayerWeapon | null;
   public weaponColors: Color[];
   public healthBar: HealthBar;
-  public propulsionLevel: number;
+  public thrustersLevel: number;
   public batteryDrainTimerFreq: number;
   public shield: Phaser.Sprite;
   public shieldColors: Color[] = [];
@@ -43,11 +44,12 @@ export default class PlayerShip extends Phaser.Sprite {
     this.body.setSize(165.4, 63.2, 25.8, 28.4);
 
     // Batteries
+    const baseSecs = this.game.params.noCards ? Infinity : 0;
     this.batteries = {
-      weapons: 15,
-      shields: 0,
-      propulsion: 0,
-      repairs: 0,
+      weapons: baseSecs + 15,
+      shields: baseSecs,
+      thrusters: baseSecs,
+      repairs: baseSecs,
     };
     this.batteryDrainPerSecond = 1;
     this.batteryDrainTimerFreq = 60;
@@ -59,7 +61,7 @@ export default class PlayerShip extends Phaser.Sprite {
     // Movement
     this.movementSpeed = 0;
     this.body.collideWorldBounds = true;
-    this.propulsionLevel = 0;
+    this.thrustersLevel = 0;
 
     // Shields
     this.shield = game.add.sprite(this.x, this.y, 'shield_R');
@@ -167,27 +169,27 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   public startMovingDown() {
-    // Can't move up with 0 propulsion
-    if (this.propulsionLevel === 0) {
+    // Can't move up with 0 thrusters
+    if (this.thrustersLevel === 0) {
       return;
     }
     this.body.velocity.y = this.movementSpeed;
-    if (this.propulsionLevel === 1) {
+    if (this.thrustersLevel === 1) {
       this.moveFastFx.play();
-    } else if (this.propulsionLevel === 2) {
+    } else if (this.thrustersLevel === 2) {
       this.moveSlowFx.play();
     }
   }
 
   public startMovingUp() {
-    // Can't move up with 0 propulsion
-    if (this.propulsionLevel === 0) {
+    // Can't move with 0 thrusters
+    if (this.thrustersLevel === 0) {
       return;
     }
     this.body.velocity.y = -this.movementSpeed;
-    if (this.propulsionLevel === 1) {
+    if (this.thrustersLevel === 1) {
       this.moveFastFx.play();
-    } else if (this.propulsionLevel === 2) {
+    } else if (this.thrustersLevel === 2) {
       this.moveSlowFx.play();
     }
   }
@@ -205,8 +207,8 @@ export default class PlayerShip extends Phaser.Sprite {
     setTimeout(() => clearInterval(h), 500);
   }
 
-  public setPropulsionLevel(level: number) {
-    this.propulsionLevel = level;
+  public setThrustersLevel(level: number) {
+    this.thrustersLevel = level;
     const levelSpeedMap = [0, 25, 100];
     this.movementSpeed = levelSpeedMap[level];
     if (this.movementSpeed === 0) {

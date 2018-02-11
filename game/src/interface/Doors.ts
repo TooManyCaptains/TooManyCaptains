@@ -2,7 +2,7 @@ import { Game } from '../index';
 
 export default class Doors extends Phaser.Group {
   public game: Game;
-  private easing = Phaser.Easing.Quadratic.InOut;
+  private easing = Phaser.Easing.Sinusoidal.InOut;
   private durationMillis: any;
   private rightOpenX: number;
   private leftOpenX: number;
@@ -23,11 +23,11 @@ export default class Doors extends Phaser.Group {
     this.doorRight = this.create(this.game.width / 2, 0, 'door-right');
 
     // Sounds
-    this.openFx = this.game.add.audio('doors_open');
-    this.closeFx = this.game.add.audio('doors_close');
+    this.openFx = this.game.add.audio('doors_opening');
+    this.closeFx = this.game.add.audio('doors_closing');
 
     // Animation
-    this.durationMillis = this.game.params.skip ? 1 : 1700;
+    this.durationMillis = this.game.params.skip ? 1 : 2350;
   }
 
   public open(callback: () => void) {

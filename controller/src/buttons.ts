@@ -1,4 +1,4 @@
-import { Button } from './types'
+import { Button } from './types';
 
 export const buttons: Button[] = [
   {
@@ -13,4 +13,4 @@ export const buttons: Button[] = [
     name: 'down',
     pin: 40,
   },
-]
+];
