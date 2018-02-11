@@ -189,85 +189,9 @@ class SubsystemIcon extends Phaser.Sprite {
   }
 }
 
-class Battery extends Phaser.Group {
-  private maxSeconds = 15;
-  private icon: Phaser.Sprite;
-  private text: Phaser.Text;
-  private bar: Phaser.Graphics;
-
-  constructor(game: Game) {
-    super(game);
-
-    this.icon = this.game.add.sprite(0, 0, 'battery-red');
-    this.icon.scale.setTo(0.9, 0.9);
-    this.add(this.icon);
-
-    this.text = this.game.add.text(
-      0,
-      0,
-      '',
-      {
-        ...baseStyle,
-        boundsAlignH: 'left',
-        fontSize: 52,
-      },
-      this,
-    );
-    this.text.setTextBounds(15, 0, this.icon.width - 14, this.icon.height);
-
-    this.maxSeconds = 15;
-    this.seconds = 0;
-  }
-
-  set seconds(seconds: number) {
-    const fraction = Math.min(seconds / this.maxSeconds, 1);
-    if (this.bar) {
-      this.remove(this.bar);
-    }
-    this.bar = this.game.add.graphics();
-    this.bar.beginFill(0x999999, 1);
-    const margin = 7;
-    this.bar.drawRect(
-      margin,
-      margin,
-      141 * this.icon.scale.y * fraction,
-      this.icon.height - 2 * margin,
-    );
-    this.add(this.bar);
-    const rounded = Math.ceil(seconds);
-    if (rounded === Infinity) {
-      this.text.setText('   ∞');
-    } else if (rounded >= 10) {
-      this.text.setText(`0:${rounded}`);
-    } else {
-      this.text.setText(`0:0${rounded}`);
-    }
-
-    this.bringToTop(this.text);
-
-    if (rounded === 0) {
-      this.icon.loadTexture('battery-red');
-      this.text.addColor('red', 0);
-    } else {
-      this.alpha = 1;
-      this.icon.loadTexture('battery-white');
-      this.text.addColor('white', 0);
-    }
-  }
-
-  public blink(isLow: boolean) {
-    if (this.seconds === 0) {
-      this.alpha = 1;
-    } else {
-      this.alpha = Number(isLow);
-    }
-  }
-}
-
 class WeaponsPanel extends Panel {
   public game: Game;
   private colorChart: ColorChart;
-  private battery: Battery;
   private colors: Color[] = [];
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
@@ -278,21 +202,10 @@ class WeaponsPanel extends Panel {
     const oldBottom = this.bottom;
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
     mask.anchor.setTo(0.5, 0.75);
-    // mask.scale.setTo(1.5, 1.5)
     this.add(mask);
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'weapons');
     this.add(icon);
-
-    this.battery = new Battery(game);
-    this.add(this.battery);
-    this.battery.x = 80;
-    this.battery.y = 137;
-    this.battery.seconds = 10;
-  }
-
-  public blink(isLow: boolean) {
-    this.battery.blink(isLow);
   }
 
   public update() {
@@ -312,7 +225,7 @@ class WeaponsPanel extends Panel {
 class ShieldsPanel extends Panel {
   public game: Game;
   private colorChart: ColorChart;
-  private battery: Battery;
+  // private battery: Battery;
   private colors: Color[] = [];
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
@@ -327,11 +240,6 @@ class ShieldsPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'shields');
     this.add(icon);
-
-    this.battery = new Battery(game);
-    this.add(this.battery);
-    this.battery.x = 80;
-    this.battery.y = 137;
   }
 
   public update() {
@@ -347,15 +255,15 @@ class ShieldsPanel extends Panel {
     super.update();
   }
 
-  public blink(isLow: boolean) {
-    this.battery.blink(isLow);
-  }
+  // public blink(isLow: boolean) {
+  //   this.battery.blink(isLow);
+  // }
 }
 
 class ThrustersPanel extends Panel {
   public game: Game;
   private chart: ThrustersChart;
-  private battery: Battery;
+  // private battery: Battery;
   private thrustersLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
@@ -371,16 +279,11 @@ class ThrustersPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'thrusters');
     this.add(icon);
-
-    this.battery = new Battery(game);
-    this.add(this.battery);
-    this.battery.x = 80;
-    this.battery.y = 137;
   }
 
-  public blink(isLow: boolean) {
-    this.battery.blink(isLow);
-  }
+  // public blink(isLow: boolean) {
+  //   this.battery.blink(isLow);
+  // }
 
   public update() {
     // Set battery seconds
@@ -397,7 +300,7 @@ class ThrustersPanel extends Panel {
 class RepairsPanel extends Panel {
   public game: Game;
   private chart: ThrustersChart;
-  private battery: Battery;
+  // private battery: Battery;
   private repairLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
@@ -413,16 +316,11 @@ class RepairsPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'repairs');
     this.add(icon);
-
-    this.battery = new Battery(game);
-    this.add(this.battery);
-    this.battery.x = 80;
-    this.battery.y = 137;
   }
 
-  public blink(isLow: boolean) {
-    this.battery.blink(isLow);
-  }
+  // public blink(isLow: boolean) {
+  //   this.battery.blink(isLow);
+  // }
 
   public update() {
     // Set battery seconds

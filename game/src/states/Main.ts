@@ -86,6 +86,13 @@ export default class Main extends Phaser.State {
       enemyHeight,
     );
     this.doors = new Doors(this.game);
+
+    this.load.spritesheet(
+      'lock',
+      'assets/sprites/lock145x155.png',
+      145,
+      155
+    );
   }
 
   public create() {
