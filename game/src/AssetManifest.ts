@@ -80,7 +80,6 @@ const AssetManifest = {
   fonts: {
     custom: {
       families: ['Exo 2:600,700,800,900'],
-      urls: ['/fonts.css'],
     },
   },
 };
