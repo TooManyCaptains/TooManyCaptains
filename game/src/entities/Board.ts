@@ -109,7 +109,7 @@ export default class Board extends Phaser.Group {
     const colors = 'RYB'.split('');
     const allEnemyTypes = _.flatten(colors.map(a => colors.map(b => a + b)));
     const randomEnemyType: string = _.sample(allEnemyTypes)!;
-    this.enemies.add(new Enemy(this.game, x, y, ...randomEnemyType));
+    this.enemies.add(new Enemy(this.game, x, y, randomEnemyType[0], randomEnemyType[1]));
   }
 
   public spawnAsteroid() {
