@@ -4,9 +4,10 @@ import { Subsystem, ScanPacket, Captain } from '../../common/types';
 const VENDOR_ID = 65535;
 
 const portToSubsystem: { [port: number]: Subsystem } = {
-  2: 'weapons',
-  1: 'shields',
-  4: 'repairs',
+  3: 'weapons',
+  4: 'shields',
+  1: 'thrusters',
+  2: 'repairs',
 };
 
 const sequenceToCaptain: { [sequence: number]: Captain } = {
