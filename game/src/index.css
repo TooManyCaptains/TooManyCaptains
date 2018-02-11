@@ -10,3 +10,5 @@ html, body {
   justify-content: center;
   width: 100%;
 }
+
+@import "./fonts.css";

@@ -78,7 +78,7 @@ const AssetManifest = {
     'gameover.wav',
   ],
   fonts: {
-    google: {
+    custom: {
       families: ['Exo 2:600,700,800,900'],
     },
   },

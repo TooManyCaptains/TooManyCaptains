@@ -5,11 +5,12 @@ import Boot from './states/Boot';
 import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
-import './index.css';
 import GameServer from './GameServer';
 import { Packet } from '../../common/types';
 import { Captain } from './types';
 import PlayerShip from './entities/PlayerShip';
+
+import './index.css';
 
 function getUrlParams(search: string) {
   const hashes = search.slice(search.indexOf('?') + 1).split('&');

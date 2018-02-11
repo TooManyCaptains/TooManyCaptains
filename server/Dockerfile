@@ -6,11 +6,11 @@ WORKDIR /usr/src/app
 # Install app dependencies
 COPY package.json yarn.lock ./
 
-RUN apk add --no-cache make linux-headers eudev-dev gcc g++ python && \
-  yarn install --production && \
-  apk del make linux-headers gcc g++ python
+# Install dependencies but not devDependencies
+RUN yarn install --production
 
 # Bundle app source
 COPY . .
 
+EXPOSE 9000
 CMD [ "npm", "start" ]
