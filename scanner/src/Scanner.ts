@@ -1,5 +1,5 @@
 import { Device, getDeviceList, on as onUsb, InEndpoint } from 'usb';
-import { Subsystem, ScanPacket, Captain } from '../../common/types';
+import { Subsystem, ScanPacket, CardID } from '../../common/types';
 
 const VENDOR_ID = 65535;
 
@@ -10,7 +10,7 @@ const portToSubsystem: { [port: number]: Subsystem } = {
   2: 'repairs',
 };
 
-const sequenceToCaptain: { [sequence: number]: Captain } = {
+const sequenceToCardId: { [sequence: number]: CardID } = {
   17728914: 1,
   1031061722: 2,
 };
@@ -62,11 +62,11 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
     } else if (scanCode === 0x28) {
       // If the enter key was pressed
       const sequence = Number(scanCodes.join(''));
-      const captain = sequenceToCaptain[sequence];
+      const cardID = sequenceToCardId[sequence];
       sendPacket({
         kind: 'scan',
         subsystem,
-        captain,
+        cardID,
       });
       scanCodes = [];
     }
