@@ -34,14 +34,13 @@ export class StartScreen extends Phaser.Group {
   constructor(game: Game) {
     super(game);
 
-    // Logo
-    const logo = this.create(
+    // Title
+    const title = this.create(
       this.game.world.centerX,
-      this.game.world.centerY,
-      'logo',
+      this.game.height - 200,
+      'title',
     );
-    logo.anchor.setTo(0.5, 0.5);
-    logo.scale.set(0.75, 0.75);
+    title.anchor.setTo(0.5, 0.5);
 
     const paddingBetweenEachCard = 25;
     const numCards = 7;
