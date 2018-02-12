@@ -93,6 +93,13 @@ export default class Main extends Phaser.State {
       145,
       155
     );
+
+    this.load.spritesheet(
+      'id_card_0',
+      'assets/sprites/id_card_0_240x600.png',
+      240,
+      600
+    );
   }
 
   public create() {
