@@ -1,8 +1,9 @@
 import Panel from './Panel';
 import { Game } from '../index';
 import { Subsystem, Color } from '../../../common/types';
-import { PlayingCaptain } from '../types';
+import { Captain } from '../types';
 import { baseStyle } from './Styles';
+import manifest from '../../../common/manifest';
 
 function colorNamesToColorKey(names: string[]) {
   const nameToKey = (name: string) => name[0].toUpperCase();
@@ -33,13 +34,7 @@ class HealthBar {
 
     this.background = game.add.graphics();
     this.background.beginFill(0x999999, 1);
-    this.background.drawRoundedRect(
-      0,
-      0,
-      this.width,
-      this.height,
-      25,
-    );
+    this.background.drawRoundedRect(0, 0, this.width, this.height, 25);
 
     this.bar = game.add.graphics();
     this.bar.beginFill(color, 1);
@@ -83,13 +78,7 @@ class HealthBar {
   set color(color: number) {
     this.bar.clear();
     this.bar.beginFill(color, 1);
-    this.bar.drawRoundedRect(
-      0,
-      0,
-      this.width,
-      this.height,
-      25,
-    );
+    this.bar.drawRoundedRect(0, 0, this.width, this.height, 25);
     this.barMask.clear();
     this.barMask.beginFill(color, 1);
     this.barMask.drawRect(0, 0, this.width, this.height);
@@ -337,10 +326,10 @@ class RepairsPanel extends Panel {
 class CaptainEntry extends Phaser.Group {
   public game: Game;
   private healthBar: HealthBar;
-  private captain: PlayingCaptain;
+  private captain: Captain;
   private charge = 0;
 
-  constructor(game: Game, captain: PlayingCaptain, index: number) {
+  constructor(game: Game, captain: Captain, index: number) {
     super(game, undefined, 'CaptainEntry');
 
     this.captain = captain;
@@ -354,7 +343,7 @@ class CaptainEntry extends Phaser.Group {
     const nameText = this.game.add.text(
       0,
       0,
-      `CAPT. ${captain.name}`,
+      `CAPT. ${manifest.find(m => m.cardID === captain.cardID)!.name}`,
       {
         ...baseStyle,
         fontSize: nameTextSize,
@@ -401,7 +390,9 @@ class CaptainEntry extends Phaser.Group {
       captain => captain.cardID === this.captain.cardID,
     );
     if (updatedCaptain === undefined) {
-      throw new Error(`[CaptainEntry] captain not found with card ID: ${this.captain.cardID}`);
+      throw new Error(
+        `[CaptainEntry] captain not found with card ID: ${this.captain.cardID}`,
+      );
     }
     if (this.charge !== updatedCaptain.charge) {
       this.captain = updatedCaptain;

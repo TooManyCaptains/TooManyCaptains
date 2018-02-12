@@ -6,12 +6,11 @@ import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
+import { Captain } from './types';
 import { Packet } from '../../common/types';
 import PlayerShip from './entities/PlayerShip';
-import captains from '../../common/captains';
 
 import './index.css';
-import { PlayingCaptain } from './types';
 
 function getUrlParams(search: string): { [P in string]: string } {
   const hashes = search.slice(search.indexOf('?') + 1).split('&');
@@ -55,7 +54,7 @@ function getConfig() {
 export class Game extends Phaser.Game {
   public params: Config;
   public server: GameServer;
-  public captains: PlayingCaptain[] = [];
+  public captains: Captain[] = [];
   public score: number = 0;
   public player: PlayerShip;
 
@@ -121,22 +120,24 @@ export class Game extends Phaser.Game {
           gameMainState.onFire(packet.state);
         }
       } else if (packet.kind === 'scan') {
-        const captain = captains.find(c => c.cardID === packet.cardID)!;
-        const playingCaptain = this.captains.find(
-          c => c.cardID === captain.cardID,
+        const captain = this.captains.find(
+          c => c.cardID === packet.cardID,
         );
         if (this.state.current === 'Before') {
-          // add captain
-          this.captains.push({
-            ...captain,
-            charge: 0,
-          });
+          if (!captain && packet.cardID !== 0) {
+            this.captains.push({
+              cardID: packet.cardID,
+              charge: 0,
+            });
+          } else {
+            // TODO: add engineer
+          }
         } else if (this.state.current === 'Main') {
-          if (!playingCaptain) {
+          if (!captain) {
             throw Error('captain not in game!');
           }
-          if (playingCaptain.charge === 1) {
-            playingCaptain.charge = 0;
+          if (captain.charge === 1) {
+            captain.charge = 0;
             const value = this.player.batteries[packet.subsystem];
             this.player.batteries[packet.subsystem] = Math.min(value + 7.5, 15);
           }

@@ -1,6 +1,15 @@
-import { Captain } from './types';
+import { CardID } from './types';
 
-const captains: Captain[] = [
+interface ManifestEntry {
+  cardID: CardID
+  name: string;
+}
+
+const manifest: ManifestEntry[] = [
+  {
+    name: 'Engineer',
+    cardID: 0,
+  },
   {
     name: 'A',
     cardID: 1,
@@ -27,4 +36,4 @@ const captains: Captain[] = [
   },
 ];
 
-export default captains;
+export default manifest;

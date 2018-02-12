@@ -1,5 +1,6 @@
-import { Captain } from '../../common/types';
+import { CaptainCardID } from '../../common/types';
 
-export interface PlayingCaptain extends Captain {
+export interface Captain {
+  cardID: CaptainCardID;
   charge: number;
 }
