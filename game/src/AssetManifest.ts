@@ -1,6 +1,6 @@
 const AssetManifest = {
   images: [
-    'logo.png',
+    'title.png',
     'planet.png',
     'background.png',
     'gameover-text.png',
@@ -48,9 +48,6 @@ const AssetManifest = {
     'icon-repairs.png',
 
     'icon-mask.png',
-
-    'battery-red.png',
-    'battery-white.png',
 
     'ring-B.png',
     'ring-BY.png',
