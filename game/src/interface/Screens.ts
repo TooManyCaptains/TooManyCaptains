@@ -48,7 +48,7 @@ export class StartScreen extends Phaser.Group {
     range(numCards).map(i => {
       // const card = new Phaser.Sprite(game, 0, 0, `id_card_${i}`);
       const card = new Phaser.Sprite(game, 0, 0, 'id_card_0');
-      card.animations.add('flip', range(29), 30, false);
+      card.animations.add('flip', range(30), 30, false);
       card.animations.play('flip');
 
       if (i === 0) {
