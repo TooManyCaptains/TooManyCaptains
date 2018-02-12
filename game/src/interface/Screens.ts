@@ -30,7 +30,48 @@ class BlinkingButtonLabel extends Phaser.Group {
   }
 }
 
+class BlinkingLabel extends Phaser.Group {
+  constructor(game: Game, x: number, y: number, textString: string) {
+    super(game);
+
+    const color = 0x32fc39;
+    const text = this.game.add.text(x, y, textString, {
+      ...baseStyle,
+      fill: `#${color.toString(16)}`,
+      fontSize: 110,
+      fontWeight: 900,
+    });
+    text.anchor.setTo(0.5, 0.5);
+    this.add(text);
+
+    const box = game.add.graphics();
+    const boxPadding = 50;
+    box.lineStyle(4, color, 1);
+    box.beginFill(0, 0);
+    box.drawRoundedRect(
+      text.left - boxPadding,
+      text.top - boxPadding / 2,
+      text.width + boxPadding * 2,
+      text.height + boxPadding,
+      20,
+    );
+    this.add(box);
+
+    // Blinking
+    const blinkDurationMillis = 1250;
+    const blinkTimer = this.game.time.create(true);
+    blinkTimer.loop(blinkDurationMillis, this.blink, this);
+    blinkTimer.start();
+  }
+
+  public blink() {
+    this.visible = this.parent.visible && !this.visible;
+  }
+}
+
 export class StartScreen extends Phaser.Group {
+  private cards: Phaser.Sprite[];
+
   constructor(game: Game) {
     super(game);
 
@@ -45,11 +86,11 @@ export class StartScreen extends Phaser.Group {
     const paddingBetweenEachCard = 25;
     const numCards = 7;
     let initialX = 0;
-    range(numCards).map(i => {
+
+    this.cards = range(numCards).map(i => {
       // const card = new Phaser.Sprite(game, 0, 0, `id_card_${i}`);
       const card = new Phaser.Sprite(game, 0, 0, 'id_card_0');
-      card.animations.add('flip', range(29), 30, false);
-      card.animations.play('flip');
+      card.animations.add('flip', range(31), 30, false);
 
       if (i === 0) {
         card.x =
@@ -62,12 +103,22 @@ export class StartScreen extends Phaser.Group {
       card.y = this.game.world.centerY - 50;
       card.anchor.setTo(0, 0.5);
       this.add(card);
+      return card;
     });
 
+    (window as any).flipCard = (i: number) => {
+      this.cards[i].animations.play('flip');
+    };
+
     // Label
-    // const x = this.game.world.centerX;
-    // const y = this.game.world.centerY + logo.height * 0.8;
-    // this.add(new BlinkingButtonLabel(game, x, y, 'START'));
+    this.add(
+      new BlinkingLabel(
+        game,
+        this.game.world.centerX,
+        150,
+        'SCAN ID CARD TO BOARD SHIP',
+      ),
+    );
   }
 }
 
