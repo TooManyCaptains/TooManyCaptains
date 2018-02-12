@@ -80,7 +80,6 @@ export default class Board extends Phaser.Group {
     this.maxY = height;
 
     // Score timer
-    this.game.score = 0;
     const scoreTimer = this.game.time.create();
     scoreTimer.loop(250, this.onScoreTimer, this);
     scoreTimer.start();

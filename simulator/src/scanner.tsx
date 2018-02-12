@@ -1,5 +1,5 @@
 import React from 'react';
-import { Subsystem, Packet, Captain } from '../../common/types';
+import { Subsystem, Packet, CardID } from '../../common/types';
 import './scanner.css';
 import { range } from 'lodash';
 
@@ -27,7 +27,7 @@ interface ScannerProps {
 }
 
 interface ScannerState {
-  captain: Captain;
+  cardID: CardID;
 }
 
 export default class Scanner extends React.Component<
@@ -35,14 +35,14 @@ export default class Scanner extends React.Component<
   ScannerState
 > {
   public state = {
-    captain: 1 as Captain,
+    cardID: 1 as CardID,
   };
 
   public onCardReaderScanned(subsystem: Subsystem) {
     this.sendPacket({
       kind: 'scan',
       subsystem,
-      captain: this.state.captain,
+      cardID: this.state.cardID,
     });
   }
 
@@ -50,12 +50,12 @@ export default class Scanner extends React.Component<
     return (
       <div className="Scanner">
         <div className="CaptainSelector">
-          {range(1, 7).map(i => (
+          {range(7).map(i => (
             <div
               className={`Captain Captain-${
-                i === this.state.captain ? 'active' : ''
+                i === this.state.cardID ? 'active' : ''
               }`}
-              onClick={() => this.setCaptain(i as Captain)}
+              onClick={() => this.setCardID(i as CardID)}
             >{`#${i}`}</div>
           ))}
         </div>
@@ -81,8 +81,8 @@ export default class Scanner extends React.Component<
     );
   }
 
-  private setCaptain(captain: Captain) {
-    this.setState({ captain });
+  private setCardID(cardID: CardID) {
+    this.setState({ cardID });
   }
 
   private sendPacket(packet: Packet) {

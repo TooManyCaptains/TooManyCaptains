@@ -112,14 +112,6 @@ export default class Main extends Phaser.State {
     this.board = new Board(this.game, this.game.width, 680);
     this.player = this.board.player;
 
-    // Captains
-    const names = ['AVI', 'DAE', 'KEL', 'ANU'];
-    this.game.captains = names.map((name, i) => ({
-      name,
-      number: i + 1,
-      charge: 1,
-    }));
-
     // Recharge captains energy
     this.game.time
       .create()

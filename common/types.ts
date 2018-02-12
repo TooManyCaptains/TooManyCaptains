@@ -2,7 +2,9 @@ export type Color = 'blue' | 'red' | 'yellow';
 export type Subsystem = 'weapons' | 'shields' | 'thrusters' | 'repairs';
 export type GameState = 'wait_for_players' | 'in_game' | 'game_over';
 export type ButtonState = 'pressed' | 'released';
-export type Captain = 1 | 2 | 3 | 4 | 5 | 6;
+export type EngineerCardID = 0;
+export type CaptainCardID = 1 | 2 | 3 | 4 | 5 | 6;
+export type CardID = EngineerCardID | CaptainCardID;
 
 interface BasePacket {
   kind: string;
@@ -33,7 +35,12 @@ export interface WiringPacket extends BasePacket {
 export interface ScanPacket extends BasePacket {
   kind: 'scan';
   subsystem: Subsystem;
-  captain: Captain;
+  cardID: CardID;
+}
+
+export interface Captain {
+  name: string;
+  cardID: CaptainCardID;
 }
 
 export type Packet =

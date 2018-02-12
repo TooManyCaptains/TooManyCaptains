@@ -1,7 +1,7 @@
 import Panel from './Panel';
 import { Game } from '../index';
 import { Subsystem, Color } from '../../../common/types';
-import { Captain } from '../types';
+import { PlayingCaptain } from '../types';
 import { baseStyle } from './Styles';
 
 function colorNamesToColorKey(names: string[]) {
@@ -337,10 +337,10 @@ class RepairsPanel extends Panel {
 class CaptainEntry extends Phaser.Group {
   public game: Game;
   private healthBar: HealthBar;
-  private captain: Captain;
+  private captain: PlayingCaptain;
   private charge = 0;
 
-  constructor(game: Game, captain: Captain) {
+  constructor(game: Game, captain: PlayingCaptain, index: number) {
     super(game, undefined, 'CaptainEntry');
 
     this.captain = captain;
@@ -366,17 +366,17 @@ class CaptainEntry extends Phaser.Group {
     nameText.setTextBounds(circle.width + 11, 0, 200, 50);
 
     let nudge = -9;
-    if (captain.number === 1) {
+    if (index === 1) {
       nudge += 3;
-    } else if (captain.number === 3) {
+    } else if (index === 3) {
       nudge += 2;
-    } else if (captain.number === 5) {
+    } else if (index === 5) {
       nudge += 1;
     }
     const numberText = this.game.add.text(
       0,
       0,
-      `${captain.number}`,
+      `${index}`,
       { ...baseStyle, fontSize: 25, boundsAlignH: 'left', fontWeight: 600 },
       this,
     );
@@ -398,10 +398,10 @@ class CaptainEntry extends Phaser.Group {
 
   public update() {
     const updatedCaptain = this.game.captains.find(
-      captain => captain.number === this.captain.number,
+      captain => captain.cardID === this.captain.cardID,
     );
     if (updatedCaptain === undefined) {
-      throw new Error(`[CaptainEntry] captain not found with number: ${this.captain.number}`);
+      throw new Error(`[CaptainEntry] captain not found with card ID: ${this.captain.cardID}`);
     }
     if (this.charge !== updatedCaptain.charge) {
       this.captain = updatedCaptain;
@@ -468,7 +468,7 @@ class CaptainsLog extends Phaser.Group {
     const captains = this.game.captains;
     this.title.setText(`${captains.length} CAPTAINS ONBOARD`);
     captains.forEach((captain, i) => {
-      const entry = new CaptainEntry(this.game, captain);
+      const entry = new CaptainEntry(this.game, captain, i);
       entry.x = 22;
       entry.y = 80 + 43 * i;
       this.add(entry);

@@ -7,10 +7,11 @@ import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
 import { Packet } from '../../common/types';
-import { Captain } from './types';
 import PlayerShip from './entities/PlayerShip';
+import captains from '../../common/captains';
 
 import './index.css';
+import { PlayingCaptain } from './types';
 
 function getUrlParams(search: string): { [P in string]: string } {
   const hashes = search.slice(search.indexOf('?') + 1).split('&');
@@ -54,9 +55,9 @@ function getConfig() {
 export class Game extends Phaser.Game {
   public params: Config;
   public server: GameServer;
-  public captains: Captain[];
+  public captains: PlayingCaptain[] = [];
+  public score: number = 0;
   public player: PlayerShip;
-  public score: number;
 
   constructor() {
     super(1920, 1080, Phaser.CANVAS, 'surface');
@@ -80,7 +81,7 @@ export class Game extends Phaser.Game {
 
   private bindServerEvents() {
     this.server = new GameServer(this.params.serverURL);
-    const gameMainState = this.state.states.Main;
+    const gameMainState = this.state.states.Main as Main;
 
     this.server.socket.on('packet', (packet: Packet) => {
       if (this.params.debug) {
@@ -107,6 +108,9 @@ export class Game extends Phaser.Game {
         }
       } else if (packet.kind === 'fire') {
         if (this.state.current === 'Before' && packet.state === 'released') {
+          // if (there's at least 2 captains in the game) {
+          //   this.state.start('Main');
+          // }
           this.state.start('Main');
         } else if (
           this.state.current === 'After' &&
@@ -117,15 +121,22 @@ export class Game extends Phaser.Game {
           gameMainState.onFire(packet.state);
         }
       } else if (packet.kind === 'scan') {
+        const captain = captains.find(c => c.cardID === packet.cardID)!;
+        const playingCaptain = this.captains.find(
+          c => c.cardID === captain.cardID,
+        );
         if (this.state.current === 'Before') {
-          // TODO
+          // add captain
+          this.captains.push({
+            ...captain,
+            charge: 0,
+          });
         } else if (this.state.current === 'Main') {
-          const captain = this.captains.find(c => c.number === packet.captain);
-          if (!captain) {
+          if (!playingCaptain) {
             throw Error('captain not in game!');
           }
-          if (captain.charge === 1) {
-            captain.charge = 0;
+          if (playingCaptain.charge === 1) {
+            playingCaptain.charge = 0;
             const value = this.player.batteries[packet.subsystem];
             this.player.batteries[packet.subsystem] = Math.min(value + 7.5, 15);
           }
