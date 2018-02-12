@@ -1,5 +1,5 @@
 import * as io from 'socket.io-client';
-import { Packet } from './types';
+import { Packet } from '../../common/types';
 
 export class Client {
   public readonly url: string;

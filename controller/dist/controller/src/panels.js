@@ -41,10 +41,10 @@ class ShieldsPanel extends types_1.Panel {
         }));
     }
 }
-class PropulsionPanel extends types_1.Panel {
+class ThrustersPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
-        this.name = 'propulsion';
+        this.name = 'thrusters';
         this.pins = [33, 35];
         this.lightIndicies = [6, 7];
         this.buttonLightPins = [26, 28];
@@ -74,21 +74,10 @@ class RepairsPanel extends types_1.Panel {
         }));
     }
 }
-// class CommunicationsPanel extends Panel {
-//   public readonly name = 'communications'
-//   public readonly pins = [37]
-//   public readonly lightIndicies = [11]
-//   public update(colorPositions: ColorPosition[]): void {
-//     this.lights = _.times(colorPositions.length, i => ({
-//       index: this.lightIndicies[i],
-//       color: LightColor.red,
-//     }))
-//   }
-// }
 const panels = [
     new WeaponsPanel(),
     new ShieldsPanel(),
-    new PropulsionPanel(),
+    new ThrustersPanel(),
     new RepairsPanel(),
 ];
 exports.panels = panels;

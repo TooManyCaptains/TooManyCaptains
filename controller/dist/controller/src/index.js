@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = require("lodash");
-const colors = require("colors/safe");
 const client_1 = require("./client");
 const panels_1 = require("./panels");
 const buttons_1 = require("./buttons");
@@ -51,9 +50,9 @@ const LightController_1 = require("./LightController");
             lightController.setLights(lights);
         }
     }
-    console.info(`\n${colors.bold('Wire poll rate')}: ${1000 / panelController.pollRateMsec} Hz`);
-    console.info(`${colors.bold('Button poll rate')}: ${1000 / buttonController.pollRateMsec} Hz`);
-    console.info(`${colors.bold('Server')}: ${client.url}\n`);
+    console.info(`\nWire poll rate: ${1000 / panelController.pollRateMsec} Hz`);
+    console.info(`Button poll rate: ${1000 / buttonController.pollRateMsec} Hz`);
+    console.info(`Server ${client.url}\n`);
     updatePanelLights();
     function teardownAndExitCleanly() {
         lightController.teardown();

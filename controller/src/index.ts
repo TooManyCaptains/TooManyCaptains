@@ -1,5 +1,4 @@
 import { flatten } from 'lodash';
-import * as colors from 'colors/safe';
 import { Client } from './client';
 import { panels } from './panels';
 import { buttons } from './buttons';
@@ -66,15 +65,9 @@ import { GameState, Packet } from '../../common/types';
     }
   }
 
-  console.info(
-    `\n${colors.bold('Wire poll rate')}: ${1000 /
-      panelController.pollRateMsec} Hz`,
-  );
-  console.info(
-    `${colors.bold('Button poll rate')}: ${1000 /
-      buttonController.pollRateMsec} Hz`,
-  );
-  console.info(`${colors.bold('Server')}: ${client.url}\n`);
+  console.info(`\nWire poll rate: ${1000 / panelController.pollRateMsec} Hz`);
+  console.info(`Button poll rate: ${1000 / buttonController.pollRateMsec} Hz`);
+  console.info(`Server ${client.url}\n`);
   updatePanelLights();
 
   function teardownAndExitCleanly() {
