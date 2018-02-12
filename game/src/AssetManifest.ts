@@ -62,6 +62,8 @@ const AssetManifest = {
     'ring-thrusters.png',
     'ring-repairs.png',
     'ring-none.png',
+
+    'card.png',
   ],
   sprites: [],
   audio: [

@@ -4,7 +4,7 @@ import { baseStyle } from './Styles';
 import { range } from 'lodash';
 
 class Battery extends Phaser.Group {
-  private maxSeconds = 15;
+  // private maxSeconds = 15;
   private preSecond = 0;
   private icon: Phaser.Sprite;
   private text: Phaser.Text;
@@ -34,14 +34,14 @@ class Battery extends Phaser.Group {
     );
     this.text.setTextBounds(16, 45, this.icon.width - 15, this.icon.height);
 
-    this.maxSeconds = 15;
+    // this.maxSeconds = 15;
     this.seconds = 0;
   }
 
   set seconds(seconds: number) {
-    
+
     // Giada Removed the Bar
-    // 
+    //
     // const fraction = Math.min(seconds / this.maxSeconds, 1);
     // if (this.bar) {
     //   this.remove(this.bar);
@@ -74,7 +74,7 @@ class Battery extends Phaser.Group {
     } else if (rounded > 0 && this.preSecond == 0) {
       this.icon.animations.play('unlocking');
     }
-    
+
     this.preSecond = rounded;
   }
 

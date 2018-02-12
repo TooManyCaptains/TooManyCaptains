@@ -1,17 +1,17 @@
 import { Game } from '../index';
 import { baseStyle } from './Styles';
+import { range } from 'lodash';
 
 class BlinkingButtonLabel extends Phaser.Group {
   constructor(game: Game, x: number, y: number, actionText: string) {
     super(game);
 
     const buttonOffset = 80;
-    const text = this.game.add.text(
-      x,
-      y,
-      `PRESS          TO ${actionText}`,
-      {...baseStyle, fontSize: 110, fontWeight: 900},
-    );
+    const text = this.game.add.text(x, y, `PRESS          TO ${actionText}`, {
+      ...baseStyle,
+      fontSize: 110,
+      fontWeight: 900,
+    });
     text.anchor.setTo(0.5, 0.5);
     const button = this.game.add.sprite(x - buttonOffset, y, 'red-button');
     button.anchor.setTo(0.5, 0.5);
@@ -43,10 +43,28 @@ export class StartScreen extends Phaser.Group {
     logo.anchor.setTo(0.5, 0.5);
     logo.scale.set(0.75, 0.75);
 
+    const paddingBetweenEachCard = 25;
+    const numCards = 7;
+    let initialX = 0;
+    range(numCards).map(i => {
+      const card = new Phaser.Sprite(game, 0, 0, 'card');
+      if (i === 0) {
+        card.x =
+          paddingBetweenEachCard / 2 +
+          (game.width - (card.width + paddingBetweenEachCard) * numCards) / 2;
+        initialX = card.x;
+      } else {
+        card.x = initialX + (card.width + paddingBetweenEachCard) * i;
+      }
+      card.y = this.game.world.centerY;
+      card.anchor.setTo(0, 0.5);
+      this.add(card);
+    });
+
     // Label
-    const x = this.game.world.centerX;
-    const y = this.game.world.centerY + logo.height * 0.8;
-    this.add(new BlinkingButtonLabel(game, x, y, 'START'));
+    // const x = this.game.world.centerX;
+    // const y = this.game.world.centerY + logo.height * 0.8;
+    // this.add(new BlinkingButtonLabel(game, x, y, 'START'));
   }
 }
 
@@ -60,12 +78,10 @@ export class EndScreen extends Phaser.Group {
     // Score
     const x = this.game.world.centerX;
     const y = this.game.world.centerY * 0.5;
-    const text = this.game.add.text(
-      x,
-      y,
-      `SCORE: ${this.game.score}`,
-      {...baseStyle, fontSize: 110},
-    );
+    const text = this.game.add.text(x, y, `SCORE: ${this.game.score}`, {
+      ...baseStyle,
+      fontSize: 110,
+    });
     text.anchor.setTo(0.5, 0.5);
 
     // "Game over" text
