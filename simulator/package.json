@@ -20,12 +20,12 @@
   },
   "devDependencies": {
     "@types/isomorphic-fetch": "^0.0.34",
-    "@types/jest": "^22.1.1",
-    "@types/lodash": "^4.14.85",
-    "@types/node": "^9.4.0",
-    "@types/react": "^16.0.22",
-    "@types/react-dom": "^16.0.3",
-    "@types/react-spinkit": "^3.0.2",
+    "@types/jest": "^22.1.2",
+    "@types/lodash": "^4.14.102",
+    "@types/node": "^9.4.6",
+    "@types/react": "^16.0.38",
+    "@types/react-dom": "^16.0.4",
+    "@types/react-spinkit": "^3.0.3",
     "@types/socket.io-client": "^1.4.32",
     "tslint": "^5.9.1"
   }
