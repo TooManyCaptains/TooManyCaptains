@@ -58,8 +58,8 @@ class ThrustersPanel extends Panel {
 
 class ShieldsPanel extends Panel {
   public readonly name = 'shields';
-  public readonly pins = [22, 24, 16];
-  public readonly lightIndicies = _.range(19, 26); // LEDs were installed backwards
+  public readonly pins = [22, 26, 24];
+  public readonly lightIndicies = _.range(19, 26);
 
   public update(colorPositions: ColorPosition[]): void {
     this.lights = colorPositions
@@ -73,8 +73,8 @@ class ShieldsPanel extends Panel {
 
 class RepairsPanel extends Panel {
   public readonly name = 'repairs';
-  public readonly pins = [8, 10, 12];
-  public readonly lightIndicies = _.range(30, 37); // LEDs were installed backwards
+  public readonly pins = [10, 12, 8];
+  public readonly lightIndicies = _.range(30, 37);
 
   public update(colorPositions: ColorPosition[]): void {
     this.lights = _.times(colorPositions.length, i => ({

@@ -61,8 +61,8 @@ class ShieldsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.name = 'shields';
-        this.pins = [22, 24, 16];
-        this.lightIndicies = _.range(19, 26); // LEDs were installed backwards
+        this.pins = [22, 26, 24];
+        this.lightIndicies = _.range(19, 26);
     }
     update(colorPositions) {
         this.lights = colorPositions
@@ -77,8 +77,8 @@ class RepairsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.name = 'repairs';
-        this.pins = [8, 10, 12];
-        this.lightIndicies = _.range(30, 37); // LEDs were installed backwards
+        this.pins = [10, 12, 8];
+        this.lightIndicies = _.range(30, 37);
     }
     update(colorPositions) {
         this.lights = _.times(colorPositions.length, i => ({
