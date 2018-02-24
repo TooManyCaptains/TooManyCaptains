@@ -33,7 +33,11 @@ const LightController_1 = require("./LightController");
     // Create a button controller to manage button presses
     const buttonController = new ButtonController_1.ButtonController(buttons_1.buttons, sendPacket, () => gameState);
     // Create a light controller for the wire/panel LEDs
-    const numLights = lodash_1.flatten(panels_1.panels.map(p => p.lightIndicies)).length;
+    // const numLights = flatten(panels.map(p => p.lightIndicies)).length;
+    // XXX: Hacky way to calculate num lights. The whole light indexing
+    // system should be re-thought since ColorPositions no longer map 1:1
+    // with LED pixels (2 pixels per color position).
+    const numLights = lodash_1.last(lodash_1.last(panels_1.panels).lightIndicies);
     const lightController = new LightController_1.LightController(numLights);
     // Update lights (all at once, since they are daisy-chained via PWM)
     function updatePanelLights() {
