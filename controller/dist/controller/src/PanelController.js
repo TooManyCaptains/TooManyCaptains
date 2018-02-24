@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const _ = require("lodash");
 const rpio = require("rpio");
 const wires = {
-    blue: 29,
-    red: 27,
-    yellow: 31,
+    blue: 31,
+    red: 29,
+    yellow: 27,
 };
 class PanelController {
     constructor(panels, packetHandler, getGameState) {

@@ -4,9 +4,9 @@ import { WireColor, Wire, Panel, ColorPosition, Connection } from './types';
 import { GameState, Packet } from '../../common/types';
 
 const wires: Wire = {
-  blue: 29,
-  red: 27,
-  yellow: 31,
+  blue: 31,
+  red: 29,
+  yellow: 27,
 };
 
 type PacketHandler = (packet: Packet) => void;

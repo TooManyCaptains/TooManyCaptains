@@ -7,7 +7,7 @@ class WeaponsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.name = 'weapons';
-        this.pins = [36, 38, 40];
+        this.pins = [40, 38, 36];
         this.lightIndicies = _.range(6);
         this.buttonLightPins = [];
     }

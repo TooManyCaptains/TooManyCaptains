@@ -5,7 +5,7 @@ import { GameState } from '../../common/types';
 
 class WeaponsPanel extends Panel {
   public readonly name = 'weapons';
-  public readonly pins = [36, 38, 40];
+  public readonly pins = [40, 38, 36];
   public readonly lightIndicies = _.range(6);
   public readonly buttonLightPins = [];
 
