@@ -8,7 +8,7 @@ class WeaponsPanel extends types_1.Panel {
         super(...arguments);
         this.name = 'weapons';
         this.pins = [40, 38, 36];
-        this.lightIndicies = _.range(6);
+        this.lightIndicies = _.range(7);
         this.buttonLightPins = [];
     }
     update(colorPositions, gameState) {
@@ -43,7 +43,7 @@ class ThrustersPanel extends types_1.Panel {
         super(...arguments);
         this.name = 'thrusters';
         this.pins = [16, 18];
-        this.lightIndicies = _.range(10, 14);
+        this.lightIndicies = _.range(11, 15);
         this.buttonLightPins = [];
     }
     update(colorPositions, gameState) {
@@ -61,8 +61,8 @@ class ShieldsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.name = 'shields';
-        this.pins = [21, 23, 19]; //
-        this.lightIndicies = _.range(16, 22); // LEDs were installed backwards
+        this.pins = [22, 24, 16];
+        this.lightIndicies = _.range(19, 26); // LEDs were installed backwards
     }
     update(colorPositions) {
         this.lights = colorPositions
@@ -77,8 +77,8 @@ class RepairsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.name = 'repairs';
-        this.pins = [36, 38, 40];
-        this.lightIndicies = _.range(24, 30); // LEDs were installed backwards
+        this.pins = [8, 10, 12];
+        this.lightIndicies = _.range(30, 37); // LEDs were installed backwards
     }
     update(colorPositions) {
         this.lights = _.times(colorPositions.length, i => ({

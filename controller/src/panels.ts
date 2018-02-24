@@ -6,7 +6,7 @@ import { GameState } from '../../common/types';
 class WeaponsPanel extends Panel {
   public readonly name = 'weapons';
   public readonly pins = [40, 38, 36];
-  public readonly lightIndicies = _.range(6);
+  public readonly lightIndicies = _.range(7);
   public readonly buttonLightPins = [];
 
   public update(colorPositions: ColorPosition[], gameState: GameState): void {
@@ -40,7 +40,7 @@ class WeaponsPanel extends Panel {
 class ThrustersPanel extends Panel {
   public readonly name = 'thrusters';
   public readonly pins = [16, 18];
-  public readonly lightIndicies = _.range(10, 14);
+  public readonly lightIndicies = _.range(11, 15);
   public readonly buttonLightPins = [];
 
   public update(colorPositions: ColorPosition[], gameState: GameState) {
@@ -58,8 +58,8 @@ class ThrustersPanel extends Panel {
 
 class ShieldsPanel extends Panel {
   public readonly name = 'shields';
-  public readonly pins = [21, 23, 19]; //
-  public readonly lightIndicies = _.range(16, 22); // LEDs were installed backwards
+  public readonly pins = [22, 24, 16];
+  public readonly lightIndicies = _.range(19, 26); // LEDs were installed backwards
 
   public update(colorPositions: ColorPosition[]): void {
     this.lights = colorPositions
@@ -73,8 +73,8 @@ class ShieldsPanel extends Panel {
 
 class RepairsPanel extends Panel {
   public readonly name = 'repairs';
-  public readonly pins = [36, 38, 40];
-  public readonly lightIndicies = _.range(24, 30); // LEDs were installed backwards
+  public readonly pins = [8, 10, 12];
+  public readonly lightIndicies = _.range(30, 37); // LEDs were installed backwards
 
   public update(colorPositions: ColorPosition[]): void {
     this.lights = _.times(colorPositions.length, i => ({
