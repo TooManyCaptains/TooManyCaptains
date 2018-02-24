@@ -17,12 +17,25 @@ class WeaponsPanel extends types_1.Panel {
             rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
         });
         // Set LED lights for later batch-update
-        this.lights = colorPositions
+        this.lights = [];
+        colorPositions
             .filter(({ position }) => position !== null)
-            .map(({ color, position }) => ({
-            index: this.lightIndicies[position],
-            color: types_1.LightColor[color],
-        }));
+            .map(({ color, position }) => {
+            this.lights.push({
+                index: this.lightIndicies[position],
+                color: types_1.LightColor[color],
+            });
+            this.lights.push({
+                index: this.lightIndicies[position + 1],
+                color: types_1.LightColor[color],
+            });
+        });
+        // this.lights = colorPositions
+        //   .filter(({ position }) => position !== null)
+        //   .map(({ color, position }) => ({
+        //     index: this.lightIndicies[position!],
+        //     color: LightColor[color],
+        //   }));
     }
 }
 class ThrustersPanel extends types_1.Panel {

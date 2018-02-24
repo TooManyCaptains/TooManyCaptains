@@ -15,12 +15,25 @@ class WeaponsPanel extends Panel {
       rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
     });
     // Set LED lights for later batch-update
-    this.lights = colorPositions
+    this.lights = [];
+    colorPositions
       .filter(({ position }) => position !== null)
-      .map(({ color, position }) => ({
-        index: this.lightIndicies[position!],
-        color: LightColor[color],
-      }));
+      .map(({ color, position }) => {
+        this.lights.push({
+          index: this.lightIndicies[position!],
+          color: LightColor[color],
+        });
+        this.lights.push({
+          index: this.lightIndicies[position! + 1],
+          color: LightColor[color],
+        });
+      });
+    // this.lights = colorPositions
+    //   .filter(({ position }) => position !== null)
+    //   .map(({ color, position }) => ({
+    //     index: this.lightIndicies[position!],
+    //     color: LightColor[color],
+    //   }));
   }
 }
 
