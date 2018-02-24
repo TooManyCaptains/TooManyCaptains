@@ -7,9 +7,9 @@ class WeaponsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.name = 'weapons';
-        this.pins = [15, 13, 11];
-        this.lightIndicies = [0, 1, 2];
-        this.buttonLightPins = [24];
+        this.pins = [36, 38, 40];
+        this.lightIndicies = _.range(6);
+        this.buttonLightPins = [];
     }
     update(colorPositions, gameState) {
         const isButtonLit = true;
@@ -25,29 +25,13 @@ class WeaponsPanel extends types_1.Panel {
         }));
     }
 }
-class ShieldsPanel extends types_1.Panel {
-    constructor() {
-        super(...arguments);
-        this.name = 'shields';
-        this.pins = [21, 23, 19]; //
-        this.lightIndicies = [5, 4, 3]; // LEDs were installed backwards
-    }
-    update(colorPositions) {
-        this.lights = colorPositions
-            .filter(({ position }) => position !== null)
-            .map(({ color, position }) => ({
-            index: this.lightIndicies[position],
-            color: types_1.LightColor[color],
-        }));
-    }
-}
 class ThrustersPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.name = 'thrusters';
-        this.pins = [33, 35];
-        this.lightIndicies = [6, 7];
-        this.buttonLightPins = [26, 28];
+        this.pins = [16, 18];
+        this.lightIndicies = _.range(10, 14);
+        this.buttonLightPins = [];
     }
     update(colorPositions, gameState) {
         const isButtonLit = colorPositions.length > 0 && gameState === 'in_game';
@@ -60,12 +44,28 @@ class ThrustersPanel extends types_1.Panel {
         }));
     }
 }
+class ShieldsPanel extends types_1.Panel {
+    constructor() {
+        super(...arguments);
+        this.name = 'shields';
+        this.pins = [21, 23, 19]; //
+        this.lightIndicies = _.range(16, 22); // LEDs were installed backwards
+    }
+    update(colorPositions) {
+        this.lights = colorPositions
+            .filter(({ position }) => position !== null)
+            .map(({ color, position }) => ({
+            index: this.lightIndicies[position],
+            color: types_1.LightColor[color],
+        }));
+    }
+}
 class RepairsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.name = 'repairs';
-        this.pins = [27, 29, 31];
-        this.lightIndicies = [10, 9, 8]; // LEDs were installed backwards
+        this.pins = [36, 38, 40];
+        this.lightIndicies = _.range(24, 30); // LEDs were installed backwards
     }
     update(colorPositions) {
         this.lights = _.times(colorPositions.length, i => ({
@@ -76,8 +76,8 @@ class RepairsPanel extends types_1.Panel {
 }
 const panels = [
     new WeaponsPanel(),
-    new ShieldsPanel(),
     new ThrustersPanel(),
+    new ShieldsPanel(),
     new RepairsPanel(),
 ];
 exports.panels = panels;

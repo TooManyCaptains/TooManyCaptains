@@ -1,19 +1,12 @@
 import * as _ from 'lodash';
 import * as rpio from 'rpio';
-import {
-  WirePin,
-  WireColor,
-  Wire,
-  Panel,
-  ColorPosition,
-  Connection,
-} from './types';
+import { WireColor, Wire, Panel, ColorPosition, Connection } from './types';
 import { GameState, Packet } from '../../common/types';
 
 const wires: Wire = {
-  red: 3,
-  blue: 5,
-  yellow: 7,
+  blue: 29,
+  red: 27,
+  yellow: 31,
 };
 
 type PacketHandler = (packet: Packet) => void;
@@ -144,7 +137,7 @@ export class PanelController {
   }
 
   private whereIsWirePluggedIn(
-    pin: WirePin,
+    pin: number,
   ): { position: number | null; panel: Panel | null } {
     // Set all wire pins to LOW
     Object.values(wires).forEach(w => rpio.write(w, rpio.LOW));
@@ -166,7 +159,7 @@ export class PanelController {
   }
 
   private getConnections(): Connection[] {
-    return _.map(wires, (pin: WirePin, color: WireColor) => {
+    return _.map(wires, (pin: number, color: WireColor) => {
       const { panel, position } = this.whereIsWirePluggedIn(pin);
       return { color, panel, position };
     });

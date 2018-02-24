@@ -5,9 +5,9 @@ import { GameState } from '../../common/types';
 
 class WeaponsPanel extends Panel {
   public readonly name = 'weapons';
-  public readonly pins = [15, 13, 11];
-  public readonly lightIndicies = [0, 1, 2];
-  public readonly buttonLightPins = [24];
+  public readonly pins = [36, 38, 40];
+  public readonly lightIndicies = _.range(6);
+  public readonly buttonLightPins = [];
 
   public update(colorPositions: ColorPosition[], gameState: GameState): void {
     const isButtonLit = true;
@@ -24,26 +24,11 @@ class WeaponsPanel extends Panel {
   }
 }
 
-class ShieldsPanel extends Panel {
-  public readonly name = 'shields';
-  public readonly pins = [21, 23, 19]; //
-  public readonly lightIndicies = [5, 4, 3]; // LEDs were installed backwards
-
-  public update(colorPositions: ColorPosition[]): void {
-    this.lights = colorPositions
-      .filter(({ position }) => position !== null)
-      .map(({ color, position }) => ({
-        index: this.lightIndicies[position!],
-        color: LightColor[color],
-      }));
-  }
-}
-
 class ThrustersPanel extends Panel {
   public readonly name = 'thrusters';
-  public readonly pins = [33, 35];
-  public readonly lightIndicies = [6, 7];
-  public readonly buttonLightPins = [26, 28];
+  public readonly pins = [16, 18];
+  public readonly lightIndicies = _.range(10, 14);
+  public readonly buttonLightPins = [];
 
   public update(colorPositions: ColorPosition[], gameState: GameState) {
     const isButtonLit = colorPositions.length > 0 && gameState === 'in_game';
@@ -58,10 +43,25 @@ class ThrustersPanel extends Panel {
   }
 }
 
+class ShieldsPanel extends Panel {
+  public readonly name = 'shields';
+  public readonly pins = [21, 23, 19]; //
+  public readonly lightIndicies = _.range(16, 22); // LEDs were installed backwards
+
+  public update(colorPositions: ColorPosition[]): void {
+    this.lights = colorPositions
+      .filter(({ position }) => position !== null)
+      .map(({ color, position }) => ({
+        index: this.lightIndicies[position!],
+        color: LightColor[color],
+      }));
+  }
+}
+
 class RepairsPanel extends Panel {
   public readonly name = 'repairs';
-  public readonly pins = [27, 29, 31];
-  public readonly lightIndicies = [10, 9, 8]; // LEDs were installed backwards
+  public readonly pins = [36, 38, 40];
+  public readonly lightIndicies = _.range(24, 30); // LEDs were installed backwards
 
   public update(colorPositions: ColorPosition[]): void {
     this.lights = _.times(colorPositions.length, i => ({
@@ -73,8 +73,8 @@ class RepairsPanel extends Panel {
 
 const panels: Panel[] = [
   new WeaponsPanel(),
-  new ShieldsPanel(),
   new ThrustersPanel(),
+  new ShieldsPanel(),
   new RepairsPanel(),
 ];
 

@@ -59,6 +59,9 @@ export class LightController {
   }
 
   private setup(): void {
-    ws281x.init(this.numLights);
+    ws281x.init(this.numLights, {
+      gpioPin: 32,
+      brightness: 64,
+    });
   }
 }

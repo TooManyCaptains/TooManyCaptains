@@ -48,7 +48,10 @@ class LightController {
         ws281x.render(pixelData);
     }
     setup() {
-        ws281x.init(this.numLights);
+        ws281x.init(this.numLights, {
+            gpioPin: 32,
+            brightness: 64,
+        });
     }
 }
 exports.LightController = LightController;
