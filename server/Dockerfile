@@ -4,10 +4,10 @@ FROM node:9-alpine
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package.json yarn.lock ./
+COPY package.json package-lock.lock ./
 
 # Install dependencies but not devDependencies
-RUN yarn install --production
+RUN npm install --production
 
 # Bundle app source
 COPY . .
