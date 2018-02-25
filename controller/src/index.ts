@@ -30,7 +30,7 @@ import { GameState, Packet } from '../../common/types';
 
   // Create a client to interact with the server
   const url =
-    process.env.GANGLIA_SERVER_URL || 'http://server.toomanycaptains.com';
+    process.env.GANGLIA_SERVER_URL || 'http://starship:9000';
   const client = new Client(url, onPacket);
 
   // Create a panel controller to manage plugging and unplugging wires into panels

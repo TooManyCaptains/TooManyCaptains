@@ -26,7 +26,7 @@ const LightController_1 = require("./LightController");
         client.sendPacket(packet);
     }
     // Create a client to interact with the server
-    const url = process.env.GANGLIA_SERVER_URL || 'http://server.toomanycaptains.com';
+    const url = process.env.GANGLIA_SERVER_URL || 'http://starship:9000';
     const client = new client_1.Client(url, onPacket);
     // Create a panel controller to manage plugging and unplugging wires into panels
     const panelController = new PanelController_1.PanelController(panels_1.panels, sendPacket, () => gameState);

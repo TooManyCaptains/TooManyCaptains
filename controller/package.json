@@ -20,7 +20,11 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "docker-build": "npm run build && docker build -t toomanycaptains/controller ."
+    "start": "node dist/controller/src/index.js",
+    "docker-build": "npm run build && docker build -t toomanycaptains/controller .",
+    "docker-run": "ssh pi@starship-controller 'docker stop controller ||:&& docker rm controller ||:&& docker run -e GANGLIA_SERVER_URL='http://starship:9000' -dit --restart unless-stopped --net=host --privileged --name controller toomanycaptains/controller'",
+    "docker-upload": "docker save toomanycaptains/controller | ssh crew@starship 'docker load'",
+    "upload": "npm run docker-build && npm run docker-upload && npm run docker-run",
+    "logs": "ssh pi@starship-controller 'docker logs controller -f'"
   }
 }
