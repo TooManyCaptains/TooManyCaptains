@@ -59,6 +59,11 @@ export class LightController {
   }
 
   private setup(): void {
-    ws281x.init(this.numLights);
+    ws281x.init(this.numLights, {
+      // Use BCM Pin 12 (Pin #32, PWM0)
+      // See here: https://github.com/jgarff/rpi_ws281x#gpio-usage
+      gpioPin: 12,
+      brightness: 64,
+    });
   }
 }

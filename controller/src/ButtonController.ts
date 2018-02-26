@@ -10,7 +10,7 @@ import {
 } from '../../common/types';
 
 function isButtonPressed(button: Button): boolean {
-  return rpio.read(button.pin) ? true : false;
+  return rpio.read(button.pin) === 0;
 }
 
 export class ButtonController {
@@ -37,7 +37,7 @@ export class ButtonController {
   private setup(): void {
     // Set up button pins for reading
     this.buttons.forEach(({ pin }) => {
-      rpio.open(pin, rpio.INPUT, rpio.PULL_DOWN);
+      rpio.open(pin, rpio.INPUT, rpio.PULL_UP);
     });
   }
 

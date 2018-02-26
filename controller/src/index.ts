@@ -1,4 +1,4 @@
-import { flatten } from 'lodash';
+import { flatten, last } from 'lodash';
 import { Client } from './client';
 import { panels } from './panels';
 import { buttons } from './buttons';
@@ -30,7 +30,7 @@ import { GameState, Packet } from '../../common/types';
 
   // Create a client to interact with the server
   const url =
-    process.env.GANGLIA_SERVER_URL || 'http://server.toomanycaptains.com';
+    process.env.GANGLIA_SERVER_URL || 'http://starship:9000';
   const client = new Client(url, onPacket);
 
   // Create a panel controller to manage plugging and unplugging wires into panels
@@ -48,7 +48,11 @@ import { GameState, Packet } from '../../common/types';
   );
 
   // Create a light controller for the wire/panel LEDs
-  const numLights = flatten(panels.map(p => p.lightIndicies)).length;
+  // const numLights = flatten(panels.map(p => p.lightIndicies)).length;
+  // XXX: Hacky way to calculate num lights. The whole light indexing
+  // system should be re-thought since ColorPositions no longer map 1:1
+  // with LED pixels (2 pixels per color position).
+  const numLights = last(last(panels)!.lightIndicies)!;
   const lightController = new LightController(numLights);
 
   // Update lights (all at once, since they are daisy-chained via PWM)

@@ -1,17 +1,10 @@
-import {
-  GameState,
-  Color,
-  Subsystem,
-  ButtonState,
-} from '../../common/types';
+import { GameState, Color, Subsystem, ButtonState } from '../../common/types';
 
 export type WireColor = Color;
 
-export type WirePin = 3 | 5 | 7;
-
-export type Wire = { [C in WireColor]: WirePin };
-
 export type Pin = number;
+
+export type Wire = { [C in WireColor]: Pin };
 
 export enum LightColor {
   red = 0xff0000,

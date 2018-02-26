@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const rpio = require("rpio");
 const _ = require("lodash");
 function isButtonPressed(button) {
-    return rpio.read(button.pin) ? true : false;
+    return rpio.read(button.pin) === 0;
 }
 class ButtonController {
     constructor(buttons, packetHandler, getGameState) {
@@ -20,7 +20,7 @@ class ButtonController {
     setup() {
         // Set up button pins for reading
         this.buttons.forEach(({ pin }) => {
-            rpio.open(pin, rpio.INPUT, rpio.PULL_DOWN);
+            rpio.open(pin, rpio.INPUT, rpio.PULL_UP);
         });
     }
     poll() {

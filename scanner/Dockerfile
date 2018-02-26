@@ -4,10 +4,10 @@ FROM node:9-alpine
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package.json yarn.lock ./
+COPY package.json package-lock.lock ./
 
 RUN apk add --no-cache make linux-headers eudev-dev gcc g++ python && \
-  yarn install --production && \
+  npm install --production && \
   apk del make linux-headers gcc g++ python
 
 # Bundle app source

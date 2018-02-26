@@ -3,15 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.buttons = [
     {
         name: 'fire',
-        pin: 36,
+        pin: 11,
     },
     {
         name: 'up',
-        pin: 38,
+        pin: 13,
     },
     {
         name: 'down',
-        pin: 40,
+        pin: 15,
     },
 ];
 //# sourceMappingURL=buttons.js.map
