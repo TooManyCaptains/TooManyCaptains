@@ -328,7 +328,7 @@ export default class PlayerShip extends Phaser.Sprite {
   public getHurtTint() {
     this.tint = 0xff0000;
     setTimeout(() => (this.tint = 0xffffff), 150);
-    const h = setInterval(() => (this.tint = 0xffffff), 100);
+    const h = setInterval(() => (this.tint = 0xffffff), 50);
     setTimeout(() => clearInterval(h), 500);
   }
 

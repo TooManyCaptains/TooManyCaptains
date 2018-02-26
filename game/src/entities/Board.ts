@@ -119,6 +119,14 @@ export default class Board extends Phaser.Group {
     this.asteroids.add(new Asteroid(this.game, x, y));
   }
 
+  private expolosion(x: number, y: number, scale: number) {
+    const explosion = this.game.add.sprite(x, y, 'explosion-yellow');
+    explosion.scale.setTo(scale, scale);
+    explosion.anchor.setTo(0.75, 0.5);
+    explosion.animations.add('explosion');
+    explosion.play('explosion', 30, false, true);
+  }
+
   public update() {
     super.update();
 
@@ -140,7 +148,8 @@ export default class Board extends Phaser.Group {
             ) {
               player.damage(enemy.weapon.bulletDamage);
               this.damagedFx.play();
-              player.getHurtTint();
+              // player.getHurtTint();
+              this.expolosion(bullet.x, bullet.y, 0.5);
             } else {
               player.damage(enemy.weapon.bulletDamage * 0.05);
               this.shieldFx.play();
@@ -206,8 +215,9 @@ export default class Board extends Phaser.Group {
       this.asteroids,
       this.player,
       (player: PlayerShip, asteroid: Asteroid) => {
+        this.expolosion(asteroid.x, asteroid.y, 1.0);
         asteroid.destroy();
-        player.getHurtTint();
+        // player.getHurtTint();
         player.damage(asteroid.collisionDamage);
         this.collideFx.play();
       },

@@ -151,6 +151,17 @@ export default class Main extends Phaser.State {
       220,
       100,
     );
+
+    this.load.spritesheet(
+      'explosion-yellow',
+      'assets/sprites/explosion_yellow_160x160.png',
+      160,
+      160,
+    );
+
+
+
+
   }
 
 
