@@ -482,9 +482,9 @@ export default class HUD extends Phaser.Group {
     const sidePadding = 40;
     this.panels = [
       WeaponsPanel,
-      ShieldsPanel,
       ThrustersPanel,
       RepairsPanel,
+      ShieldsPanel,
     ].map((Klass, i) => {
       const panel = new Klass(this.game, this, 300, 300);
       panel.x = sidePadding + (panel.width + innerPadding) * i;

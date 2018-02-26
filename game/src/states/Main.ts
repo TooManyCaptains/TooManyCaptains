@@ -17,12 +17,12 @@ export default class Main extends Phaser.State {
   private board: Board;
 
   public preload() {
-    this.load.spritesheet(
-      'player-ship',
-      'assets/sprites/player-ship.png',
-      200,
-      120,
-    );
+    // this.load.spritesheet(
+    //   'player-ship',
+    //   'assets/sprites/player-ship.png',
+    //   200,
+    //   120,
+    // );
     this.load.spritesheet(
       'explosion',
       'assets/sprites/explosion.png',
@@ -100,7 +100,62 @@ export default class Main extends Phaser.State {
       240,
       600
     );
+
+    // New Sprites (Feb.24)
+
+    this.load.spritesheet(
+      'player-ship',
+      'assets/sprites/ship_220x100.png',
+      220,
+      100,
+    );  
+
+    this.load.spritesheet(
+      'ship-weapon-light-top',
+      'assets/sprites/ship_weapon_light_1_220x100.png',
+      220,
+      100,
+    ); 
+
+    this.load.spritesheet(
+      'ship-weapon-light-middle',
+      'assets/sprites/ship_weapon_light_2_220x100.png',
+      220,
+      100,
+    ); 
+
+    this.load.spritesheet(
+      'ship-weapon-light-bottom',
+      'assets/sprites/ship_weapon_light_3_220x100.png',
+      220,
+      100,
+    ); 
+
+    this.load.spritesheet(
+      'ship-shield',
+      'assets/sprites/ship_shield_220x120.png',
+      220,
+      120,
+    );
+
+    this.load.spritesheet(
+      'ship-thurster',
+      'assets/sprites/ship_thurster_220x100.png',
+      220,
+      100,
+    );
+
+    this.load.spritesheet(
+      'ship-repair',
+      'assets/sprites/ship_repair_220x100.png',
+      220,
+      100,
+    );
   }
+
+
+
+
 
   public create() {
     // Background

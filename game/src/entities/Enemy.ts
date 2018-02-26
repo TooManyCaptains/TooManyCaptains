@@ -37,7 +37,7 @@ export class Enemy extends Phaser.Sprite {
     this.health = 20;
     this.maxHealth = this.health;
     // tslint:disable-next-line:no-unused-expression
-    new HealthBar(this);
+    // new HealthBar(this);
 
     // Weapon
     const baseFiringRate = 10000;

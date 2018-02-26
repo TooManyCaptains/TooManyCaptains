@@ -10,6 +10,7 @@ export default class HealthBar {
 
   constructor(ship: PlayerShip | Enemy, color = 0x30ee02) {
     this.ship = ship;
+    // this.width = 140;
     this.width = this.ship.width * 0.5;
 
     if (this.ship.key === 'player-ship') {
@@ -32,7 +33,7 @@ export default class HealthBar {
     let y = this.ship.y - this.ship.height * 0.85;
     if (this.ship.key === 'player-ship') {
       x = this.ship.centerX - this.width * 0.5;
-      y = this.ship.y - this.ship.height * 0.6;
+      y = this.ship.y - this.ship.height * 0.7;
     }
     this.bar.x = x;
     this.bar.y = y;
