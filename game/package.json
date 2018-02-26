@@ -38,10 +38,12 @@
   },
   "scripts": {
     "hack": "webpack-dev-server --config webpack/dev.config.js",
-    "build-prod": "webpack --config webpack/prod.config.js",
-    "deploy": "npm run build-prod && surge dist play.toomanycaptains.com",
-    "upload": "npm run build-prod && rsync -Pavz dist/ crew@starship.local:/var/www/html && npm run refresh",
-    "refresh": "ssh crew@starship.local './TooManyCaptains/refresh.sh'",
-    "reboot": "ssh crew@starship.local sudo reboot"
+    "build": "webpack --config webpack/prod.config.js",
+    "deploy": "npm run build && surge dist play.toomanycaptains.com",
+    "docker-build": "npm run build && docker build -t toomanycaptains/game .",
+    "docker-run": "ssh crew@starship 'docker stop game ||:&& docker rm game ||:&& docker run -d -p 80 --net=host --name game toomanycaptains/game'",
+    "docker-upload": "docker save toomanycaptains/game | gzip | ssh crew@starship 'gunzip | docker load'",
+    "upload": "npm run docker-build && npm run docker-upload && npm run docker-run",
+    "logs": "ssh crew@starship 'docker logs game -f'"
   }
 }

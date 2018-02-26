@@ -1,4 +1,4 @@
-import HealthBar from './HealthBar';
+// import HealthBar from './HealthBar';
 import { Weapon } from './Weapon';
 import { Game } from '../index';
 import Board from './Board';
