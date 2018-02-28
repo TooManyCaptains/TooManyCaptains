@@ -1,6 +1,6 @@
 import { CaptainCardID } from '../../common/types';
 
-export interface Captain {
+export interface GameCaptain {
   cardID: CaptainCardID;
   charge: number;
 }

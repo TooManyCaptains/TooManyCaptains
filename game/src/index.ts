@@ -6,7 +6,7 @@ import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
-import { Captain } from './types';
+import { GameCaptain } from './types';
 import { Packet } from '../../common/types';
 import PlayerShip from './entities/PlayerShip';
 
@@ -55,7 +55,7 @@ function getConfig() {
 export class Game extends Phaser.Game {
   public params: Config;
   public server: GameServer;
-  public captains: Captain[] = [];
+  public captains: GameCaptain[] = [];
   public score: number = 0;
   public player: PlayerShip;
 
@@ -108,10 +108,9 @@ export class Game extends Phaser.Game {
         }
       } else if (packet.kind === 'fire') {
         if (this.state.current === 'Before' && packet.state === 'released') {
-          // if (there's at least 2 captains in the game) {
-          //   this.state.start('Main');
-          // }
-          this.state.start('Main');
+          if (this.captains.length >= 2 ) {
+            this.state.start('Main');
+          }
         } else if (
           this.state.current === 'After' &&
           packet.state === 'released'
@@ -121,9 +120,7 @@ export class Game extends Phaser.Game {
           gameMainState.onFire(packet.state);
         }
       } else if (packet.kind === 'scan') {
-        const captain = this.captains.find(
-          c => c.cardID === packet.cardID,
-        );
+        const captain = this.captains.find(c => c.cardID === packet.cardID);
         if (this.state.current === 'Before') {
           if (!captain && packet.cardID !== 0) {
             this.captains.push({

@@ -1,6 +1,7 @@
 import { Game } from '../index';
 import { baseStyle } from './Styles';
 import { range } from 'lodash';
+import { GameCaptain } from '../types';
 
 class BlinkingButtonLabel extends Phaser.Group {
   constructor(game: Game, x: number, y: number, actionText: string) {
@@ -26,12 +27,21 @@ class BlinkingButtonLabel extends Phaser.Group {
   }
 
   public blink() {
-    this.visible = this.parent.visible && !this.visible;
+    this.alpha = this.alpha === 0 ? 1 : 0;
   }
 }
 
+// This class can create labels that blink at a frequency
+// specified by `blinkDuration`. For a labal that does NOT,
+// set blinkDuration to 0.
 class BlinkingLabel extends Phaser.Group {
-  constructor(game: Game, x: number, y: number, textString: string) {
+  constructor(
+    game: Game,
+    x: number,
+    y: number,
+    textString: string,
+    blinkDuration: number = 1250,
+  ) {
     super(game);
 
     const color = 0x32fc39;
@@ -58,30 +68,35 @@ class BlinkingLabel extends Phaser.Group {
     this.add(box);
 
     // Blinking
-    const blinkDurationMillis = 1250;
-    const blinkTimer = this.game.time.create(true);
-    blinkTimer.loop(blinkDurationMillis, this.blink, this);
-    blinkTimer.start();
+    if (blinkDuration !== 0) {
+      const blinkTimer = this.game.time.create(true);
+      blinkTimer.loop(blinkDuration, this.blink, this);
+      blinkTimer.start();
+    }
   }
 
   public blink() {
-    this.visible = this.parent.visible && !this.visible;
+    this.alpha = this.alpha === 0 ? 1 : 0;
   }
 }
 
 export class StartScreen extends Phaser.Group {
+  public game: Game;
   private cards: Phaser.Sprite[];
+  private addedCaptains: GameCaptain[] = [];
+  private scanCardLabel: BlinkingLabel;
+  private startLabel: BlinkingButtonLabel;
 
   constructor(game: Game) {
     super(game);
 
-    // Title
-    const title = this.create(
-      this.game.world.centerX,
-      this.game.height - 200,
-      'title',
-    );
-    title.anchor.setTo(0.5, 0.5);
+    // // Title
+    // const title = this.create(
+    //   this.game.world.centerX,
+    //   this.game.height - 200,
+    //   'title',
+    // );
+    // title.anchor.setTo(0.5, 0.5);
 
     const paddingBetweenEachCard = 25;
     const numCards = 7;
@@ -100,7 +115,7 @@ export class StartScreen extends Phaser.Group {
       } else {
         card.x = initialX + (card.width + paddingBetweenEachCard) * i;
       }
-      card.y = this.game.world.centerY - 50;
+      card.y = this.game.world.centerY + 100;
       card.anchor.setTo(0, 0.5);
       this.add(card);
       return card;
@@ -110,15 +125,51 @@ export class StartScreen extends Phaser.Group {
       this.cards[i].animations.play('flip');
     };
 
+    const labelTopMargin = 250;
+
     // Label
-    this.add(
-      new BlinkingLabel(
-        game,
-        this.game.world.centerX,
-        150,
-        'SCAN ID CARD TO BOARD SHIP',
-      ),
+    this.scanCardLabel = new BlinkingLabel(
+      game,
+      this.game.world.centerX,
+      labelTopMargin,
+      'SCAN ID CARD TO BOARD SHIP',
+      0,
     );
+
+    this.add(this.scanCardLabel);
+
+    const blinkTimer = this.game.time.create(true);
+    blinkTimer.loop(50, this.checkForNewCaptains, this);
+    blinkTimer.start();
+  }
+
+  private checkForNewCaptains() {
+    if (this.addedCaptains.length !== this.game.captains.length) {
+      this.game.captains.forEach(captain => {
+        if (!this.addedCaptains.includes(captain)) {
+          this.addedCaptains.push(captain);
+          this.onCaptainJoined(captain);
+        }
+      });
+    }
+  }
+
+  private onCaptainJoined(captain: GameCaptain) {
+    this.cards[captain.cardID].animations.play('flip');
+    if (this.addedCaptains.length >= 2) {
+      this.scanCardLabel.destroy();
+      // We need to create the button here so that the blink
+      // time begins when it first added to the group.
+      if (!this.startLabel) {
+        this.startLabel = new BlinkingButtonLabel(
+          this.game,
+          this.game.world.centerX,
+          250,
+          'START',
+        );
+        this.add(this.startLabel);
+      }
+    }
   }
 }
 
