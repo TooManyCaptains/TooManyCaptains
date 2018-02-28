@@ -1,5 +1,6 @@
 ## Too Many Captains
 
+```
   _______            __  __                      _____            _        _
  |__   __|          |  \/  |                    / ____|          | |      (_)
     | | ___   ___   | \  / | __ _ _ __  _   _  | |     __ _ _ __ | |_ __ _ _ _ __  ___
@@ -8,7 +9,7 @@
     |_|\___/ \___/  |_|  |_|\__,_|_| |_|\__, |  \_____\__,_| .__/ \__\__,_|_|_| |_|___/
                                          __/ |             | |
                                         |___/              |_|
-
+```
 ### How do I set this up?
 
 Too Many Captains makes extensive use of Docker! If you're not familiar, it's a really cool technology that lets you
