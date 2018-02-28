@@ -38,10 +38,10 @@ export interface ScanPacket extends BasePacket {
   cardID: CardID;
 }
 
-export interface Captain {
-  name: string;
-  cardID: CaptainCardID;
-}
+// export interface Captain {
+//   name: string;
+//   cardID: CaptainCardID;
+// }
 
 export type Packet =
   | MovePacket
