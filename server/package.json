@@ -23,11 +23,6 @@
     "build": "tsc",
     "start": "npm run serve",
     "serve": "node dist/index.js",
-    "watch": "nodemon -e ts --exec 'npm run start'",
-    "docker-build": "npm run build && docker build -t toomanycaptains/server .",
-    "docker-run": "ssh crew@starship.local 'docker stop server ||:&& docker rm server ||:&& docker run -dit --restart unless-stopped --net=host --name server toomanycaptains/server'",
-    "docker-upload": "docker save toomanycaptains/server | ssh crew@starship.local 'docker load'",
-    "upload": "npm run docker-build && npm run docker-upload && npm run docker-run",
-    "logs": "ssh crew@starship.local 'docker logs server -f'"
+    "watch": "nodemon -e ts --exec 'npm run start'"
   }
 }

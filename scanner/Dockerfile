@@ -4,7 +4,7 @@ FROM node:9-alpine
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package.json package-lock.lock ./
+COPY package.json package-lock.json ./
 
 RUN apk add --no-cache make linux-headers eudev-dev gcc g++ python && \
   npm install --production && \
