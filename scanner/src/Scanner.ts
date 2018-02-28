@@ -5,14 +5,15 @@ const VENDOR_ID = 65535;
 
 const portToSubsystem: { [port: number]: Subsystem } = {
   3: 'weapons',
-  4: 'shields',
+  2: 'shields',
   1: 'thrusters',
-  2: 'repairs',
+  4: 'repairs',
 };
 
 const sequenceToCardId: { [sequence: number]: CardID } = {
   17728914: 1,
   1031061722: 2,
+  138262410: 3,
 };
 
 function deviceIsCardScanner(device: Device): boolean {
@@ -62,7 +63,9 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
     } else if (scanCode === 0x28) {
       // If the enter key was pressed
       const sequence = Number(scanCodes.join(''));
+      console.log(`card with sequence: ${sequence}`);
       const cardID = sequenceToCardId[sequence];
+      console.log(`card ID: ${cardID}`);
       sendPacket({
         kind: 'scan',
         subsystem,

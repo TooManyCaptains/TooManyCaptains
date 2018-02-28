@@ -2,7 +2,7 @@ import * as io from 'socket.io-client';
 import Scanner from './Scanner';
 import { Packet } from '../../common/types';
 
-const URL = 'http://localhost:9000';
+const URL = 'http://starship:9000';
 
 const socket = io(URL);
 
@@ -11,7 +11,7 @@ socket.on('connect', () => {
 });
 
 socket.on('packet', (packet: Packet) => {
-  console.log(`[Socket] received packet: ${JSON.stringify(packet)}`);
+  // no-op
 });
 
 socket.on('disconnect', () => {
@@ -20,7 +20,6 @@ socket.on('disconnect', () => {
 
 function sendPacket(packet: Packet) {
   socket.emit('packet', packet);
-  console.log(`[Socket] sent packet: ${JSON.stringify(packet)}`);
 }
 
 console.log(`Attempting to connect to: ${URL}`);
