@@ -1,9 +1,10 @@
 import Board from '../entities/Board';
 import HUD from '../interface/HUD';
-import { GameState, Color, ButtonState } from '../../../common/types';
+import { GameState, Color, ButtonState, Subsystem } from '../../../common/types';
 import PlayerShip from '../entities/PlayerShip';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
+import { GameCaptain } from '../types';
 
 export default class Main extends Phaser.State {
   public game: Game;
@@ -15,6 +16,7 @@ export default class Main extends Phaser.State {
   private captainRechargeTimerFreq = 50;
   private doors: Doors;
   private board: Board;
+  private captainScanSuccess: Phaser.Sound;
 
   public preload() {
     // this.load.spritesheet(
@@ -108,28 +110,28 @@ export default class Main extends Phaser.State {
       'assets/sprites/ship_220x100.png',
       220,
       100,
-    );  
+    );
 
     this.load.spritesheet(
       'ship-weapon-light-top',
       'assets/sprites/ship_weapon_light_1_220x100.png',
       220,
       100,
-    ); 
+    );
 
     this.load.spritesheet(
       'ship-weapon-light-middle',
       'assets/sprites/ship_weapon_light_2_220x100.png',
       220,
       100,
-    ); 
+    );
 
     this.load.spritesheet(
       'ship-weapon-light-bottom',
       'assets/sprites/ship_weapon_light_3_220x100.png',
       220,
       100,
-    ); 
+    );
 
     this.load.spritesheet(
       'ship-shield',
@@ -233,6 +235,8 @@ export default class Main extends Phaser.State {
       this.player.health = health;
     }
 
+    this.captainScanSuccess = this.game.add.audio('scan_success');
+
     this.startGame();
   }
 
@@ -277,6 +281,27 @@ export default class Main extends Phaser.State {
     } else if (state === 'released') {
       this.player.stopChargingWeaponAndFireIfPossible();
     }
+  }
+
+  public onCaptainScan(captain: GameCaptain, subsystem: Subsystem) {
+    if (captain.charge !== 1) {
+      return;
+      // TODO: play error sound
+    }
+
+    // Play success sound
+    this.captainScanSuccess.play();
+
+    // Drain charge
+    captain.charge = 0;
+
+    // Update batteries
+    const value = this.player.batteries[subsystem];
+    this.player.batteries[subsystem] = Math.min(value + 7.5, 15);
+
+    // Update shields
+    // XXX: Why do we need to do this?
+    this.onShieldsChanged(this.player.shieldColors);
   }
 
   public update() {

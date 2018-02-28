@@ -134,12 +134,7 @@ export class Game extends Phaser.Game {
           if (!captain) {
             throw Error('captain not in game!');
           }
-          if (captain.charge === 1) {
-            captain.charge = 0;
-            const value = this.player.batteries[packet.subsystem];
-            this.player.batteries[packet.subsystem] = Math.min(value + 7.5, 15);
-          }
-          gameMainState.onShieldsChanged(this.player.shieldColors);
+          gameMainState.onCaptainScan(captain, packet.subsystem);
         }
       }
     });

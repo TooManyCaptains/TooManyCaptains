@@ -75,6 +75,7 @@ const AssetManifest = {
     'damaged.wav',
     'collide.wav',
     'gameover.wav',
+    'scan_success.wav',
   ],
   fonts: {
     custom: {

@@ -86,6 +86,7 @@ export class StartScreen extends Phaser.Group {
   private addedCaptains: GameCaptain[] = [];
   private scanCardLabel: BlinkingLabel;
   private startLabel: BlinkingButtonLabel;
+  private captainJoinedFx: Phaser.Sound;
 
   constructor(game: Game) {
     super(game);
@@ -125,8 +126,9 @@ export class StartScreen extends Phaser.Group {
       this.cards[i].animations.play('flip');
     };
 
-    const labelTopMargin = 250;
+    this.captainJoinedFx = this.game.add.audio('scan_success');
 
+    const labelTopMargin = 250;
     // Label
     this.scanCardLabel = new BlinkingLabel(
       game,
@@ -155,7 +157,14 @@ export class StartScreen extends Phaser.Group {
   }
 
   private onCaptainJoined(captain: GameCaptain) {
+
+    // Play a sound
+    this.captainJoinedFx.play();
+
+    // Flip over the captain's card
     this.cards[captain.cardID].animations.play('flip');
+
+    // If more than 2 captains, show instructions to start game
     if (this.addedCaptains.length >= 2) {
       this.scanCardLabel.destroy();
       // We need to create the button here so that the blink
