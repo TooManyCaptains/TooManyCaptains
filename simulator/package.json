@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react-router-dom": "^4.2.4",
     "lodash": "^4.17.4",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
     "react-scripts-ts": "2.13.0",
     "react-spinkit": "^3.0.0",
     "socket.io-client": "^2.0.4",

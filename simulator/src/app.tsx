@@ -1,6 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
 import Spinner from 'react-spinkit';
+import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
 import Scanner from './scanner';
 import Cheats from './cheats';
 import Controller from './controller';
@@ -42,33 +43,36 @@ class App extends React.Component<{}, AppState> {
       );
     }
 
-    let component = null;
-    if (this.state.activeTab === 'scanner') {
-      component = <Scanner socket={this.state.socket} />;
-    } else if (this.state.activeTab === 'controller') {
-      component = <Controller socket={this.state.socket} />;
-    } else {
-      component = <Cheats socket={this.state.socket} />;
-    }
-
-    const tabs: Tab[] = ['controller', 'scanner', 'cheats'];
-
     return (
-      <div className="App">
-        <div className="ModeTabs">
-          {tabs.map(tab => (
-            <div
-              className={`ModeTab ${
-                this.state.activeTab === tab ? 'active' : ''
-              }`}
-              onClick={() => this.setState({ activeTab: tab })}
-            >
-              {tab}
-            </div>
-          ))}
+      <Router>
+        <div className="App">
+          <div className="ModeTabs">
+            <NavLink to="/" exact className="ModeTab" activeClassName="active">
+              Home
+            </NavLink>
+            <NavLink to="/scanner" className="ModeTab" activeClassName="active">
+              Scanner
+            </NavLink>
+            <NavLink to="/cheats" className="ModeTab" activeClassName="active">
+              Cheats
+            </NavLink>
+          </div>
+
+          <Route
+            exact
+            path="/"
+            render={() => <Controller socket={this.state.socket} />}
+          />
+          <Route
+            path="/scanner"
+            render={() => <Scanner socket={this.state.socket} />}
+          />
+          <Route
+            path="/cheats"
+            render={() => <Cheats socket={this.state.socket} />}
+          />
         </div>
-        {component}
-      </div>
+      </Router>
     );
   }
 }

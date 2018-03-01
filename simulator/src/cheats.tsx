@@ -24,12 +24,20 @@ export default class Cheats extends React.Component<CheatsProps, {}> {
         >
           👾 Spawn Enemy
         </div>
-        <div
+        {/* <div
           className="Cheat"
           onClick={() => this.sendCheat({ code: 'fast_enemies' })}
         >
           🏃🏻‍♂️ Fast Enemies
         </div>
+        <div
+          className="Cheat"
+          onClick={() =>
+            this.sendCheat({ code: 'force_state', state: 'wait_for_players' })
+          }
+        >
+          ✨ Force state
+        </div> */}
       </div>
     );
   }
