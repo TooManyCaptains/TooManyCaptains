@@ -48,13 +48,13 @@ class App extends React.Component<{}, AppState> {
         <div className="App">
           <div className="ModeTabs">
             <NavLink to="/" exact className="ModeTab" activeClassName="active">
-              Home
+              🕹 Controller
             </NavLink>
             <NavLink to="/scanner" className="ModeTab" activeClassName="active">
-              Scanner
+              🖐🏻 Scanner
             </NavLink>
             <NavLink to="/cheats" className="ModeTab" activeClassName="active">
-              Cheats
+              😵 Cheats
             </NavLink>
           </div>
 
