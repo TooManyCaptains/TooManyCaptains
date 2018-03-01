@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run serve",
-    "serve": "node dist/index.js",
+    "serve": "node dist/server/src/index.js",
     "watch": "nodemon -e ts --exec 'npm run start'"
   }
 }

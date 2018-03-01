@@ -1,10 +1,12 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as socketIo from 'socket.io';
+import { GameState, GameStatePacket } from '../../common/types';
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+let gameState: GameState = 'wait_for_players';
 
 // set CORS headers
 app.use((req, res, next) => {
@@ -19,8 +21,17 @@ app.use((req, res, next) => {
 io.on('connection', socket => {
   console.log('⚡️  connected');
 
+  console.log('emitting gamestate packet');
+  socket.emit('packet', {
+    kind: 'gamestate',
+    state: gameState,
+  } as GameStatePacket);
+
   // Rebroadcast all packets
   socket.on('packet', packet => {
+    if (packet.kind === 'gamestate') {
+      gameState = packet.state;
+    }
     socket.broadcast.emit('packet', packet);
     console.log(`relaying packet: ${JSON.stringify(packet)}`);
   });
