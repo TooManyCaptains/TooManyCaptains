@@ -29,7 +29,6 @@ class WeaponsPanel extends types_1.Panel {
                 });
             });
         });
-        console.log(this.lights);
     }
 }
 class ThrustersPanel extends types_1.Panel {
@@ -108,7 +107,6 @@ class ShieldsPanel extends types_1.Panel {
                 });
             });
         });
-        console.log(this.lights);
     }
 }
 const panels = [
