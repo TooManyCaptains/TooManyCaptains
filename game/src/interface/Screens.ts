@@ -20,7 +20,7 @@ class BlinkingButtonLabel extends Phaser.Group {
     this.add(button);
 
     // Blinking
-    const blinkDurationMillis = 1500;
+    const blinkDurationMillis = 1000;
     const blinkTimer = this.game.time.create(true);
     blinkTimer.loop(blinkDurationMillis, this.blink, this);
     blinkTimer.start();
