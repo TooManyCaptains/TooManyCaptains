@@ -16,6 +16,8 @@ import { GameState, Packet } from '../../common/types';
       // Update local copy of game state if different
       if (packet.state !== gameState) {
         gameState = packet.state;
+        // Send current wire configurations
+
         console.info('new game state: ', gameState);
         updatePanelLights();
       }

@@ -32,7 +32,7 @@ services:
       - "/dev/shm:/dev/shm"
     devices:
       - "/dev/snd:/dev/snd"
-    command: "--kiosk --incognito --alsa-output-device=hw:0,3 --no-first-run 'http://localhost?local'"
+    command: "--kiosk --incognito --alsa-output-device=hw:0,3 --no-first-run 'http://localhost?local&skip'"
   game:
     depends_on:
       - "server"

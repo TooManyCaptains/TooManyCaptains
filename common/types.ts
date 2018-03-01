@@ -1,9 +1,17 @@
+import { Cheat } from './cheats';
+
 export type Color = 'blue' | 'red' | 'yellow';
+
 export type Subsystem = 'weapons' | 'shields' | 'thrusters' | 'repairs';
+
 export type GameState = 'wait_for_players' | 'in_game' | 'game_over';
+
 export type ButtonState = 'pressed' | 'released';
+
 export type EngineerCardID = 0;
+
 export type CaptainCardID = 1 | 2 | 3 | 4 | 5 | 6;
+
 export type CardID = EngineerCardID | CaptainCardID;
 
 interface BasePacket {
@@ -38,14 +46,15 @@ export interface ScanPacket extends BasePacket {
   cardID: CardID;
 }
 
-// export interface Captain {
-//   name: string;
-//   cardID: CaptainCardID;
-// }
+export interface CheatPacket extends BasePacket {
+  readonly kind: 'cheat';
+  cheat: Cheat;
+}
 
 export type Packet =
   | MovePacket
   | FirePacket
   | WiringPacket
   | ScanPacket
+  | CheatPacket
   | GameStatePacket;

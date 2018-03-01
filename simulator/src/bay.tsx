@@ -10,6 +10,7 @@ interface PortComponentProps {
   onWireUnplugged: (port: Port) => void;
 }
 
+// tslint:disable-next-line:variable-name
 const PortComponent: React.SFC<PortComponentProps> = props => {
   function onWirePluggedIn(port: Port, wire: Wire) {
     // Make sure wire isn't already plugged in

@@ -7,7 +7,7 @@ import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
 import { GameCaptain } from './types';
-import { Packet } from '../../common/types';
+import { Packet, GameState } from '../../common/types';
 import PlayerShip from './entities/PlayerShip';
 
 import './index.css';
@@ -59,6 +59,8 @@ export class Game extends Phaser.Game {
   public score: number = 0;
   public player: PlayerShip;
 
+  private _gameState: GameState = 'wait_for_players';
+
   constructor() {
     super(1920, 1080, Phaser.CANVAS, 'surface');
     this.state.add('Boot', Boot, false);
@@ -77,6 +79,15 @@ export class Game extends Phaser.Game {
     if (this.params.debug) {
       this.setupPerformanceStatistics();
     }
+  }
+
+  get gameState(): GameState {
+    return this._gameState;
+  }
+
+  set gameState(gameState: GameState) {
+    this._gameState = gameState;
+    this.server.notifyGameState(gameState);
   }
 
   private bindServerEvents() {
@@ -108,7 +119,7 @@ export class Game extends Phaser.Game {
         }
       } else if (packet.kind === 'fire') {
         if (this.state.current === 'Before' && packet.state === 'released') {
-          if (this.captains.length >= 2 ) {
+          if (this.captains.length >= 2) {
             this.state.start('Main');
           }
         } else if (
@@ -135,6 +146,17 @@ export class Game extends Phaser.Game {
             throw Error('captain not in game!');
           }
           gameMainState.onCaptainScan(captain, packet.subsystem);
+        }
+      } else if (packet.kind === 'cheat') {
+        const cheat = packet.cheat;
+        if (cheat.code === 'kill_player') {
+          this.player.kill();
+        } else if (cheat.code === 'spawn_enemy') {
+          gameMainState.board.spawnEnemy();
+        } else if (cheat.code === 'force_state') {
+          this.gameState = cheat.state;
+        } else if (cheat.code === 'fast_enemies') {
+          // TODO
         }
       }
     });
