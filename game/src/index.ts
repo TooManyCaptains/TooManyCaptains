@@ -6,8 +6,8 @@ import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
-import { Captain } from './types';
-import { Packet } from '../../common/types';
+import { GameCaptain } from './types';
+import { Packet, GameState } from '../../common/types';
 import PlayerShip from './entities/PlayerShip';
 
 import './index.css';
@@ -45,7 +45,7 @@ function getConfig() {
     serverURL: 'http://server.toomanycaptains.com',
   };
   if (config.local) {
-    config.serverURL = 'http://localhost:9000';
+    config.serverURL = 'http://starship:9000';
   } else if (_.has(urlParams, 'serverURL')) {
     config.serverURL = urlParams.serverURL;
   }
@@ -55,9 +55,11 @@ function getConfig() {
 export class Game extends Phaser.Game {
   public params: Config;
   public server: GameServer;
-  public captains: Captain[] = [];
+  public captains: GameCaptain[] = [];
   public score: number = 0;
   public player: PlayerShip;
+
+  private _gameState: GameState = 'wait_for_players';
 
   constructor() {
     super(1920, 1080, Phaser.CANVAS, 'surface');
@@ -77,6 +79,15 @@ export class Game extends Phaser.Game {
     if (this.params.debug) {
       this.setupPerformanceStatistics();
     }
+  }
+
+  get gameState(): GameState {
+    return this._gameState;
+  }
+
+  set gameState(gameState: GameState) {
+    this._gameState = gameState;
+    this.server.notifyGameState(gameState);
   }
 
   private bindServerEvents() {
@@ -108,10 +119,9 @@ export class Game extends Phaser.Game {
         }
       } else if (packet.kind === 'fire') {
         if (this.state.current === 'Before' && packet.state === 'released') {
-          // if (there's at least 2 captains in the game) {
-          //   this.state.start('Main');
-          // }
-          this.state.start('Main');
+          if (this.captains.length >= 2) {
+            this.state.start('Main');
+          }
         } else if (
           this.state.current === 'After' &&
           packet.state === 'released'
@@ -121,9 +131,7 @@ export class Game extends Phaser.Game {
           gameMainState.onFire(packet.state);
         }
       } else if (packet.kind === 'scan') {
-        const captain = this.captains.find(
-          c => c.cardID === packet.cardID,
-        );
+        const captain = this.captains.find(c => c.cardID === packet.cardID);
         if (this.state.current === 'Before') {
           if (!captain && packet.cardID !== 0) {
             this.captains.push({
@@ -137,12 +145,18 @@ export class Game extends Phaser.Game {
           if (!captain) {
             throw Error('captain not in game!');
           }
-          if (captain.charge === 1) {
-            captain.charge = 0;
-            const value = this.player.batteries[packet.subsystem];
-            this.player.batteries[packet.subsystem] = Math.min(value + 7.5, 15);
-          }
-          gameMainState.onShieldsChanged(this.player.shieldColors);
+          gameMainState.onCaptainScan(captain, packet.subsystem);
+        }
+      } else if (packet.kind === 'cheat') {
+        const cheat = packet.cheat;
+        if (cheat.code === 'kill_player') {
+          this.player.kill();
+        } else if (cheat.code === 'spawn_enemy') {
+          gameMainState.board.spawnEnemy();
+        } else if (cheat.code === 'force_state') {
+          this.gameState = cheat.state;
+        } else if (cheat.code === 'fast_enemies') {
+          // TODO
         }
       }
     });

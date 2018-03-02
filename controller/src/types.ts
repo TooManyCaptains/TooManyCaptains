@@ -35,7 +35,7 @@ export abstract class Panel {
 }
 
 export interface ColorPosition {
-  position: number | null;
+  position: number | null; // relative position within a given panel (e.g. 1, 2, 3)
   color: WireColor;
 }
 

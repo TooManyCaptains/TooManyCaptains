@@ -1,7 +1,7 @@
 import Panel from './Panel';
 import { Game } from '../index';
 import { Subsystem, Color } from '../../../common/types';
-import { Captain } from '../types';
+import { GameCaptain } from '../types';
 import { baseStyle } from './Styles';
 import manifest from '../../../common/manifest';
 
@@ -326,10 +326,10 @@ class RepairsPanel extends Panel {
 class CaptainEntry extends Phaser.Group {
   public game: Game;
   private healthBar: HealthBar;
-  private captain: Captain;
+  private captain: GameCaptain;
   private charge = 0;
 
-  constructor(game: Game, captain: Captain, index: number) {
+  constructor(game: Game, captain: GameCaptain, index: number) {
     super(game, undefined, 'CaptainEntry');
 
     this.captain = captain;

@@ -20,10 +20,26 @@ body,
   flex-direction: column;
 }
 
-.App-toggleMode {
-  color: black;
+.ModeTabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.ModeTab {
   padding: 10px;
-  background-color: white;
+  background-color: black;
+  color: white;
   cursor: pointer;
-  border-radius: 0 0 5px 5px;
+  border-radius: 0 0 7.5px 7.5px;
+  margin: 0 7.5px 0 7.5px;
+  border: 2px solid white;
+  border-top: 0;
+  text-decoration: none !important;
+}
+
+.ModeTab.active {
+  color: black;
+  background-color: white;
 }

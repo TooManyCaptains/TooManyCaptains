@@ -181,8 +181,8 @@
 .Move {
   width: 40px;
   height: 40px;
-  background-color: white;
-  color: black;
+  background-color: black;
+  color: white;
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -191,10 +191,10 @@
   margin: 7px;
   cursor: pointer;
   border: 3px solid white;
-  select: none;
+  user-select: none;
 }
 
 .Move:active {
-  background-color: black;
-  color: white;
+  background-color: white;
+  color: black;
 }

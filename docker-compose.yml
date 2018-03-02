@@ -1,0 +1,46 @@
+version: '3'
+services:
+  server:
+    build: server
+    image: toomanycaptains/server
+    network_mode: host
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+  scanner:
+    depends_on:
+      - "server"
+    build: scanner
+    image: toomanycaptains/scanner
+    network_mode: host
+    restart: unless-stopped
+    privileged: true # Need for libusb access
+    volumes:
+      - "/dev:/dev" # Needed for USB hotplugging
+  kiosk:
+    depends_on:
+      - "server"
+      - "game"
+      - "scanner"
+    build: kiosk
+    image: toomanycaptains/kiosk
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      DISPLAY: ":0" # X display to use
+    privileged: true # Needed for Chrome to work. Can use profiles instead, but this is easier.
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix" # Need for X forwarding
+      - "/dev/shm:/dev/shm" # Need for X forwarding
+    devices:
+      - "/dev/snd:/dev/snd" # Needed for sound
+    command: "--kiosk --incognito --alsa-output-device=hw:0,3 --no-first-run 'http://localhost?local'"
+  game:
+    depends_on:
+      - "server"
+    build: game
+    image: toomanycaptains/game
+    network_mode: host
+    restart: unless-stopped
+    ports:
+      - "80:80"

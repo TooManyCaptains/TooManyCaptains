@@ -1,20 +1,21 @@
 import Board from '../entities/Board';
 import HUD from '../interface/HUD';
-import { GameState, Color, ButtonState } from '../../../common/types';
+import { Color, ButtonState, Subsystem } from '../../../common/types';
 import PlayerShip from '../entities/PlayerShip';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
+import { GameCaptain } from '../types';
 
 export default class Main extends Phaser.State {
   public game: Game;
+  public board: Board;
 
   private recentlyEnded = false;
-  private gameState: GameState = 'wait_for_players';
   private player: PlayerShip;
   private captainRechargePerSecond = 0.1;
   private captainRechargeTimerFreq = 50;
   private doors: Doors;
-  private board: Board;
+  private captainScanSuccess: Phaser.Sound;
 
   public preload() {
     // this.load.spritesheet(
@@ -87,18 +88,13 @@ export default class Main extends Phaser.State {
     );
     this.doors = new Doors(this.game);
 
-    this.load.spritesheet(
-      'lock',
-      'assets/sprites/lock145x155.png',
-      145,
-      155
-    );
+    this.load.spritesheet('lock', 'assets/sprites/lock145x155.png', 145, 155);
 
     this.load.spritesheet(
       'id_card_0',
       'assets/sprites/id_card_0_240x600.png',
       240,
-      600
+      600,
     );
 
     // New Sprites (Feb.24)
@@ -108,28 +104,28 @@ export default class Main extends Phaser.State {
       'assets/sprites/ship_220x100.png',
       220,
       100,
-    );  
+    );
 
     this.load.spritesheet(
       'ship-weapon-light-top',
       'assets/sprites/ship_weapon_light_1_220x100.png',
       220,
       100,
-    ); 
+    );
 
     this.load.spritesheet(
       'ship-weapon-light-middle',
       'assets/sprites/ship_weapon_light_2_220x100.png',
       220,
       100,
-    ); 
+    );
 
     this.load.spritesheet(
       'ship-weapon-light-bottom',
       'assets/sprites/ship_weapon_light_3_220x100.png',
       220,
       100,
-    ); 
+    );
 
     this.load.spritesheet(
       'ship-shield',
@@ -158,15 +154,7 @@ export default class Main extends Phaser.State {
       160,
       160,
     );
-
-
-
-
   }
-
-
-
-
 
   public create() {
     // Background
@@ -218,20 +206,26 @@ export default class Main extends Phaser.State {
       .onDown.add(() => this.player.kill(), this);
 
     this.game.input.keyboard
-    .addKey(Phaser.Keyboard.D)
-    .onDown.add(() => this.player.damage(5), this);
+      .addKey(Phaser.Keyboard.D)
+      .onDown.add(() => this.player.damage(5), this);
 
     this.game.input.keyboard
-    .addKey(Phaser.Keyboard.S)
-    .onDown.add(() => this.game.captains = this.game.captains.map(captain => ({...captain, charge: 0}), this));
-
-    this.game.server.notifyGameState(this.gameState);
+      .addKey(Phaser.Keyboard.S)
+      .onDown.add(
+        () =>
+          (this.game.captains = this.game.captains.map(
+            captain => ({ ...captain, charge: 0 }),
+            this,
+          )),
+      );
 
     if (this.game.params.invulnerable) {
       const health = 100 * 1000;
       this.player.maxHealth = health;
       this.player.health = health;
     }
+
+    this.captainScanSuccess = this.game.add.audio('scan_success');
 
     this.startGame();
   }
@@ -281,11 +275,32 @@ export default class Main extends Phaser.State {
     }
   }
 
+  public onCaptainScan(captain: GameCaptain, subsystem: Subsystem) {
+    if (captain.charge !== 1) {
+      return;
+      // TODO: play error sound
+    }
+
+    // Play success sound
+    this.captainScanSuccess.play();
+
+    // Drain charge
+    captain.charge = 0;
+
+    // Update batteries
+    const value = this.player.batteries[subsystem];
+    this.player.batteries[subsystem] = Math.min(value + 7.5, 15);
+
+    // Update shields
+    // XXX: Why do we need to do this?
+    this.onShieldsChanged(this.player.shieldColors);
+  }
+
   public update() {
     const isGameEnding = !this.player.alive;
 
     // Did the game just end now (i.e. it was previously not ended)?
-    if (isGameEnding && this.gameState === 'in_game') {
+    if (isGameEnding && this.game.gameState === 'in_game') {
       this.endGame();
     }
   }
@@ -302,14 +317,12 @@ export default class Main extends Phaser.State {
   private startGame() {
     this.game.world.bringToTop(this.doors);
     this.doors.open(() => {
-      this.gameState = 'in_game';
-      this.game.server.notifyGameState(this.gameState);
+      this.game.gameState = 'in_game';
     });
   }
 
   private endGame() {
-    this.gameState = 'game_over';
-    this.game.server.notifyGameState(this.gameState);
+    this.game.gameState = 'game_over';
     this.recentlyEnded = true;
     this.game.world.bringToTop(this.doors);
     this.doors.close(() => {

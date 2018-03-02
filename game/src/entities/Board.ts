@@ -108,7 +108,9 @@ export default class Board extends Phaser.Group {
     const colors = 'RYB'.split('');
     const allEnemyTypes = _.flatten(colors.map(a => colors.map(b => a + b)));
     const randomEnemyType: string = _.sample(allEnemyTypes)!;
-    this.enemies.add(new Enemy(this.game, x, y, randomEnemyType[0], randomEnemyType[1]));
+    this.enemies.add(
+      new Enemy(this.game, x, y, randomEnemyType[0], randomEnemyType[1]),
+    );
   }
 
   public spawnAsteroid() {
@@ -117,14 +119,6 @@ export default class Board extends Phaser.Group {
     // Should be based on the asteroid's intrinsic size.
     const y = (this.maxY - 100) * Math.random() + 50;
     this.asteroids.add(new Asteroid(this.game, x, y));
-  }
-
-  private expolosion(x: number, y: number, scale: number) {
-    const explosion = this.game.add.sprite(x, y, 'explosion-yellow');
-    explosion.scale.setTo(scale, scale);
-    explosion.anchor.setTo(0.75, 0.5);
-    explosion.animations.add('explosion');
-    explosion.play('explosion', 30, false, true);
   }
 
   public update() {
@@ -226,6 +220,14 @@ export default class Board extends Phaser.Group {
         this.collideFx.play();
       },
     );
+  }
+
+  private expolosion(x: number, y: number, scale: number) {
+    const explosion = this.game.add.sprite(x, y, 'explosion-yellow');
+    explosion.scale.setTo(scale, scale);
+    explosion.anchor.setTo(0.75, 0.5);
+    explosion.animations.add('explosion');
+    explosion.play('explosion', 30, false, true);
   }
 
   private onScoreTimer() {

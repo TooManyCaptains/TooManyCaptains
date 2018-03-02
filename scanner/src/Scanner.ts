@@ -1,18 +1,19 @@
 import { Device, getDeviceList, on as onUsb, InEndpoint } from 'usb';
 import { Subsystem, ScanPacket, CardID } from '../../common/types';
 
-const VENDOR_ID = 65535;
+const VENDOR_ID = 65535; // 2^16 - 1. Lol. Very lazy of them.
 
 const portToSubsystem: { [port: number]: Subsystem } = {
   3: 'weapons',
-  4: 'shields',
-  1: 'thrusters',
-  2: 'repairs',
+  4: 'thrusters',
+  1: 'repairs',
+  2: 'shields',
 };
 
 const sequenceToCardId: { [sequence: number]: CardID } = {
   17728914: 1,
   1031061722: 2,
+  138262410: 3,
 };
 
 function deviceIsCardScanner(device: Device): boolean {
@@ -33,7 +34,9 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
   device.open();
   const iface = device.interfaces[0];
 
-  // this line is because the RFID reader is recognized as a keyboard when plugged
+  // The RFID reader is recognized as a keyboard when plugged
+  // in. So we want to tell the kernel to stop treating it as such, and
+  // let us have full control.
   if (iface.isKernelDriverActive()) {
     iface.detachKernelDriver();
   }
@@ -62,7 +65,9 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
     } else if (scanCode === 0x28) {
       // If the enter key was pressed
       const sequence = Number(scanCodes.join(''));
+      console.log(`card with sequence: ${sequence}`);
       const cardID = sequenceToCardId[sequence];
+      console.log(`card ID: ${cardID}`);
       sendPacket({
         kind: 'scan',
         subsystem,
