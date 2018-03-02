@@ -193,32 +193,58 @@ export default class Main extends Phaser.State {
     );
     enemyTimer.start();
 
-    // Keyboard shortcuts (for debugging)
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.E)
-      .onDown.add(() => this.board.spawnEnemy(), this);
+    if (this.game.params.debug) {
+      // Keyboard shortcuts (for debugging)
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.E)
+        .onDown.add(() => this.board.spawnEnemy(), this);
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.A)
-      .onDown.add(() => this.board.spawnAsteroid(), this);
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.A)
+        .onDown.add(() => this.board.spawnAsteroid(), this);
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.K)
-      .onDown.add(() => this.player.kill(), this);
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.T)
+        .onDown.add(() => this.player.setThrustersLevel(2), this);
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.D)
-      .onDown.add(() => this.player.damage(5), this);
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.UP)
+        .onDown.add(() => this.player.startMovingUp(), this);
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.S)
-      .onDown.add(
-        () =>
-          (this.game.captains = this.game.captains.map(
-            captain => ({ ...captain, charge: 0 }),
-            this,
-          )),
-      );
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.UP)
+        .onUp.add(() => this.player.stopMoving(), this);
+
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.DOWN)
+        .onUp.add(() => this.player.stopMoving(), this);
+
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.DOWN)
+        .onDown.add(() => this.player.startMovingDown(), this);
+
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.K)
+        .onDown.add(() => this.player.kill(), this);
+
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.D)
+        .onDown.add(() => this.player.damage(5), this);
+
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.SPACEBAR)
+        .onDown.add(() => this.player.fireWeapon(), this);
+
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.S)
+        .onDown.add(
+          () =>
+            (this.game.captains = this.game.captains.map(
+              captain => ({ ...captain, charge: 0 }),
+              this,
+            )),
+        );
+    }
 
     if (this.game.params.invulnerable) {
       const health = 100 * 1000;

@@ -4,6 +4,7 @@ import { Game } from '../index';
 import { colorNameToLetter } from '../utils';
 import { Subsystem, ColorPosition, Color } from '../../../common/types';
 import { range, mapValues } from 'lodash';
+import Board from './Board';
 
 export default class PlayerShip extends Phaser.Sprite {
   public game: Game;
@@ -48,9 +49,13 @@ export default class PlayerShip extends Phaser.Sprite {
 
   private nextFire = 0;
   private fireRate = 250;
+  private board: Board;
 
-  constructor(game: Game, x: number, y: number) {
-    super(game, x, y, 'player-ship');
+  constructor(board: Board, x: number, y: number) {
+    super(board.game, x, y, 'player-ship');
+    this.board = board;
+    this.board.add(this);
+    const game = board.game;
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
     this.anchor.setTo(0.5, 0.5);
 
@@ -254,7 +259,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
   public setRepairLevel(level: number) {
     this.repairLevel = level;
-    const repairSpeedMap = [0, 0.015, 0.025, 0.065];
+    const repairSpeedMap = [0, 0.01, 0.02, 0.045];
     const repairAnimationSpeedMap = [0, 10, 30, 90];
     this.repairPercentagePerSecond = repairSpeedMap[level];
     if (level > 0) {
@@ -286,6 +291,12 @@ export default class PlayerShip extends Phaser.Sprite {
     this.thurster.y = this.y;
     this.repair.x = this.x;
     this.repair.y = this.y;
+    if (this.y < this.board.minY) {
+      this.y = this.board.minY;
+    }
+    if (this.y > this.board.maxY) {
+      this.y = this.board.maxY;
+    }
   }
 
   public setShields(colors: Color[]) {

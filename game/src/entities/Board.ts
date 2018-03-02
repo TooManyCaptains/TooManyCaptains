@@ -7,6 +7,7 @@ import { Game } from '../index';
 import { Weapon, Bullet } from './Weapon';
 
 export default class Board extends Phaser.Group {
+  minY: number;
   public maxX: number;
   public maxY: number;
   public game: Game;
@@ -76,9 +77,9 @@ export default class Board extends Phaser.Group {
     );
 
     // Boundaries for the playable game area
-    this.maxX = width;
-    // this.maxX = width - this.planet.width / 2 - rectOffsetFromEdge;
-    this.maxY = height * (670 / 1080);
+    this.minY = 90;
+    this.maxX = width - 100;
+    this.maxY = height - 50;
 
     // Score timer
     const scoreTimer = this.game.time.create();
@@ -86,8 +87,7 @@ export default class Board extends Phaser.Group {
     scoreTimer.start();
 
     // Player ship
-    this.player = new PlayerShip(this.game, 125, height / 2);
-    this.add(this.player);
+    this.player = new PlayerShip(this, 125, height / 2);
     this.game.player = this.player;
 
     // Add starting enemies
