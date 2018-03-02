@@ -20,6 +20,13 @@ body,
   flex-direction: column;
 }
 
+.App-GameState {
+  font-family: monospace;
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+}
+
 .Loading {
  display: flex;
  align-items: center;
