@@ -59,16 +59,6 @@ export default class Controller extends React.Component<
           />
         </Bay>
         <Bay
-          name="shields"
-          numPorts={3}
-          wires={this.state.wires}
-          onNewConfiguration={config =>
-            this.onSubsystemWiringChanged('shields', config)
-          }
-          onWireAdded={this.onWireAdded.bind(this)}
-          onWireRemoved={this.onWireRemoved.bind(this)}
-        />
-        <Bay
           name="thrusters"
           numPorts={2}
           wires={this.state.wires}
@@ -105,6 +95,16 @@ export default class Controller extends React.Component<
           wires={this.state.wires}
           onNewConfiguration={config =>
             this.onSubsystemWiringChanged('repairs', config)
+          }
+          onWireAdded={this.onWireAdded.bind(this)}
+          onWireRemoved={this.onWireRemoved.bind(this)}
+        />
+        <Bay
+          name="shields"
+          numPorts={3}
+          wires={this.state.wires}
+          onNewConfiguration={config =>
+            this.onSubsystemWiringChanged('shields', config)
           }
           onWireAdded={this.onWireAdded.bind(this)}
           onWireRemoved={this.onWireRemoved.bind(this)}
