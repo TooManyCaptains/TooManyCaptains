@@ -65,6 +65,11 @@ const AssetManifest = {
     'ring-none.png',
 
     'card.png',
+
+    'mini_map.png',
+    'player_icon.png',
+    'boss_icon.png',
+
   ],
   sprites: [],
   audio: [
