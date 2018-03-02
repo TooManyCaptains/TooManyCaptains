@@ -1,16 +1,12 @@
-<<<<<<< HEAD
-export type Color = 'blue' | 'red' | 'yellow' | 'null';
-=======
 import { Cheat } from './cheats';
 
 export type Color = 'blue' | 'red' | 'yellow';
 
 export interface ColorPosition {
-  position: number; // relative position within a given panel (e.g. 0, 2, 3)
+  position: number; // relative position within a given panel (e.g. 0, 1, 2)
   color: Color;
 }
 
->>>>>>> 598d104af6b0f37ac995891b07140b7269910b3a
 export type Subsystem = 'weapons' | 'shields' | 'thrusters' | 'repairs';
 export type GameState = 'wait_for_players' | 'in_game' | 'game_over';
 export type ButtonState = 'pressed' | 'released';

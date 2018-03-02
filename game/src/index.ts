@@ -7,7 +7,12 @@ import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
 import { GameCaptain } from './types';
-import { Packet, GameState } from '../../common/types';
+import {
+  Packet,
+  GameState,
+  Subsystem,
+  ColorPosition,
+} from '../../common/types';
 import PlayerShip from './entities/PlayerShip';
 
 import './index.css';
@@ -58,6 +63,12 @@ export class Game extends Phaser.Game {
   public captains: GameCaptain[] = [];
   public score: number = 0;
   public player: PlayerShip;
+  public wiringConfigurations: { [S in Subsystem]: ColorPosition[] } = {
+    weapons: [],
+    thrusters: [],
+    repairs: [],
+    shields: [],
+  };
 
   private _gameState: GameState = 'wait_for_players';
 
@@ -101,6 +112,7 @@ export class Game extends Phaser.Game {
 
       if (packet.kind === 'wiring' && this.state.current === 'Main') {
         packet.configurations.map(({ subsystem, colorPositions }) => {
+          this.wiringConfigurations[subsystem] = colorPositions;
           if (subsystem === 'weapons') {
             gameMainState.onWeaponsConfiguration(colorPositions);
           } else if (subsystem === 'shields') {

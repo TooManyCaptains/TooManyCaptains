@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-import { Subsystem, Color } from './../../../common/types';
-=======
-import { Subsystem, Color, ColorPosition } from './../../../common/types';
->>>>>>> 598d104af6b0f37ac995891b07140b7269910b3a
-import { mapValues } from 'lodash';
 import { PlayerWeapon } from './Weapon';
 import HealthBar from './HealthBar';
 import { Game } from '../index';
-
-import { range } from 'lodash';
-
-export function colorNameToLetter(color: Color): string {
-  return color[0].toUpperCase();
-}
+import { colorNameToLetter } from '../utils';
+import { Subsystem, ColorPosition, Color } from '../../../common/types';
+import { range, mapValues } from 'lodash';
 
 export default class PlayerShip extends Phaser.Sprite {
   public game: Game;
@@ -27,7 +18,6 @@ export default class PlayerShip extends Phaser.Sprite {
   public growingBullet: Phaser.Sprite;
   public timeChargingStarted: number;
   public weapon: PlayerWeapon | null;
-  public weaponColors: Color[];
   public healthBar: HealthBar;
   public thrustersLevel: number;
   public batteryDrainTimerFreq: number;
@@ -43,7 +33,6 @@ export default class PlayerShip extends Phaser.Sprite {
   public shieldColors: Color[] = [];
 
   public weapons: Phaser.Group;
-  public weaponColorPositions: ColorPosition[];
 
   public weaponLightTop: Phaser.Sprite;
   public weaponLightMiddle: Phaser.Sprite;
@@ -96,10 +85,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.healthBar = new HealthBar(this);
 
     // Weapons
-    this.weaponColors = [];
     this.weapon = null;
-
-    this.weaponColorPositions = [];
 
     // this.timeChargingStarted = 0;
     // this.growingBullet = this.game.add.sprite(this.x + this.width / 2, this.y);
@@ -196,7 +182,6 @@ export default class PlayerShip extends Phaser.Sprite {
     this.shield.visible = false;
     this.shield.anchor.setTo(0.5, 0.5);
     game.physics.enable(this.shield, Phaser.Physics.ARCADE); // why not this.game.physics ??
-    this.setShields(this.shieldColors);
 
     // 6: Explosion(TOP)
     this.explodsions = new Phaser.Group(game);
@@ -209,11 +194,7 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   public setWeapons(colorPositions: ColorPosition[]) {
-    this.weaponColorPositions = colorPositions;
     // this.stopChargingWeaponAndFireIfPossible();
-    if (colorPositions.length === 0) {
-      this.weapon = null;
-    }
     this.weaponLightTop.visible = false;
     this.weaponLightMiddle.visible = false;
     this.weaponLightBottom.visible = false;
@@ -327,7 +308,7 @@ export default class PlayerShip extends Phaser.Sprite {
     if (this.game.time.time < this.nextFire) {
       return;
     }
-    this.weaponColorPositions.map(({ color, position }) => {
+    this.game.wiringConfigurations.weapons.map(({ color, position }) => {
       if (color === 'blue') {
         this.blueBullets.fire(20, position);
       } else if (color === 'red') {
@@ -336,7 +317,7 @@ export default class PlayerShip extends Phaser.Sprite {
         this.yellowBullets.fire(20, position);
       }
     });
-    if (this.weaponColorPositions.length > 0) {
+    if (this.game.wiringConfigurations.weapons.length > 0) {
       this.shootFx.play();
     }
     this.nextFire = this.game.time.time + this.fireRate;
@@ -389,7 +370,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.batteries = mapValues(this.batteries, charge =>
       Math.max(0, charge - delta),
     );
-    this.setShields(this.shieldColors);
+    // this.setShields(this.shieldColors);
     if (this.batteries.weapons === 0) {
       // this.stopChargingWeaponAndFireIfPossible();
     }

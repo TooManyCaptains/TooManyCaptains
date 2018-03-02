@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // import HealthBar from './HealthBar';
->>>>>>> 598d104af6b0f37ac995891b07140b7269910b3a
 import { Color } from './../../../common/types';
 import { Weapon } from './Weapon';
 import { Game } from '../index';
@@ -32,9 +29,13 @@ export class Enemy extends Phaser.Sprite {
     this.animations.add('move');
     this.animations.play('move', 15, true);
 
-    if (shipType == 'R') this.color = 'red';
-    else if (shipType == 'B') this.color = 'blue';
-    else if (shipType == 'Y') this.color = 'yellow';
+    if (shipType === 'R') {
+      this.color = 'red';
+    } else if (shipType === 'B') {
+      this.color = 'blue';
+    } else if (shipType === 'Y') {
+      this.color = 'yellow';
+    }
 
     this.shipType = shipType;
     this.weaponType = weaponType;

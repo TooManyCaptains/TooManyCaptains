@@ -13,18 +13,14 @@ const LightController_1 = require("./LightController");
     function onPacket(packet) {
         if (packet.kind === 'gamestate') {
             // Update local copy of game state if different
-            if (packet.state !== gameState) {
-                gameState = packet.state;
-                // TODO: Send current wire configurations
-                panelController.resetConnections();
-                console.info('new game state: ', gameState);
-                updatePanelLights();
-            }
+            gameState = packet.state;
+            // TODO: Send current wire configurations
+            panelController.resetConnections();
+            console.info('new game state: ', gameState);
+            updatePanelLights();
         }
     }
     function sendPacket(packet) {
-        console.log(packet);
-        console.log(JSON.stringify(packet, null, 2));
         updatePanelLights();
         client.sendPacket(packet);
     }

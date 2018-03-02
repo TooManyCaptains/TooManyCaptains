@@ -15,7 +15,7 @@ class Battery extends Phaser.Group {
 
     this.icon = this.game.add.sprite(0, 0, 'lock');
     this.icon.animations.add('unlocking', range(19), 30, false);
-    this.icon.animations.add('locking', range(20,39), 30, false);
+    this.icon.animations.add('locking', range(20, 39), 30, false);
     // this.icon.frame = 0;
     // this.icon.animations.play('locking');
 
@@ -39,7 +39,6 @@ class Battery extends Phaser.Group {
   }
 
   set seconds(seconds: number) {
-
     // Giada Removed the Bar
     //
     // const fraction = Math.min(seconds / this.maxSeconds, 1);
@@ -71,7 +70,7 @@ class Battery extends Phaser.Group {
 
     if (rounded === 0 && this.preSecond > 0) {
       this.icon.animations.play('locking');
-    } else if (rounded > 0 && this.preSecond == 0) {
+    } else if (rounded > 0 && this.preSecond === 0) {
       this.icon.animations.play('unlocking');
     }
 
@@ -117,11 +116,9 @@ export default class Panel extends Phaser.Group {
     );
     text.setTextBounds(0, 125, width, 40);
     text.addColor('black', 0);
-
-
   }
 
   public blink(isLow: boolean) {
-    console.log('blink');
+    // console.log('blink');
   }
 }

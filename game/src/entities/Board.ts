@@ -4,7 +4,7 @@ import PlayerShip from './PlayerShip';
 import { Enemy } from '../entities/Enemy';
 import Asteroid from './Asteroid';
 import { Game } from '../index';
-import { PlayerWeapon, Weapon, Bullet } from './Weapon';
+import { Weapon, Bullet } from './Weapon';
 
 export default class Board extends Phaser.Group {
   public maxX: number;
@@ -78,7 +78,7 @@ export default class Board extends Phaser.Group {
     // Boundaries for the playable game area
     this.maxX = width;
     // this.maxX = width - this.planet.width / 2 - rectOffsetFromEdge;
-    this.maxY = height*(670/1080);
+    this.maxY = height * (670 / 1080);
 
     // Score timer
     const scoreTimer = this.game.time.create();
@@ -169,19 +169,21 @@ export default class Board extends Phaser.Group {
 
     // Enemy <-> player bullet collision
 
-    [this.player.redBullets, this.player.blueBullets, this.player.yellowBullets].map(bulletGroup => {
+    [
+      this.player.redBullets,
+      this.player.blueBullets,
+      this.player.yellowBullets,
+    ].map(bulletGroup => {
       this.game.physics.arcade.overlap(
         this.enemies,
         bulletGroup,
         (enemy: Enemy, bullet: Bullet) => {
-          const playerBulletCanHurtEnemy = bullet.color.includes(
-            enemy.color,
-          );
+          const playerBulletCanHurtEnemy = bullet.color.includes(enemy.color);
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
             // enemy.getHurtTint();
             // enemy.damage(bullet.strength);
-            enemy.kill()
+            enemy.kill();
             if (!enemy.alive) {
               enemy.explode();
               this.game.score += 150;
@@ -193,7 +195,6 @@ export default class Board extends Phaser.Group {
         },
       );
     });
-
 
     // Enemy <-> player ship (no shield) collision
     this.game.physics.arcade.overlap(

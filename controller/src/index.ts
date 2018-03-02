@@ -14,27 +14,22 @@ import { GameState, Packet } from '../../common/types';
   function onPacket(packet: Packet) {
     if (packet.kind === 'gamestate') {
       // Update local copy of game state if different
-      if (packet.state !== gameState) {
-        gameState = packet.state;
-        // TODO: Send current wire configurations
-        panelController.resetConnections();
+      gameState = packet.state;
+      // TODO: Send current wire configurations
+      panelController.resetConnections();
 
-        console.info('new game state: ', gameState);
-        updatePanelLights();
-      }
+      console.info('new game state: ', gameState);
+      updatePanelLights();
     }
   }
 
   function sendPacket(packet: Packet) {
-    console.log(packet);
-    console.log(JSON.stringify(packet, null, 2));
     updatePanelLights();
     client.sendPacket(packet);
   }
 
   // Create a client to interact with the server
-  const url =
-    process.env.GANGLIA_SERVER_URL || 'http://starship:9000';
+  const url = process.env.GANGLIA_SERVER_URL || 'http://starship:9000';
   const client = new Client(url, onPacket);
 
   // Create a panel controller to manage plugging and unplugging wires into panels

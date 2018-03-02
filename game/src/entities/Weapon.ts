@@ -1,8 +1,8 @@
 import { Color } from './../../../common/types';
 import { Game } from '../index';
 import PlayerShip from './PlayerShip';
-import { colorNameToLetter } from './PlayerShip';
 import { Enemy } from './Enemy';
+import { colorNameToLetter } from '../utils';
 
 const toDegrees = (radians: number) => radians * 180 / Math.PI;
 

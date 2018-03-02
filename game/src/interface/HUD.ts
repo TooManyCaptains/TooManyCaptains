@@ -1,14 +1,11 @@
 import Panel from './Panel';
 import { Game } from '../index';
-import { Subsystem, Color } from '../../../common/types';
+import { Subsystem, ColorPosition } from '../../../common/types';
 import { GameCaptain } from '../types';
 import { baseStyle } from './Styles';
 import manifest from '../../../common/manifest';
-
-function colorNamesToColorKey(names: string[]) {
-  const nameToKey = (name: string) => name[0].toUpperCase();
-  return names.map(nameToKey, names).join('') || 'none';
-}
+import { colorPositionsToColorKey } from '../utils';
+import { isEqual } from 'lodash';
 
 class HealthBar {
   public game: Game;
@@ -105,17 +102,28 @@ class BigHealthBar extends HealthBar {
 
 class ColorChart extends Phaser.Sprite {
   public game: Game;
+  private _colorPositions: ColorPosition[];
 
-  constructor(game: Game, x: number, y: number, colorNames: Color[] = []) {
+  constructor(
+    game: Game,
+    x: number,
+    y: number,
+    colorPositions: ColorPosition[] = [],
+  ) {
     super(game, x, y);
     this.anchor.setTo(0.5, 0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.setColors(colorNames);
+    this.colorPositions = colorPositions;
   }
 
-  public setColors(colorNames: Color[]) {
-    const colorKey = colorNamesToColorKey(colorNames);
-    if (colorNames.length > 0) {
+  get colorPositions() {
+    return this._colorPositions;
+  }
+
+  set colorPositions(colorPositions: ColorPosition[]) {
+    this._colorPositions = colorPositions;
+    const colorKey = colorPositionsToColorKey(colorPositions);
+    if (colorPositions.length > 0) {
       this.body.angularVelocity = 75;
     } else {
       this.body.angularVelocity = 0;
@@ -181,7 +189,6 @@ class SubsystemIcon extends Phaser.Sprite {
 class WeaponsPanel extends Panel {
   public game: Game;
   private colorChart: ColorChart;
-  private colors: Color[] = [];
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'WEAPONS');
@@ -201,11 +208,10 @@ class WeaponsPanel extends Panel {
     // Set battery seconds
     this.battery.seconds = this.game.player.batteries.weapons;
 
-    const newColors = this.game.player.weaponColors;
+    const newColorPositions = this.game.wiringConfigurations.weapons;
     // If shield colors changed, update the color chart
-    if (this.colors.length !== newColors.length) {
-      this.colors = newColors;
-      this.colorChart.setColors(this.colors);
+    if (!isEqual(newColorPositions, this.colorChart.colorPositions)) {
+      this.colorChart.colorPositions = newColorPositions;
     }
     super.update();
   }
@@ -215,7 +221,6 @@ class ShieldsPanel extends Panel {
   public game: Game;
   private colorChart: ColorChart;
   // private battery: Battery;
-  private colors: Color[] = [];
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'SHIELDS');
@@ -235,13 +240,11 @@ class ShieldsPanel extends Panel {
     // Set battery seconds
     this.battery.seconds = this.game.player.batteries.shields;
 
-    const newColors = this.game.player.shieldColors;
+    const newColorPositions = this.game.wiringConfigurations.shields;
     // If shield colors changed, update the color chart
-    if (this.colors.length !== newColors.length) {
-      this.colors = newColors;
-      this.colorChart.setColors(this.colors);
+    if (!isEqual(newColorPositions, this.colorChart.colorPositions)) {
+      this.colorChart.colorPositions = newColorPositions;
     }
-    super.update();
   }
 
   // public blink(isLow: boolean) {
@@ -485,8 +488,8 @@ export default class HUD extends Phaser.Group {
       ThrustersPanel,
       RepairsPanel,
       ShieldsPanel,
-    ].map((Klass, i) => {
-      const panel = new Klass(this.game, this, 300, 300);
+    ].map((klass, i) => {
+      const panel = new klass(this.game, this, 300, 300);
       panel.x = sidePadding + (panel.width + innerPadding) * i;
       panel.y = innerPadding;
       return panel;
