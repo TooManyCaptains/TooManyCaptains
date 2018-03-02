@@ -45,7 +45,7 @@ function getConfig() {
     serverURL: 'http://server.toomanycaptains.com',
   };
   if (config.local) {
-    config.serverURL = 'http://localhost:9000';
+    config.serverURL = 'http://starship:9000';
   } else if (_.has(urlParams, 'serverURL')) {
     config.serverURL = urlParams.serverURL;
   }
