@@ -1,5 +1,7 @@
 #!/bin/sh
 
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # Exit early if any step fails
 set -e
 
@@ -18,6 +20,7 @@ machine=starship
 image=toomanycaptains/$name
 
 echo "🚧 Building ${bold}$image${normal}\n"
+cd "$dir/${name}" && npm run-script build &&
 docker-compose build $name
 
 echo "\n🚂 Uploading ${bold}$image${normal} to ${bold}$machine${normal}\n"
