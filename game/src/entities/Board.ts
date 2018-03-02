@@ -130,6 +130,7 @@ export default class Board extends Phaser.Group {
             ) {
               player.damage(enemy.weapon.bulletDamage);
               this.damagedFx.play();
+              Phaser.GAMES[0].camera.shake(0.005, 400);
               // player.getHurtTint();
               this.expolosion(bullet.x, bullet.y, 0.5);
             } else {
@@ -192,6 +193,7 @@ export default class Board extends Phaser.Group {
       (player: PlayerShip, asteroid: Asteroid) => {
         this.expolosion(asteroid.x, asteroid.y, 1.0);
         asteroid.destroy();
+        Phaser.GAMES[0].camera.shake(0.02, 800);
         // player.getHurtTint();
         player.damage(asteroid.collisionDamage);
         this.collideFx.play();
