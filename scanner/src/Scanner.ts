@@ -1,7 +1,7 @@
 import { Device, getDeviceList, on as onUsb, InEndpoint } from 'usb';
 import { Subsystem, ScanPacket, CardID } from '../../common/types';
 
-const VENDOR_ID = 65535;
+const VENDOR_ID = 65535; // 2^16 - 1. Lol. Very lazy of them.
 
 const portToSubsystem: { [port: number]: Subsystem } = {
   3: 'weapons',
@@ -34,7 +34,9 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
   device.open();
   const iface = device.interfaces[0];
 
-  // this line is because the RFID reader is recognized as a keyboard when plugged
+  // The RFID reader is recognized as a keyboard when plugged
+  // in. So we want to tell the kernel to stop treating it as such, and
+  // let us have full control.
   if (iface.isKernelDriverActive()) {
     iface.detachKernelDriver();
   }
