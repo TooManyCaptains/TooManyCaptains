@@ -26,6 +26,7 @@ import { GameState, Packet } from '../../common/types';
   }
 
   function sendPacket(packet: Packet) {
+    console.log(packet);
     console.log(JSON.stringify(packet, null, 2));
     updatePanelLights();
     client.sendPacket(packet);

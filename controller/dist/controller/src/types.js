@@ -11,19 +11,12 @@ var LightColor;
 })(LightColor = exports.LightColor || (exports.LightColor = {}));
 class Panel {
     constructor() {
-        this.pins = [];
         this.lights = [];
+        this.connections = [];
+        this.pins = [];
         this.lightIndicies = [];
         this.buttonLightPins = [];
     }
 }
 exports.Panel = Panel;
-// export abstract class PolledController<T, E> {
-//   public readonly pollRateMsec: number
-//   public readonly onEvent: (event: Event) => void
-//   protected abstract poll(): void
-//   protected abstract setup(): void
-//
-//   constructor(objects: T[], )
-// }
 //# sourceMappingURL=types.js.map

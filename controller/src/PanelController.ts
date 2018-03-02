@@ -68,14 +68,9 @@ export class PanelController {
 
   private poll() {
     const newConnections = this.getConnections();
-    const changedConnections = _.differenceWith(
-      newConnections,
-      this.connections,
-      _.isEqual,
-    );
 
     // If there were no new/changed connections, just return early
-    if (_.isEmpty(changedConnections)) {
+    if (_.isEqual(newConnections, this.connections)) {
       return;
     }
 
@@ -96,7 +91,10 @@ export class PanelController {
   private sendConnections() {
     const configurations = this.panels.map(panel => ({
       subsystem: panel.subsystem,
-      colorPositions: panel.connections,
+      colorPositions: panel.connections.map(({ color, position }) => ({
+        color,
+        position,
+      })),
     }));
     const packet: WiringPacket = {
       kind: 'wiring',
