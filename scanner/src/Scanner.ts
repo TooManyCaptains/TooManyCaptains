@@ -5,9 +5,9 @@ const VENDOR_ID = 65535;
 
 const portToSubsystem: { [port: number]: Subsystem } = {
   3: 'weapons',
+  4: 'thrusters',
+  1: 'repairs',
   2: 'shields',
-  1: 'thrusters',
-  4: 'repairs',
 };
 
 const sequenceToCardId: { [sequence: number]: CardID } = {
