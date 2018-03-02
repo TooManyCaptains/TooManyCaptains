@@ -7,7 +7,7 @@ import { Game } from '../index';
 import { Weapon, Bullet } from './Weapon';
 
 export default class Board extends Phaser.Group {
-  minY: number;
+  public minY: number;
   public maxX: number;
   public maxY: number;
   public game: Game;
@@ -18,7 +18,6 @@ export default class Board extends Phaser.Group {
   private damagedFx: Phaser.Sound;
   private shieldFx: Phaser.Sound;
   private scoreText: Phaser.Text;
-  // private planet: Phaser.Sprite;
 
   constructor(game: Game, width: number, height: number) {
     super(game);
@@ -31,18 +30,6 @@ export default class Board extends Phaser.Group {
     // Asteroids
     this.asteroids = new Phaser.Group(this.game, undefined, 'asteroids');
     this.add(this.asteroids);
-
-    // // Planet
-    // this.planet = this.game.add.sprite(
-    //   width,
-    //   height / 2,
-    //   'planet',
-    //   undefined,
-    //   this,
-    // );
-    // this.planet.anchor.setTo(0.5, 0.5);
-    // this.game.physics.enable(this.planet, Phaser.Physics.ARCADE);
-    // this.planet.body.angularVelocity = 2;
 
     // Mask (overflow)
     const mask = this.game.add.graphics(0, 0, this);
@@ -156,19 +143,7 @@ export default class Board extends Phaser.Group {
       undefined,
     );
 
-    // // Planet <-> enemy bullet collision
-    // if (this.player.weapon) {
-    //   this.game.physics.arcade.overlap(
-    //     this.planet,
-    //     this.player.weapon,
-    //     (planet: Phaser.Sprite, bullet: PlayerWeapon) => {
-    //       bullet.kill();
-    //     },
-    //   );
-    // }
-
     // Enemy <-> player bullet collision
-
     [
       this.player.redBullets,
       this.player.blueBullets,

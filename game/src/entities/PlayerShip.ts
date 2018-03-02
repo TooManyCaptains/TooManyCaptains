@@ -1,5 +1,5 @@
 import { PlayerWeapon } from './Weapon';
-import HealthBar from './HealthBar';
+import PlayerHealthBar from './PlayerHealthBar';
 import { Game } from '../index';
 import { colorNameToLetter } from '../utils';
 import { Subsystem, ColorPosition, Color } from '../../../common/types';
@@ -18,8 +18,8 @@ export default class PlayerShip extends Phaser.Sprite {
   public shootFx: Phaser.Sound;
   public growingBullet: Phaser.Sprite;
   public timeChargingStarted: number;
-  public weapon: PlayerWeapon | null;
-  public healthBar: HealthBar;
+  public weapon: PlayerWeapon;
+  public healthBar: PlayerHealthBar;
   public thrustersLevel: number;
   public batteryDrainTimerFreq: number;
 
@@ -87,19 +87,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.health = 100;
 
     // HP bar
-    this.healthBar = new HealthBar(this);
-
-    // Weapons
-    this.weapon = null;
-
-    // this.timeChargingStarted = 0;
-    // this.growingBullet = this.game.add.sprite(this.x + this.width / 2, this.y);
-    // this.growingBullet.anchor.setTo(0.5, 0.5);
-    // this.growingBullet.update = () => {
-    //   const scale = 0.25 * (1 + this.weaponCharge * 1.5);
-    //   this.growingBullet.scale.setTo(scale, scale);
-    //   this.growingBullet.y = this.y;
-    // };
+    this.healthBar = new PlayerHealthBar(this);
 
     // Sound effects
     this.shootFx = this.game.add.audio('shoot');

@@ -94,7 +94,7 @@ class BigHealthBar extends HealthBar {
   public game: Game;
 
   constructor(game: Game, parent: Phaser.Group, width: number) {
-    super(game, parent, width, 50, 0x00ff00, 'HEALTH 100%', 1);
+    super(game, parent, width, 50, 0x30ee02, 'HEALTH 100%', 1);
     this.text.fontSize = 40;
     this.text.fontWeight = 800;
   }
@@ -516,8 +516,8 @@ export default class HUD extends Phaser.Group {
       this.healthBar.value = playerHealth / this.game.player.maxHealth;
       const label =
         playerHealth > 25
-          ? Math.ceil(playerHealth)
-          : Math.round(playerHealth * 100) / 100;
+          ? Math.ceil(playerHealth).toFixed(0)
+          : playerHealth.toFixed(1);
       this.healthBar.label = `HEALTH ${label}%`;
     }
     super.update();
