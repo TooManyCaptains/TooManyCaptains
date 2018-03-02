@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Port, Wire, wireName } from './types';
-import { Subsystem } from '../../common/types';
+import { Subsystem, ColorPosition } from '../../common/types';
 
 interface PortComponentProps {
   port: Port;
@@ -71,7 +71,7 @@ interface BayProps {
   name: Subsystem;
   numPorts: number;
   wires: Wire[];
-  onNewConfiguration: (wires: Array<Wire | null>) => void;
+  onNewConfiguration: (colorPositions: ColorPosition[]) => void;
   onWireAdded: (wire: Wire) => void;
   onWireRemoved: (wire: Wire) => void;
 }
@@ -123,14 +123,18 @@ export class Bay extends React.Component<BayProps, BayState> {
   }
 
   private onNewConfiguration() {
-    const configuration = this.state.ports.map(port => {
-      if (port.isDisabled) {
-        return null;
-      } else {
-        return port.wire;
-      }
-    });
-    this.props.onNewConfiguration(configuration);
+    const colorPositions = this.state.ports
+      .map((port, i) => {
+        if (port.isDisabled || port.wire === null) {
+          return null;
+        }
+        return {
+          color: port.wire.color,
+          position: i,
+        };
+      })
+      .filter(colorPosition => colorPosition !== null) as ColorPosition[];
+    this.props.onNewConfiguration(colorPositions);
   }
 
   private unplugWireFromPort(port: Port) {

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// import HealthBar from './HealthBar';
+>>>>>>> 598d104af6b0f37ac995891b07140b7269910b3a
 import { Color } from './../../../common/types';
 import { Weapon } from './Weapon';
 import { Game } from '../index';

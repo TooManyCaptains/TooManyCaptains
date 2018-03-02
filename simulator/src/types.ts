@@ -1,8 +1,4 @@
-export enum Color {
-  red = 0,
-  blue = 1,
-  yellow = 2,
-}
+import { Color } from '../../common/types';
 
 export interface Port {
   id: number;
@@ -19,12 +15,5 @@ export function wireName(wire: Wire | null) {
   if (wire === null) {
     return 'none';
   }
-  switch (wire.color) {
-    case Color.red:
-      return 'red';
-    case Color.blue:
-      return 'blue';
-    case Color.yellow:
-      return 'yellow';
-  }
+  return wire.color;
 }

@@ -29,7 +29,7 @@ docker save $image | pv -Ibt | docker-machine ssh $machine 'docker load'
 eval $(docker-machine env --shell=sh starship)
 
 echo "\n🚀 Launching ${bold}$image${normal}\n"
-docker-compose up --no-deps -d $name
+docker-compose up -d $name
 
 echo "\n🛸🌈 We did it fam"
 

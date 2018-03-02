@@ -1,13 +1,22 @@
 import * as _ from 'lodash';
 import * as rpio from 'rpio';
-import { WireColor, Wire, Panel, ColorPosition, Connection } from './types';
-import { GameState, Packet } from '../../common/types';
+import { Wire, Panel, Connection } from './types';
+import { GameState, Packet, WiringPacket } from '../../common/types';
 
-const wires: Wire = {
-  blue: 31,
-  red: 29,
-  yellow: 27,
-};
+const wires: Wire[] = [
+  {
+    color: 'blue',
+    pin: 31,
+  },
+  {
+    color: 'red',
+    pin: 29,
+  },
+  {
+    color: 'yellow',
+    pin: 27,
+  },
+];
 
 type PacketHandler = (packet: Packet) => void;
 
@@ -15,7 +24,7 @@ export class PanelController {
   public readonly pollRateMsec: number = 250;
   public readonly panels: Panel[] = [];
   public readonly sendPacket: PacketHandler;
-  private prevConnections: Connection[] = [];
+  private connections: Connection[] = [];
   private getGameState: () => GameState;
 
   constructor(
@@ -32,25 +41,14 @@ export class PanelController {
     setInterval(this.poll.bind(this), this.pollRateMsec);
   }
 
-  public emitAll() {
-    const connections = this.getConnections();
-    connections.forEach(({ color, panel }) => {
-      if (panel === null) {
-        return;
-      }
-      const colorPositions = this.colorPositions(connections, panel);
-      const packet = this.packetForPanelWithColorPositions(
-        panel,
-        colorPositions,
-      );
-      panel!.update(colorPositions, this.getGameState());
-      this.sendPacket(packet);
-    });
+  public resetConnections() {
+    this.connections = [];
+    this.poll();
   }
 
   private setup(): void {
     // Set up wire pins for writing
-    Object.values(wires).forEach(pin => {
+    wires.forEach(({ pin }) => {
       rpio.open(pin, rpio.OUTPUT, rpio.LOW);
       rpio.pud(pin, rpio.PULL_DOWN);
     });
@@ -68,100 +66,72 @@ export class PanelController {
     });
   }
 
-  // Returns the colors of the wires plugged into panel
-  private colorPositions(
-    connections: Connection[],
-    panel: Panel | null,
-  ): ColorPosition[] {
-    return _.sortBy(connections, 'position')
-      .filter(conn => conn.panel && panel && conn.panel.name === panel.name)
-      .map(({ color, position }) => ({ color, position }));
-  }
-
   private poll() {
-    const connections = this.getConnections();
-    const newConnections = _.differenceWith(
-      connections,
-      this.prevConnections,
-      _.isEqual,
-    );
+    const newConnections = this.getConnections();
 
-    // If there were no new connections, just return early
-    if (_.isEmpty(newConnections)) {
+    // If there were no new/changed connections, just return early
+    if (_.isEqual(newConnections, this.connections)) {
       return;
     }
 
-    // Dispatch server packets and change lights based on new connections
-    newConnections.forEach(c => this.processConnection(c, connections));
-    this.prevConnections = connections;
+    // Update panels
+    this.panels.forEach(panel => {
+      panel.connections = newConnections.filter(
+        conn => conn.panel.subsystem === panel.subsystem,
+      );
+      panel.update(this.getGameState());
+    });
+
+    // Send
+    this.sendConnections();
+
+    this.connections = newConnections;
   }
 
-  private processConnection(connection: Connection, connections: Connection[]) {
-    const { color, panel } = connection;
-    let panelToUse: Panel;
-    if (panel) {
-      // Connection added, use the panel it was added to
-      panelToUse = panel;
-    } else {
-      // Connection removed, find the panel it was previously connected to and remove it
-      const previousConnection = this.prevConnections.find(
-        (conn: Connection) => conn.color === color,
-      );
-      // If the previous connection doesn't exist, it's because
-      // it was plugged in before the daemon was started. That's fine,
-      // just skip it!
-      if (!previousConnection) {
-        return;
-      }
-      panelToUse = previousConnection.panel!;
-    }
-    const colorPositions = this.colorPositions(connections, panelToUse);
-    const packet = this.packetForPanelWithColorPositions(
-      panelToUse,
-      colorPositions,
-    );
-    panelToUse.update(colorPositions, this.getGameState());
+  private sendConnections() {
+    const configurations = this.panels.map(panel => ({
+      subsystem: panel.subsystem,
+      colorPositions: panel.connections.map(({ color, position }) => ({
+        color,
+        position,
+      })),
+    }));
+    const packet: WiringPacket = {
+      kind: 'wiring',
+      configurations,
+    };
     this.sendPacket(packet);
   }
 
-  // Create an event based on the panel and wires
-  private packetForPanelWithColorPositions(
-    panel: Panel,
-    colorPositions: ColorPosition[],
-  ): Packet {
-    return {
-      kind: 'wiring',
-      subsystem: panel.name,
-      wires: _.sortBy(colorPositions, 'position').map(p => p.color),
-    };
-  }
-
-  private whereIsWirePluggedIn(
-    pin: number,
-  ): { position: number | null; panel: Panel | null } {
+  private getConnectionForWire(wire: Wire): Connection | null {
     // Set all wire pins to LOW
-    Object.values(wires).forEach(w => rpio.write(w, rpio.LOW));
+    wires.forEach(w => rpio.write(w.pin, rpio.LOW));
     // Set the we're testing in to HIGH
-    rpio.write(pin, rpio.HIGH);
+    rpio.write(wire.pin, rpio.HIGH);
     // Find the panel that the wire is plugged in and what position it is in (i.e. order)
-    let position = null;
-    const panel =
-      _.find(this.panels, ({ name, pins }) => {
-        return pins.some((p, i) => {
-          const wireIsConnectedToPin = Boolean(rpio.read(p));
-          if (wireIsConnectedToPin) {
-            position = i;
-          }
-          return wireIsConnectedToPin;
-        });
-      }) || null;
-    return { panel, position };
+    let position = -1;
+    const panel = this.panels.find(({ subsystem, pins }) => {
+      return pins.some((p, i) => {
+        const wireIsConnectedToPin = Boolean(rpio.read(p));
+        if (wireIsConnectedToPin) {
+          position = i;
+        }
+        return wireIsConnectedToPin;
+      });
+    });
+    if (panel) {
+      return {
+        panel,
+        position,
+        color: wire.color,
+      };
+    }
+    return null;
   }
 
   private getConnections(): Connection[] {
-    return _.map(wires, (pin: number, color: WireColor) => {
-      const { panel, position } = this.whereIsWirePluggedIn(pin);
-      return { color, panel, position };
-    });
+    return wires
+      .map(wire => this.getConnectionForWire(wire))
+      .filter(connection => connection !== null) as Connection[];
   }
 }

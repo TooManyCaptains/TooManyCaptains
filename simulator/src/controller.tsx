@@ -1,11 +1,16 @@
 import React from 'react';
 import { Bay } from './bay';
-import { Wire, wireName } from './types';
-import { Packet, Color, Subsystem, ButtonState } from '../../common/types';
-import { range } from 'lodash';
+import { Wire } from './types';
+import {
+  Packet,
+  ColorPosition,
+  Subsystem,
+  ButtonState,
+  Color,
+} from '../../common/types';
 import './controller.css';
 
-const NUM_WIRES = 3;
+const colors: Color[] = ['blue', 'red', 'yellow'];
 
 interface ControllerState {
   wires: Wire[];
@@ -25,7 +30,7 @@ export default class Controller extends React.Component<
   constructor(props: ControllerProps) {
     super(props);
     this.state = {
-      wires: range(NUM_WIRES).map(i => ({ color: i, inUse: false } as Wire)),
+      wires: colors.map(i => ({ color: i, inUse: false } as Wire)),
       isLoading: true,
       shieldTimer: null,
       overHeatTimer: null,
@@ -168,15 +173,11 @@ export default class Controller extends React.Component<
 
   private onSubsystemWiringChanged(
     subsystem: Subsystem,
-    wires: Array<Wire | null>,
+    colorPositions: ColorPosition[],
   ) {
-    const colors = wires
-      .filter(wire => wire !== null)
-      .map(wire => wireName(wire)) as Color[];
     this.sendPacket({
       kind: 'wiring',
-      subsystem,
-      wires: colors,
+      configurations: [{ subsystem, colorPositions }],
     });
   }
 }

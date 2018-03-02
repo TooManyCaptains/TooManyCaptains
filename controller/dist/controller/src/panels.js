@@ -1,28 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const _ = require("lodash");
-const types_1 = require("./types");
 const rpio = require("rpio");
+const lodash_1 = require("lodash");
+const types_1 = require("./types");
 class WeaponsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
-        this.name = 'weapons';
+        this.subsystem = 'weapons';
         this.pins = [40, 38, 36];
-        this.lightIndicies = _.range(6);
+        this.lightIndicies = lodash_1.range(6);
         this.buttonLightPins = [];
     }
-    update(colorPositions, gameState) {
+    update(gameState) {
+        // Update button light
         const isButtonLit = true;
-        _.forEach(this.buttonLightPins, pin => {
+        this.buttonLightPins.forEach(pin => {
             rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
         });
         // Set LED lights for later batch-update
         this.lights = [];
         const pixelsPerPosition = Math.floor(this.lightIndicies.length / this.pins.length);
-        colorPositions
-            .filter(({ position }) => position !== null)
-            .forEach(({ color, position }) => {
-            _.range(pixelsPerPosition).forEach(i => {
+        this.connections.forEach(({ color, position }) => {
+            lodash_1.range(pixelsPerPosition).forEach(i => {
                 this.lights.push({
                     index: this.lightIndicies[i + position * pixelsPerPosition],
                     color: types_1.LightColor[color],
@@ -34,23 +33,21 @@ class WeaponsPanel extends types_1.Panel {
 class ThrustersPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
-        this.name = 'thrusters';
+        this.subsystem = 'thrusters';
         this.pins = [18, 16];
-        this.lightIndicies = _.range(9, 13);
+        this.lightIndicies = lodash_1.range(9, 13);
         this.buttonLightPins = [];
     }
-    update(colorPositions, gameState) {
-        const isButtonLit = colorPositions.length > 0 && gameState === 'in_game';
-        _.forEach(this.buttonLightPins, pin => {
+    update(gameState) {
+        const isButtonLit = this.connections.length > 0 && gameState === 'in_game';
+        this.buttonLightPins.forEach(pin => {
             rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
         });
         // Set LED lights for later batch-update
         this.lights = [];
         const pixelsPerPosition = Math.floor(this.lightIndicies.length / this.pins.length);
-        colorPositions
-            .filter(({ position }) => position !== null)
-            .forEach(({ color, position }) => {
-            _.range(pixelsPerPosition).forEach(i => {
+        this.connections.forEach(({ color, position }) => {
+            lodash_1.range(pixelsPerPosition).forEach(i => {
                 this.lights.push({
                     index: this.lightIndicies[i + position * pixelsPerPosition],
                     color: types_1.LightColor.purple,
@@ -62,11 +59,11 @@ class ThrustersPanel extends types_1.Panel {
 class RepairsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
-        this.name = 'repairs';
+        this.subsystem = 'repairs';
         this.pins = [26, 24, 22];
-        this.lightIndicies = _.range(16, 22);
+        this.lightIndicies = lodash_1.range(16, 22);
     }
-    update(colorPositions) {
+    update() {
         // this.lights = _.times(colorPositions.length, i => ({
         //   index: this.lightIndicies[i],
         //   color: LightColor.green,
@@ -74,10 +71,8 @@ class RepairsPanel extends types_1.Panel {
         // Set LED lights for later batch-update
         this.lights = [];
         const pixelsPerPosition = Math.floor(this.lightIndicies.length / this.pins.length);
-        colorPositions
-            .filter(({ position }) => position !== null)
-            .forEach(({ color, position }) => {
-            _.range(pixelsPerPosition).forEach(i => {
+        this.connections.forEach(({ color, position }) => {
+            lodash_1.range(pixelsPerPosition).forEach(i => {
                 this.lights.push({
                     index: this.lightIndicies[i + position * pixelsPerPosition],
                     color: types_1.LightColor.green,
@@ -89,18 +84,16 @@ class RepairsPanel extends types_1.Panel {
 class ShieldsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
-        this.name = 'shields';
+        this.subsystem = 'shields';
         this.pins = [8, 12, 10];
-        this.lightIndicies = _.range(25, 32);
+        this.lightIndicies = lodash_1.range(25, 32);
     }
-    update(colorPositions) {
+    update() {
         // Set LED lights for later batch-update
         this.lights = [];
         const pixelsPerPosition = Math.floor(this.lightIndicies.length / this.pins.length);
-        colorPositions
-            .filter(({ position }) => position !== null)
-            .forEach(({ color, position }) => {
-            _.range(pixelsPerPosition).forEach(i => {
+        this.connections.forEach(({ color, position }) => {
+            lodash_1.range(pixelsPerPosition).forEach(i => {
                 this.lights.push({
                     index: this.lightIndicies[i + position * pixelsPerPosition],
                     color: types_1.LightColor[color],
