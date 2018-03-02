@@ -1,11 +1,12 @@
-<<<<<<< HEAD
-export type Color = 'blue' | 'red' | 'yellow' | 'null';
-=======
 import { Cheat } from './cheats';
 
 export type Color = 'blue' | 'red' | 'yellow';
 
->>>>>>> 7cbec38f419ec8667939cd404a5dd0f23a2ed5f8
+export interface ColorPosition {
+  position: number; // relative position within a given panel (e.g. 0, 2, 3)
+  color: Color;
+}
+
 export type Subsystem = 'weapons' | 'shields' | 'thrusters' | 'repairs';
 
 export type GameState = 'wait_for_players' | 'in_game' | 'game_over';
@@ -38,10 +39,14 @@ export interface FirePacket extends BasePacket {
   state: ButtonState;
 }
 
+export interface WiringConfiguration {
+  subsystem: Subsystem;
+  colorPositions: ColorPosition[];
+}
+
 export interface WiringPacket extends BasePacket {
   kind: 'wiring';
-  subsystem: Subsystem;
-  wires: Color[];
+  configurations: WiringConfiguration[];
 }
 
 export interface ScanPacket extends BasePacket {

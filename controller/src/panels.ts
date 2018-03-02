@@ -1,17 +1,18 @@
-import * as _ from 'lodash';
-import { Panel, ColorPosition, LightColor } from './types';
 import * as rpio from 'rpio';
+import { range } from 'lodash';
+import { Panel, LightColor } from './types';
 import { GameState } from '../../common/types';
 
 class WeaponsPanel extends Panel {
-  public readonly name = 'weapons';
+  public readonly subsystem = 'weapons';
   public readonly pins = [40, 38, 36];
-  public readonly lightIndicies = _.range(6);
+  public readonly lightIndicies = range(6);
   public readonly buttonLightPins = [];
 
-  public update(colorPositions: ColorPosition[], gameState: GameState): void {
+  public update(gameState: GameState): void {
+    // Update button light
     const isButtonLit = true;
-    _.forEach(this.buttonLightPins, pin => {
+    this.buttonLightPins.forEach(pin => {
       rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
     });
 
@@ -20,28 +21,26 @@ class WeaponsPanel extends Panel {
     const pixelsPerPosition = Math.floor(
       this.lightIndicies.length / this.pins.length,
     );
-    colorPositions
-      .filter(({ position }) => position !== null)
-      .forEach(({ color, position }) => {
-        _.range(pixelsPerPosition).forEach(i => {
-          this.lights.push({
-            index: this.lightIndicies[i + position! * pixelsPerPosition],
-            color: LightColor[color],
-          });
+    this.connections.forEach(({ color, position }) => {
+      range(pixelsPerPosition).forEach(i => {
+        this.lights.push({
+          index: this.lightIndicies[i + position! * pixelsPerPosition],
+          color: LightColor[color],
         });
       });
+    });
   }
 }
 
 class ThrustersPanel extends Panel {
-  public readonly name = 'thrusters';
+  public readonly subsystem = 'thrusters';
   public readonly pins = [18, 16];
-  public readonly lightIndicies = _.range(9, 13);
+  public readonly lightIndicies = range(9, 13);
   public readonly buttonLightPins = [];
 
-  public update(colorPositions: ColorPosition[], gameState: GameState) {
-    const isButtonLit = colorPositions.length > 0 && gameState === 'in_game';
-    _.forEach(this.buttonLightPins, pin => {
+  public update(gameState: GameState) {
+    const isButtonLit = this.connections.length > 0 && gameState === 'in_game';
+    this.buttonLightPins.forEach(pin => {
       rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
     });
 
@@ -50,25 +49,23 @@ class ThrustersPanel extends Panel {
     const pixelsPerPosition = Math.floor(
       this.lightIndicies.length / this.pins.length,
     );
-    colorPositions
-      .filter(({ position }) => position !== null)
-      .forEach(({ color, position }) => {
-        _.range(pixelsPerPosition).forEach(i => {
-          this.lights.push({
-            index: this.lightIndicies[i + position! * pixelsPerPosition],
-            color: LightColor.purple,
-          });
+    this.connections.forEach(({ color, position }) => {
+      range(pixelsPerPosition).forEach(i => {
+        this.lights.push({
+          index: this.lightIndicies[i + position! * pixelsPerPosition],
+          color: LightColor.purple,
         });
       });
+    });
   }
 }
 
 class RepairsPanel extends Panel {
-  public readonly name = 'repairs';
+  public readonly subsystem = 'repairs';
   public readonly pins = [26, 24, 22];
-  public readonly lightIndicies = _.range(16, 22);
+  public readonly lightIndicies = range(16, 22);
 
-  public update(colorPositions: ColorPosition[]): void {
+  public update(): void {
     // this.lights = _.times(colorPositions.length, i => ({
     //   index: this.lightIndicies[i],
     //   color: LightColor.green,
@@ -78,40 +75,36 @@ class RepairsPanel extends Panel {
     const pixelsPerPosition = Math.floor(
       this.lightIndicies.length / this.pins.length,
     );
-    colorPositions
-      .filter(({ position }) => position !== null)
-      .forEach(({ color, position }) => {
-        _.range(pixelsPerPosition).forEach(i => {
-          this.lights.push({
-            index: this.lightIndicies[i + position! * pixelsPerPosition],
-            color: LightColor.green,
-          });
+    this.connections.forEach(({ color, position }) => {
+      range(pixelsPerPosition).forEach(i => {
+        this.lights.push({
+          index: this.lightIndicies[i + position! * pixelsPerPosition],
+          color: LightColor.green,
         });
       });
+    });
   }
 }
 
 class ShieldsPanel extends Panel {
-  public readonly name = 'shields';
+  public readonly subsystem = 'shields';
   public readonly pins = [8, 12, 10];
-  public readonly lightIndicies = _.range(25, 32);
+  public readonly lightIndicies = range(25, 32);
 
-  public update(colorPositions: ColorPosition[]): void {
+  public update(): void {
     // Set LED lights for later batch-update
     this.lights = [];
     const pixelsPerPosition = Math.floor(
       this.lightIndicies.length / this.pins.length,
     );
-    colorPositions
-      .filter(({ position }) => position !== null)
-      .forEach(({ color, position }) => {
-        _.range(pixelsPerPosition).forEach(i => {
-          this.lights.push({
-            index: this.lightIndicies[i + position! * pixelsPerPosition],
-            color: LightColor[color],
-          });
+    this.connections.forEach(({ color, position }) => {
+      range(pixelsPerPosition).forEach(i => {
+        this.lights.push({
+          index: this.lightIndicies[i + position! * pixelsPerPosition],
+          color: LightColor[color],
         });
       });
+    });
   }
 }
 

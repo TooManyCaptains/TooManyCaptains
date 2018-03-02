@@ -1,8 +1,5 @@
 // import HealthBar from './HealthBar';
-<<<<<<< HEAD
 import { Color } from './../../../common/types';
-=======
->>>>>>> 7cbec38f419ec8667939cd404a5dd0f23a2ed5f8
 import { Weapon } from './Weapon';
 import { Game } from '../index';
 import Board from './Board';

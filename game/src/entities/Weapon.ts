@@ -134,7 +134,7 @@ export class PlayerWeapon extends Phaser.Group {
   public bulletVelocity = 400;
   public fireRate = 500;
   public color: Color;
-  public colorType: String;
+  public colorType: string;
 
   constructor(ship: PlayerShip, color: Color) {
     super(
@@ -157,12 +157,17 @@ export class PlayerWeapon extends Phaser.Group {
 
   public fire(strength: number, canon: number) {
     console.info(`firing with strength: ${strength}`);
-    const x = [this.ship.x + this.ship.width / 2 - 48,
-               this.ship.x + this.ship.width / 2,
-               this.ship.x + this.ship.width / 2 - 48];
-    const y = [this.ship.y - 33.5,
-               this.ship.y,
-               this.ship.y + 33.5];  
-    this.getFirstExists(false).fire(x[canon], y[canon], this.bulletVelocity, strength);
+    const x = [
+      this.ship.x + this.ship.width / 2 - 48,
+      this.ship.x + this.ship.width / 2,
+      this.ship.x + this.ship.width / 2 - 48,
+    ];
+    const y = [this.ship.y - 33.5, this.ship.y, this.ship.y + 33.5];
+    this.getFirstExists(false).fire(
+      x[canon],
+      y[canon],
+      this.bulletVelocity,
+      strength,
+    );
   }
 }

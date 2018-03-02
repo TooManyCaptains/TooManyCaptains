@@ -1,10 +1,17 @@
-import { GameState, Color, Subsystem, ButtonState } from '../../common/types';
-
-export type WireColor = Color;
+import {
+  GameState,
+  Color,
+  ColorPosition,
+  Subsystem,
+  ButtonState,
+} from '../../common/types';
 
 export type Pin = number;
 
-export type Wire = { [C in WireColor]: Pin };
+export interface Wire {
+  color: Color;
+  pin: Pin;
+}
 
 export enum LightColor {
   red = 0xff0000,
@@ -23,24 +30,19 @@ export interface Light {
 }
 
 export abstract class Panel {
-  public readonly name: Subsystem;
-  public readonly pins: Pin[] = [];
+  public readonly subsystem: Subsystem;
   public lights: Light[] = [];
+  public connections: Connection[] = [];
+  public readonly pins: Pin[] = [];
   public readonly lightIndicies: LightIndex[] = [];
   public readonly buttonLightPins: Pin[] = [];
-  public abstract update(
-    colorPositions: ColorPosition[],
-    gameState: GameState,
-  ): void;
-}
 
-export interface ColorPosition {
-  position: number | null; // relative position within a given panel (e.g. 1, 2, 3)
-  color: WireColor;
+  // Update button, lights, wiring configuration (for serialization)
+  public abstract update(gameState: GameState): void;
 }
 
 export interface Connection extends ColorPosition {
-  panel: Panel | null;
+  panel: Panel;
 }
 
 export interface Button {
@@ -52,12 +54,3 @@ export interface Press {
   button: Button;
   state: ButtonState;
 }
-
-// export abstract class PolledController<T, E> {
-//   public readonly pollRateMsec: number
-//   public readonly onEvent: (event: Event) => void
-//   protected abstract poll(): void
-//   protected abstract setup(): void
-//
-//   constructor(objects: T[], )
-// }

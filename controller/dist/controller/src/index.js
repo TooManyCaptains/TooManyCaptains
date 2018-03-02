@@ -15,6 +15,8 @@ const LightController_1 = require("./LightController");
             // Update local copy of game state if different
             if (packet.state !== gameState) {
                 gameState = packet.state;
+                // TODO: Send current wire configurations
+                panelController.resetConnections();
                 console.info('new game state: ', gameState);
                 updatePanelLights();
             }

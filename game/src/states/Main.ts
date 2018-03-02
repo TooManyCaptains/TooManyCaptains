@@ -1,10 +1,11 @@
 import Board from '../entities/Board';
 import HUD from '../interface/HUD';
-import { Color, ButtonState, Subsystem } from '../../../common/types';
+import { ButtonState, Subsystem, ColorPosition } from '../../../common/types';
 import PlayerShip from '../entities/PlayerShip';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { GameCaptain } from '../types';
+import { sortBy } from 'lodash';
 
 export default class Main extends Phaser.State {
   public game: Game;
@@ -246,22 +247,22 @@ export default class Main extends Phaser.State {
     this.player.stopMoving();
   }
 
-  public onWeaponsChanged(colors: Color[]) {
-    this.player.setWeapons(colors);
+  public onWeaponsConfiguration(colorPositions: ColorPosition[]) {
+    this.player.setWeapons(colorPositions);
   }
 
-  public onShieldsChanged(colors: Color[]) {
+  public onShieldsConfiguration(colorPositions: ColorPosition[]) {
+    const colors = sortBy(colorPositions, 'color').map(cp => cp.color);
     this.player.setShields(colors);
   }
 
-  public onThrustersChanged(colors: Color[]) {
-    this.player.setThrustersLevel(colors.length);
+  public onThrustersConfiguration(colorPositions: ColorPosition[]) {
+    this.player.setThrustersLevel(colorPositions.length);
   }
 
-  public onRepairsChanged(colors: Color[]) {
-    this.player.setRepairLevel(colors.length);
+  public onRepairsConfiguration(colorPositions: ColorPosition[]) {
+    this.player.setRepairLevel(colorPositions.length);
   }
-
 
   public onFire(state: ButtonState) {
     if (this.player.batteries.weapons === 0) {
@@ -290,10 +291,6 @@ export default class Main extends Phaser.State {
     // Update batteries
     const value = this.player.batteries[subsystem];
     this.player.batteries[subsystem] = Math.min(value + 7.5, 15);
-
-    // Update shields
-    // XXX: Why do we need to do this?
-    this.onShieldsChanged(this.player.shieldColors);
   }
 
   public update() {

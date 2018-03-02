@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { has } from 'lodash';
 import Stats from 'stats.js';
 import Main from './states/Main';
 import Boot from './states/Boot';
@@ -37,16 +37,16 @@ function getConfig() {
   const urlParams = getUrlParams(window.location.search);
 
   const config: Config = {
-    debug: _.has(urlParams, 'debug'),
-    skip: _.has(urlParams, 'skip'),
-    invulnerable: _.has(urlParams, 'invuln'),
-    local: _.has(urlParams, 'local'),
-    noCards: _.has(urlParams, 'nocards'),
+    debug: has(urlParams, 'debug'),
+    skip: has(urlParams, 'skip'),
+    invulnerable: has(urlParams, 'invuln'),
+    local: has(urlParams, 'local'),
+    noCards: has(urlParams, 'nocards'),
     serverURL: 'http://server.toomanycaptains.com',
   };
   if (config.local) {
     config.serverURL = 'http://starship:9000';
-  } else if (_.has(urlParams, 'serverURL')) {
+  } else if (has(urlParams, 'serverURL')) {
     config.serverURL = urlParams.serverURL;
   }
   return config;
@@ -100,15 +100,17 @@ export class Game extends Phaser.Game {
       }
 
       if (packet.kind === 'wiring' && this.state.current === 'Main') {
-        if (packet.subsystem === 'weapons') {
-          gameMainState.onWeaponsChanged(packet.wires);
-        } else if (packet.subsystem === 'shields') {
-          gameMainState.onShieldsChanged(packet.wires);
-        } else if (packet.subsystem === 'thrusters') {
-          gameMainState.onThrustersChanged(packet.wires);
-        } else if (packet.subsystem === 'repairs') {
-          gameMainState.onRepairsChanged(packet.wires);
-        }
+        packet.configurations.map(({ subsystem, colorPositions }) => {
+          if (subsystem === 'weapons') {
+            gameMainState.onWeaponsConfiguration(colorPositions);
+          } else if (subsystem === 'shields') {
+            gameMainState.onShieldsConfiguration(colorPositions);
+          } else if (subsystem === 'thrusters') {
+            gameMainState.onThrustersConfiguration(colorPositions);
+          } else if (subsystem === 'repairs') {
+            gameMainState.onRepairsConfiguration(colorPositions);
+          }
+        });
       } else if (packet.kind === 'move' && this.state.current === 'Main') {
         if (packet.state === 'released') {
           gameMainState.onMoveStop();

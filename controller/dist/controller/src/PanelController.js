@@ -31,6 +31,10 @@ class PanelController {
             this.sendPacket(packet);
         });
     }
+    resetConnections() {
+        this.prevConnections = [];
+        this.poll();
+    }
     setup() {
         // Set up wire pins for writing
         Object.values(wires).forEach(pin => {
