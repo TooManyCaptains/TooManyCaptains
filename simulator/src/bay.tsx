@@ -35,19 +35,6 @@ const PortComponent: React.SFC<PortComponentProps> = props => {
     props.onWireUnplugged(p);
   }
 
-  const portStatus = (() => {
-    if (props.port.isDisabled && props.port.wire === null) {
-      return 'recharging';
-    }
-    if (props.port.isDisabled) {
-      return 'disabled';
-    }
-    if (props.port.wire === null) {
-      return 'unplugged';
-    } else {
-      return 'used';
-    }
-  })();
   return (
     <div className={`Port Wire-${wireName(props.port.wire)}`}>
       <div className="Wire-icon-container">
@@ -62,7 +49,6 @@ const PortComponent: React.SFC<PortComponentProps> = props => {
           onClick={() => onWireUnplugged(props.port)}
         />
       </div>
-      <div className={`Port-status Port-status-${portStatus}`} />
     </div>
   );
 };

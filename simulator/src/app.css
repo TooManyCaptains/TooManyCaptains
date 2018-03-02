@@ -25,6 +25,8 @@ body,
   position: absolute;
   left: 10px;
   bottom: 10px;
+  background-color: black;
+  z-index: 1000;
 }
 
 .Loading {

@@ -3,6 +3,7 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
+  margin-top: 10px;
 }
 
 .Bay {
@@ -97,59 +98,6 @@
 
 .Port-wire-label {
   color: white;
-}
-
-.Port-status {
-  width: 15px;
-  height: 15px;
-  border-radius: 100%;
-  position: absolute;
-  bottom: -25px;
-}
-
-.Port-status-unplugged {
-  background-color: black;
-}
-
-.Port-status-used {
-  background-color: #18f518;
-}
-
-.Port-status-unused {
-  background-color: yellow;
-}
-
-.Port-status-disabled {
-  background-color: red;
-  animation: blink-red steps(1, start) 1s infinite;
-}
-
-.Port-status-recharging {
-  animation: blink-blue steps(1, start) 250ms infinite;
-}
-
-@keyframes blink-blue {
-  0% {
-    background-color: black;
-  }
-  50% {
-    background-color: blue;
-  }
-  100% {
-    background-color: black;
-  }
-}
-
-@keyframes blink-red {
-  0% {
-    background-color: black;
-  }
-  50% {
-    background-color: red;
-  }
-  100% {
-    background-color: black;
-  }
 }
 
 .FireButton {
