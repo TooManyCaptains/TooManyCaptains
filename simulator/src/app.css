@@ -20,6 +20,13 @@ body,
   flex-direction: column;
 }
 
+.Loading {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ height: 100%;
+}
+
 .ModeTabs {
   display: flex;
   align-items: center;

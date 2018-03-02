@@ -167,6 +167,8 @@ export class Game extends Phaser.Game {
           this.player.kill();
         } else if (cheat.code === 'spawn_enemy') {
           gameMainState.board.spawnEnemy();
+        } else if (cheat.code === 'spawn_asteroid') {
+          gameMainState.board.spawnAsteroid();
         } else if (cheat.code === 'force_state') {
           this.gameState = cheat.state;
         } else if (cheat.code === 'fast_enemies') {

@@ -21,8 +21,13 @@ interface SpawnEnemyCheat extends BaseCheat {
   code: 'spawn_enemy';
 }
 
+interface SpawnAsteroidCheat extends BaseCheat {
+  code: 'spawn_asteroid';
+}
+
 export type Cheat =
   | ForceStateCheat
   | KillPlayerCheat
   | FastEnemiesCheat
-  | SpawnEnemyCheat;
+  | SpawnEnemyCheat
+  | SpawnAsteroidCheat;
