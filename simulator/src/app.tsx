@@ -61,6 +61,7 @@ class App extends React.Component<{}, AppState> {
     return (
       <Router>
         <div className="App">
+          <div className="App-GameState">{this.state.gameState}</div>
           <div className="ModeTabs">
             <NavLink to="/" exact className="ModeTab" activeClassName="active">
               🕹 Controller
