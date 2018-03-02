@@ -3,11 +3,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const baseConfig = require('./base.config');
 
+baseConfig.mode = 'development';
+
 baseConfig.plugins = [
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    filename: 'vendor.bundle.js',
-  }),
   new HtmlWebpackPlugin({
     template: 'index.html',
   }),

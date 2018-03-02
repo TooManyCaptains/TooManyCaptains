@@ -8,20 +8,29 @@ const phaser = path.join(phaserModule, './build/custom/phaser-split.js');
 const pixi = path.join(phaserModule, './build/custom/pixi.js');
 const p2 = path.join(phaserModule, './build/custom/p2.js');
 
-const src = path.join(__dirname, '../src')
+const src = path.join(__dirname, '../src');
 
 module.exports = {
-  entry: {
-    app: `${src}/index.ts`,
-    vendor: ['pixi', 'p2', 'phaser'],
-  },
+  entry: `${src}/index.ts`,
 
   output: {
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     path: path.join(__dirname + '/../dist'),
   },
 
-  devtool: 'cheap-module-source-map',
+  // optimization: {
+  //   splitChunks: {
+  //     cacheGroups: {
+  //       commons: {
+  //         test: /node_modules\//,
+  //         name: 'vendor',
+  //         chunks: 'all',
+  //       },
+  //     },
+  //   },
+  // },
+
+  devtool: 'inline-source-map',
 
   plugins: [],
 
@@ -59,15 +68,10 @@ module.exports = {
       },
       {
         test: /\.(gif|png|jpe?g|svg)$/i,
-        use: [
-          'file-loader',
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              bypassOnDebug: true,
-            },
-          },
-        ],
+        loader: 'file-loader',
+        options: {
+          name: 'images/[name].[ext]',
+        },
       },
       {
         test: /\.css$/,
@@ -81,7 +85,7 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.ts', '.js', '.json'],
+    extensions: ['.ts', '.js', '.tsx', '.json'],
     alias: {
       phaser,
       pixi,

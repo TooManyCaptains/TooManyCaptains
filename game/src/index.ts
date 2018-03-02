@@ -1,3 +1,4 @@
+import './phaser-wrapper';
 import { has } from 'lodash';
 import Stats from 'stats.js';
 import Main from './states/Main';

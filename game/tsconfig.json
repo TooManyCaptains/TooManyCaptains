@@ -19,5 +19,5 @@
   },
   "include": ["./src/**/*"],
   "files": ["./node_modules/phaser-ce/typescript/phaser.d.ts"],
-  "exclude": ["build", "webpack"]
+  "exclude": ["dist", "webpack"]
 }
