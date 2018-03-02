@@ -1,4 +1,4 @@
-export type Color = 'blue' | 'red' | 'yellow';
+export type Color = 'blue' | 'red' | 'yellow' | 'null';
 export type Subsystem = 'weapons' | 'shields' | 'thrusters' | 'repairs';
 export type GameState = 'wait_for_players' | 'in_game' | 'game_over';
 export type ButtonState = 'pressed' | 'released';

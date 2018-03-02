@@ -152,6 +152,7 @@ export default class Board extends Phaser.Group {
               this.expolosion(bullet.x, bullet.y, 0.5);
             } else {
               player.damage(enemy.weapon.bulletDamage * 0.05);
+              player.shieldTint();
               this.shieldFx.play();
             }
             bullet.kill();
@@ -172,18 +173,20 @@ export default class Board extends Phaser.Group {
     }
 
     // Enemy <-> player bullet collision
-    if (this.player.weapon) {
+
+    [this.player.redBullets, this.player.blueBullets, this.player.yellowBullets].map(bulletGroup => {
       this.game.physics.arcade.overlap(
         this.enemies,
-        this.player.weapon,
+        bulletGroup,
         (enemy: Enemy, bullet: Bullet) => {
           const playerBulletCanHurtEnemy = bullet.color.includes(
-            enemy.shipType,
+            enemy.color,
           );
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
-            enemy.getHurtTint();
-            enemy.damage(bullet.strength);
+            // enemy.getHurtTint();
+            // enemy.damage(bullet.strength);
+            enemy.kill()
             if (!enemy.alive) {
               enemy.explode();
               this.game.score += 150;
@@ -194,7 +197,8 @@ export default class Board extends Phaser.Group {
           bullet.kill();
         },
       );
-    }
+    });
+
 
     // Enemy <-> player ship (no shield) collision
     this.game.physics.arcade.overlap(

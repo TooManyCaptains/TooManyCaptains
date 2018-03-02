@@ -1,4 +1,5 @@
-import HealthBar from './HealthBar';
+// import HealthBar from './HealthBar';
+import { Color } from './../../../common/types';
 import { Weapon } from './Weapon';
 import { Game } from '../index';
 import Board from './Board';
@@ -15,6 +16,7 @@ export class Enemy extends Phaser.Sprite {
   public weapon: Weapon;
   public bulletDamage: 12.5;
   public game: Game;
+  public color: Color;
 
   constructor(
     game: Game,
@@ -26,6 +28,10 @@ export class Enemy extends Phaser.Sprite {
     super(game, x, y, `enemy_${shipType}${weaponType}`);
     this.animations.add('move');
     this.animations.play('move', 15, true);
+
+    if (shipType == 'R') this.color = 'red';
+    else if (shipType == 'B') this.color = 'blue';
+    else if (shipType == 'Y') this.color = 'yellow';
 
     this.shipType = shipType;
     this.weaponType = weaponType;

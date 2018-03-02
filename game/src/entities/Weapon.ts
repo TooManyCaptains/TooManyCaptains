@@ -1,5 +1,7 @@
+import { Color } from './../../../common/types';
 import { Game } from '../index';
 import PlayerShip from './PlayerShip';
+import { colorNameToLetter } from './PlayerShip';
 import { Enemy } from './Enemy';
 
 const toDegrees = (radians: number) => radians * 180 / Math.PI;
@@ -108,20 +110,15 @@ export class Bullet extends Phaser.Sprite {
     this.checkWorldBounds = true;
     this.outOfBoundsKill = true;
     this.exists = false;
-    const scale = 0.25;
-    this.scale.set(scale, scale);
-    this.scale.x = -this.scale.x;
     game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.body.setSize(350, 100, 0, 25);
+    this.body.setSize(15, 15, 40, 5);
   }
 
   public fire(x: number, y: number, speed: number, strength: number) {
     this.reset(x, y);
     this.angle = 0;
-    this.strength = 50 * strength;
-    const scale = 0.25 * (1 + strength * 1.5);
-    console.log(`bullet damage: ${this.strength}`);
-    this.scale.set(scale, scale);
+    // this.strength = 50 * strength;
+    // console.log(`bullet damage: ${this.strength}`);
     this.game.physics.arcade.velocityFromAngle(
       this.angle,
       speed,
@@ -135,10 +132,11 @@ export class PlayerWeapon extends Phaser.Group {
   public ship: PlayerShip;
   public nextFire = 0;
   public bulletVelocity = 400;
-  public fireRate = 100;
-  public color: string;
+  public fireRate = 500;
+  public color: Color;
+  public colorType: String;
 
-  constructor(ship: PlayerShip, color = 'R') {
+  constructor(ship: PlayerShip, color: Color) {
     super(
       ship.game,
       ship.game.world,
@@ -148,27 +146,23 @@ export class PlayerWeapon extends Phaser.Group {
       Phaser.Physics.ARCADE,
     );
     this.ship = ship;
-    this.color = color;
+    this.colorType = colorNameToLetter(color);
     this.bulletVelocity = this.bulletVelocity;
-
     for (let i = 0; i < 64; i++) {
-      const bullet = new Bullet(this.game, `bullet_shoot_${color}`);
+      const bullet = new Bullet(this.game, 'bullet_new_' + this.colorType);
       bullet.color = color;
       this.add(bullet, true);
     }
   }
 
-  public fire(strength: number) {
-    if (this.game.time.time < this.nextFire) {
-      return false;
-    }
+  public fire(strength: number, canon: number) {
     console.info(`firing with strength: ${strength}`);
-
-    const x = this.ship.x + this.ship.width / 2;
-    const y = this.ship.y;
-
-    this.getFirstExists(false).fire(x, y, this.bulletVelocity, strength);
-    this.nextFire = this.game.time.time + this.fireRate;
-    return true;
+    const x = [this.ship.x + this.ship.width / 2 - 48,
+               this.ship.x + this.ship.width / 2,
+               this.ship.x + this.ship.width / 2 - 48];
+    const y = [this.ship.y - 33.5,
+               this.ship.y,
+               this.ship.y + 33.5];  
+    this.getFirstExists(false).fire(x[canon], y[canon], this.bulletVelocity, strength);
   }
 }

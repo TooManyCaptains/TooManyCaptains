@@ -34,6 +34,10 @@ const AssetManifest = {
     'bullet_shoot_RY.png',
     'bullet_shoot_Y.png',
 
+    'bullet_new_R.png',
+    'bullet_new_B.png',
+    'bullet_new_Y.png',
+
     'shield_B.png',
     'shield_BY.png',
     'shield_BRY.png',

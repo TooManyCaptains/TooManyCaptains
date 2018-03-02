@@ -268,14 +268,16 @@ export default class Main extends Phaser.State {
     this.player.setRepairLevel(colors.length);
   }
 
+
   public onFire(state: ButtonState) {
     if (this.player.batteries.weapons === 0) {
       return;
     }
     if (state === 'pressed') {
-      this.player.startChargingWeapon.call(this.player);
+      this.player.fireWeapon();
+      // this.player.startChargingWeapon.call(this.player);
     } else if (state === 'released') {
-      this.player.stopChargingWeaponAndFireIfPossible();
+      // this.player.stopChargingWeaponAndFireIfPossible();
     }
   }
 
