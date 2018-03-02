@@ -1,5 +1,5 @@
 import { Subsystem, Color } from './../../../common/types';
-import { clamp, mapValues } from 'lodash';
+import { mapValues } from 'lodash';
 import { PlayerWeapon } from './Weapon';
 import HealthBar from './HealthBar';
 import { Game } from '../index';
