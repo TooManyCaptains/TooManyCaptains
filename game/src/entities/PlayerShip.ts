@@ -48,7 +48,7 @@ export default class PlayerShip extends Phaser.Sprite {
   public thurster: Phaser.Sprite;
 
   private nextFire = 0;
-  private fireRate = 250;
+  private fireRate = 750;
   private board: Board;
 
   constructor(board: Board, x: number, y: number) {
@@ -65,12 +65,12 @@ export default class PlayerShip extends Phaser.Sprite {
     // Batteries
     const baseSecs = this.game.params.noCards ? Infinity : 0;
     this.batteries = {
-      weapons: baseSecs + 15,
+      weapons: baseSecs,
       thrusters: baseSecs,
       repairs: baseSecs,
       shields: baseSecs,
     };
-    this.batteryDrainPerSecond = 1;
+    this.batteryDrainPerSecond = 0.5;
     this.batteryDrainTimerFreq = 60;
     this.game.time
       .create()

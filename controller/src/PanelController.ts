@@ -42,6 +42,7 @@ export class PanelController {
   }
 
   public resetConnections() {
+    console.log('resetting connections');
     this.connections = [];
     this.poll();
   }
@@ -68,11 +69,14 @@ export class PanelController {
 
   private poll() {
     const newConnections = this.getConnections();
+    // console.log(newConnections);
 
     // If there were no new/changed connections, just return early
     if (_.isEqual(newConnections, this.connections)) {
       return;
     }
+
+    console.log(_.difference(newConnections, this.connections));
 
     // Update panels
     this.panels.forEach(panel => {
@@ -100,6 +104,7 @@ export class PanelController {
       kind: 'wiring',
       configurations,
     };
+    console.log(JSON.stringify(packet));
     this.sendPacket(packet);
   }
 
@@ -113,6 +118,7 @@ export class PanelController {
     const panel = this.panels.find(({ subsystem, pins }) => {
       return pins.some((p, i) => {
         const wireIsConnectedToPin = Boolean(rpio.read(p));
+        console.log(p, wireIsConnectedToPin);
         if (wireIsConnectedToPin) {
           position = i;
         }
