@@ -98,6 +98,9 @@ export class Game extends Phaser.Game {
 
   set gameState(gameState: GameState) {
     this._gameState = gameState;
+    if (gameState === 'wait_for_players') {
+      this.captains = [];
+    }
     this.server.notifyGameState(gameState);
   }
 
@@ -140,7 +143,7 @@ export class Game extends Phaser.Game {
           this.state.current === 'After' &&
           packet.state === 'released'
         ) {
-          this.state.start('Main');
+          this.state.start('Before');
         } else if (this.state.current === 'Main') {
           gameMainState.onFire(packet.state);
         }

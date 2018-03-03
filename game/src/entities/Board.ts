@@ -17,7 +17,7 @@ export default class Board extends Phaser.Group {
   private collideFx: Phaser.Sound;
   private damagedFx: Phaser.Sound;
   private shieldFx: Phaser.Sound;
-  private scoreText: Phaser.Text;
+  // private scoreText: Phaser.Text;
 
   constructor(game: Game, width: number, height: number) {
     super(game);
@@ -37,31 +37,31 @@ export default class Board extends Phaser.Group {
     mask.drawRect(0, 0, width, height);
     this.mask = mask;
 
-    // Score text
-    const rectWidth = 260;
-    const rectHeight = 69;
-    const rectOffsetFromEdge = 15;
-    const offsetLeft = 21;
-    const offsetTop = 14;
-    const graphics = this.game.add.graphics(
-      width - rectWidth - rectOffsetFromEdge,
-      height / 2 - rectHeight / 2,
-      this,
-    );
-    graphics.lineStyle(2, 0x000000, 1);
-    graphics.beginFill(0xffffff);
-    graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 37.5);
-    this.scoreText = this.game.add.text(
-      width - rectWidth - rectOffsetFromEdge + offsetLeft,
-      height / 2 - rectHeight / 2 + offsetTop,
-      '',
-      {
-        font: `${32}px Exo 2`,
-        fill: 'black',
-        fontWeight: 900,
-      },
-      this,
-    );
+    // // Score text
+    // const rectWidth = 260;
+    // const rectHeight = 69;
+    // const rectOffsetFromEdge = 15;
+    // const offsetLeft = 21;
+    // const offsetTop = 14;
+    // const graphics = this.game.add.graphics(
+    //   width - rectWidth - rectOffsetFromEdge,
+    //   height / 2 - rectHeight / 2,
+    //   this,
+    // );
+    // graphics.lineStyle(2, 0x000000, 1);
+    // graphics.beginFill(0xffffff);
+    // graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 37.5);
+    // this.scoreText = this.game.add.text(
+    //   width - rectWidth - rectOffsetFromEdge + offsetLeft,
+    //   height / 2 - rectHeight / 2 + offsetTop,
+    //   '',
+    //   {
+    //     font: `${32}px Exo 2`,
+    //     fill: 'black',
+    //     fontWeight: 900,
+    //   },
+    //   this,
+    // );
 
     // Boundaries for the playable game area
     this.minY = 90;
@@ -211,6 +211,6 @@ export default class Board extends Phaser.Group {
 
   private onScoreTimer() {
     this.game.score += 1;
-    this.scoreText.text = `SCORE: ${this.game.score}`;
+    // this.scoreText.text = `SCORE: ${this.game.score}`;
   }
 }
