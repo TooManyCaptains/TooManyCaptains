@@ -20,11 +20,6 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/controller/src/index.js",
-    "docker-build": "npm run build && docker build -t toomanycaptains/controller .",
-    "docker-run": "ssh crew@starship \"ssh pi@starship-controller 'docker stop controller ||:&& docker rm controller ||:&& docker run -d --restart unless-stopped --net=host --privileged --name controller toomanycaptains/controller'\"",
-    "docker-upload": "docker save toomanycaptains/controller | pv -Ibt | ssh crew@starship ssh pi@starship-controller 'docker load'",
-    "upload": "npm run docker-build && npm run docker-upload && npm run docker-run",
-    "logs": "ssh crew@starship ssh pi@starship-controller 'docker logs controller -f'"
+    "start": "node dist/controller/src/index.js"
   }
 }

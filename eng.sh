@@ -15,23 +15,54 @@ unset DOCKER_MACHINE_NAME
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-name=$1
-machine=starship
-image=toomanycaptains/$name
+if [ "$1" = "logs" ]
+then
+  name=$2
+  eval $(docker-machine env --shell=sh starship)
+  echo "📚 Logs for ${bold}$name${normal}\n"
 
-echo "🚧 Building ${bold}$image${normal}\n"
-cd "$dir/${name}" && npm run-script build &&
-docker-compose build $name
+  if [ "$name" = "controller" ]
+  then
+    ssh crew@starship ssh pi@starship-controller 'docker logs --tail=20 -f controller'
+  else
+    docker-compose logs --tail=20 -f $2
+  fi
 
-echo "\n🚂 Uploading ${bold}$image${normal} to ${bold}$machine${normal}\n"
-docker save $image | pv -Ibt | docker-machine ssh $machine 'docker load'
+else
+  name=$1
+  image=toomanycaptains/$name
 
-eval $(docker-machine env --shell=sh starship)
+  if [ "$name" = "controller" ]
+    then
+    echo "🚧 Building ${bold}$image${normal}\n"
+    cd "$dir/${name}" &&
+    npm run build &&
+    docker build -t toomanycaptains/controller .
 
-echo "\n🚀 Launching ${bold}$image${normal}\n"
-docker-compose up -d $name
+    echo "\n🚂 Uploading ${bold}$image${normal} to ${bold}starship-controller${normal} via ${bold}starship${normal}\n"
+    docker save toomanycaptains/controller | pv -Ibt | ssh crew@starship ssh pi@starship-controller 'docker load'
+
+    eval $(docker-machine env --shell=sh starship)
+
+    echo "\n🚀 Launching ${bold}$image${normal}\n"
+    ssh crew@starship "ssh pi@starship-controller 'docker stop controller ||:&& docker rm controller ||:&& docker run -d --restart unless-stopped --net=host --privileged --name controller toomanycaptains/controller'"
+
+    echo "\n🛸🌈 We did it fam"
+
+    exit
+    fi
+
+  echo "🚧 Building ${bold}$image${normal}\n"
+  cd "$dir/${name}" && npm run-script build &&
+  docker-compose build $name
+
+  echo "\n🚂 Uploading ${bold}$image${normal} to ${bold}$machine${normal}\n"
+  docker save $image | pv -Ibt | docker-machine ssh $machine 'docker load'
+
+  eval $(docker-machine env --shell=sh starship)
+
+  echo "\n🚀 Launching ${bold}$image${normal}\n"
+  docker-compose up -d $name
+fi
 
 echo "\n🛸🌈 We did it fam"
-
-
-
