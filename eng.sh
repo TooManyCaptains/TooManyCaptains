@@ -15,14 +15,22 @@ unset DOCKER_MACHINE_NAME
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-if [ "$1" = "logs" ]
-then
+if [ "$1" = "" ]; then
+echo "🛸🌈 ${bold}eng${normal} manages TooManyCaptains tofuware (like firmware, but softer).\n"
+
+echo "Usage: ${bold}eng COMPONENT${normal} => build and re-upload code for ${bold}COMPONENT${normal}"
+echo "Example: ${bold}eng server${normal} => build and re-upload code for ${bold}server${normal}\n"
+
+echo "Usage: ${bold}eng logs COMPONENT${normal} => stream logs for ${bold}COMPONENT${normal}"
+echo "Example: ${bold}eng logs controller${normal} => build and re-upload code for ${bold}controller${normal}"
+exit
+
+elif [ "$1" = "logs" ]; then
   name=$2
   eval $(docker-machine env --shell=sh starship)
   echo "📚 Logs for ${bold}$name${normal}\n"
 
-  if [ "$name" = "controller" ]
-  then
+  if [ "$name" = "controller" ]; then
     ssh crew@starship ssh pi@starship-controller 'docker logs --tail=20 -f controller'
   else
     docker-compose logs --tail=20 -f $2
@@ -32,8 +40,7 @@ else
   name=$1
   image=toomanycaptains/$name
 
-  if [ "$name" = "controller" ]
-    then
+  if [ "$name" = "controller" ]; then
     echo "🚧 Building ${bold}$image${normal}\n"
     cd "$dir/${name}" &&
     npm run build &&
