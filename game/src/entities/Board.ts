@@ -76,6 +76,7 @@ export default class Board extends Phaser.Group {
     // Player ship
     this.player = new PlayerShip(this, 125, height / 2);
     this.game.player = this.player;
+    this.add(this.player);
 
     // Add starting enemies
     this.enemies = new Phaser.Group(this.game, undefined, 'enemies');
