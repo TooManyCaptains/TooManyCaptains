@@ -32,9 +32,8 @@ services:
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix" # Need for X forwarding
       - "/dev/shm:/dev/shm" # Need for X forwarding
-    devices:
       - "/dev/snd:/dev/snd" # Needed for sound
-    command: "--kiosk --incognito --alsa-output-device=hw:0,3 --no-first-run 'http://localhost?local&nocards&skip'"
+    command: "--kiosk --incognito --alsa-output-device=hw:0,3 --no-first-run 'http://starship?local'"
   game:
     depends_on:
       - "server"

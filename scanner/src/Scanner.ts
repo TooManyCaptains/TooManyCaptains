@@ -11,9 +11,11 @@ const portToSubsystem: { [port: number]: Subsystem } = {
 };
 
 const sequenceToCardId: { [sequence: number]: CardID } = {
-  17728914: 1,
-  1031061722: 2,
-  138262410: 3,
+  1051651082: 1,
+  105164714 : 2,
+  1049619310: 3,
+  104962298: 4,
+  104962842: 5,
 };
 
 function deviceIsCardScanner(device: Device): boolean {

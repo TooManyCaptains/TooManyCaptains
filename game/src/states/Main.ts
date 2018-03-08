@@ -324,7 +324,7 @@ export default class Main extends Phaser.State {
 
     // Update batteries
     const value = this.player.batteries[subsystem];
-    this.player.batteries[subsystem] = Math.min(value + 7.5, 15);
+    this.player.batteries[subsystem] = Math.min(value + 10, 15);
   }
 
   public update() {

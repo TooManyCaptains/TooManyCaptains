@@ -64,5 +64,8 @@ export default class Boot extends Phaser.State {
   public create() {
     this.game.add.existing(new Doors(this.game));
     this.game.add.existing(new StartScreen(this.game));
+
+    // Update gamestate
+    this.game.gameState = 'wait_for_players';
   }
 }

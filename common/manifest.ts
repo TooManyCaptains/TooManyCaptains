@@ -11,27 +11,27 @@ const manifest: ManifestEntry[] = [
     cardID: 0,
   },
   {
-    name: 'A',
+    name: '1',
     cardID: 1,
   },
   {
-    name: 'B',
+    name: '2',
     cardID: 2,
   },
   {
-    name: 'C',
+    name: '3',
     cardID: 3,
   },
   {
-    name: 'D',
+    name: '4',
     cardID: 4,
   },
   {
-    name: 'E',
+    name: '5',
     cardID: 5,
   },
   {
-    name: 'F',
+    name: '6',
     cardID: 6,
   },
 ];
