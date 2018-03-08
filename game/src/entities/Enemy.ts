@@ -1,6 +1,5 @@
 // import HealthBar from './HealthBar';
 import { Color } from './../../../common/types';
-import { Weapon } from './Weapon';
 import { Game } from '../index';
 import Board from './Board';
 
@@ -13,10 +12,16 @@ export class Enemy extends Phaser.Sprite {
   public verticalDriftSpeed = 7.5;
   public outOfBoundsKill = true;
   public checkWorldBounds = true;
-  public weapon: Weapon;
+
   public bulletDamage: 12.5;
   public game: Game;
   public color: Color;
+
+
+  public weaponColor: Color;
+  public nextFire = 0;
+  public fireRate = 250;
+
 
   constructor(
     game: Game,
@@ -29,16 +34,16 @@ export class Enemy extends Phaser.Sprite {
     this.animations.add('move');
     this.animations.play('move', 15, true);
 
-    if (shipType === 'R') {
-      this.color = 'red';
-    } else if (shipType === 'B') {
-      this.color = 'blue';
-    } else if (shipType === 'Y') {
-      this.color = 'yellow';
-    }
+    if (shipType == 'R') this.color = 'red';
+    else if (shipType == 'B') this.color = 'blue';
+    else if (shipType == 'Y') this.color = 'yellow';
 
     this.shipType = shipType;
     this.weaponType = weaponType;
+
+    if (weaponType == 'R') this.weaponColor = 'red';
+    else if (weaponType == 'B') this.weaponColor = 'blue';
+    else if (weaponType == 'Y') this.weaponColor = 'yellow';
 
     // Size and anchoring
     this.anchor.setTo(0.5, 0.5);
@@ -51,7 +56,6 @@ export class Enemy extends Phaser.Sprite {
 
     // Weapon
     const baseFiringRate = 10000;
-    this.weapon = new Weapon(this, this.bulletDamage, weaponType);
     const fireTimer = this.game.time.create();
     fireTimer.loop(baseFiringRate + baseFiringRate * Math.random(), () =>
       this.fire(),
@@ -96,6 +100,6 @@ export class Enemy extends Phaser.Sprite {
   }
 
   public fire() {
-    this.weapon.fire();
+    this.game.enemyWeapons.fire(this.game, this);
   }
 }

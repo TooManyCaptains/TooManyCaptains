@@ -6,6 +6,7 @@ import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { GameCaptain } from '../types';
 import { sortBy } from 'lodash';
+import { EnemyWeapon } from '../entities/Weapon';
 
 export default class Main extends Phaser.State {
   public game: Game;
@@ -102,7 +103,7 @@ export default class Main extends Phaser.State {
 
     this.load.spritesheet(
       'player-ship',
-      'assets/sprites/ship_220x100.png',
+      'assets/sprites/ship-220x100.png',
       220,
       100,
     );
@@ -257,6 +258,9 @@ export default class Main extends Phaser.State {
     }
 
     this.captainScanSuccess = this.game.add.audio('scan_success');
+
+    // Enemy Weapon
+    this.game.enemyWeapons = new EnemyWeapon(this.game);
 
     this.startGame();
   }

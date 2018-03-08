@@ -3,7 +3,7 @@ import { Cheat } from './cheats';
 export type Color = 'blue' | 'red' | 'yellow';
 
 export interface ColorPosition {
-  position: number; // relative position within a given panel (e.g. 0, 1, 2)
+  position: number; // relative position within a given panel (e.g. 0, 2, 3)
   color: Color;
 }
 

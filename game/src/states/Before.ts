@@ -54,6 +54,11 @@ export default class Boot extends Phaser.State {
       240,
       600,
     );
+
+
+
+
+    
   }
 
   public create() {

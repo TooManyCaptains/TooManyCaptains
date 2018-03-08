@@ -4,7 +4,7 @@ import PlayerShip from './PlayerShip';
 import { Enemy } from '../entities/Enemy';
 import Asteroid from './Asteroid';
 import { Game } from '../index';
-import { Weapon, Bullet } from './Weapon';
+import { Bullet, Beam } from './Weapon';
 
 export default class Board extends Phaser.Group {
   public minY: number;
@@ -113,35 +113,31 @@ export default class Board extends Phaser.Group {
     super.update();
 
     // Player <-> enemy bullet collision
-    this.enemies.forEach(
-      (enemy: Enemy) =>
-        this.game.physics.arcade.overlap(
-          enemy.weapon,
-          this.player,
-          (player: PlayerShip, bullet: Weapon) => {
-            const playerHasMatchingShield = player.shieldColors.some(
-              color => color[0].toUpperCase() === enemy.weaponType,
-            );
-            // Bullet hits
-            if (
-              player.shieldColors.length === 0 ||
-              !playerHasMatchingShield ||
-              !player.shield.visible
-            ) {
-              player.damage(enemy.weapon.bulletDamage);
-              this.damagedFx.play();
-              Phaser.GAMES[0].camera.shake(0.005, 400);
-              // player.getHurtTint();
-              this.expolosion(bullet.x, bullet.y, 0.5);
-            } else {
-              player.damage(enemy.weapon.bulletDamage * 0.05);
-              player.shieldTint();
-              this.shieldFx.play();
-            }
-            bullet.kill();
-          },
-        ),
-      undefined,
+    this.game.physics.arcade.overlap(
+      this.game.enemyWeapons,
+      this.player,
+      (player: PlayerShip, bullet: Beam) => {
+        const playerHasMatchingShield = player.shieldColors.some(
+          color => color === bullet.color,
+        );
+        // Bullet hits
+        if (
+          player.shieldColors.length === 0 ||
+          !playerHasMatchingShield ||
+          !player.shield.visible
+        ) {
+          player.damage(this.game.enemyWeapons.bulletDamage);
+          this.damagedFx.play();
+          Phaser.GAMES[0].camera.shake(0.005, 400);
+          // player.getHurtTint();
+          this.expolosion(bullet.x, bullet.y, 0.5);
+        } else {
+          player.damage(this.game.enemyWeapons.bulletDamage * 0.05);
+          player.shieldTint();
+          this.shieldFx.play();
+        }
+        bullet.kill();
+      },
     );
 
     // Enemy <-> player bullet collision
@@ -178,7 +174,7 @@ export default class Board extends Phaser.Group {
       this.player,
       (player: PlayerShip, enemy: Enemy) => {
         enemy.destroy();
-        player.getHurtTint();
+        // player.getHurtTint();
         player.damage(enemy.collisionDamage);
       },
     );

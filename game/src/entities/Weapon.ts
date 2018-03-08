@@ -6,7 +6,60 @@ import { colorNameToLetter } from '../utils';
 
 const toDegrees = (radians: number) => radians * 180 / Math.PI;
 
-class Beam extends Phaser.Sprite {
+export class EnemyWeapon extends Phaser.Group {
+  public color: Color;
+  public game: Game;
+  public bulletColor: string;
+  public bulletDamage = 10;
+  public ship: Enemy;
+
+  private bulletVelocity = -200;
+
+  constructor(game: Game) {
+    super(
+      game,
+      game.world,
+      'Enemy Bullet',
+      false,
+      true,
+      Phaser.Physics.ARCADE,
+    );
+    
+    for (let i = 0; i < 256; i++) {
+      const beam = new Beam(game, 'beam_R');
+      beam.color = 'red';
+      this.add(beam, true);
+    }
+  }
+
+  public fire(game: Game, ship: Enemy): boolean {
+    if (ship.game.time.time < ship.nextFire) {
+      return false;
+    }
+
+    const x = ship.x - (ship.width/2);
+    const y = ship.y;
+
+    const angleToPlayer = toDegrees(
+      game.physics.arcade.angleToXY(game.player, x, y),
+    );
+    const beam = this.getFirstExists(false);
+    beam.color = ship.weaponColor;
+    beam.loadTexture(`beam_${ship.weaponType}`);
+    beam.fire(
+      x,
+      y,
+      angleToPlayer,
+      this.bulletVelocity,
+      0,
+      600,
+    );
+    ship.nextFire = this.game.time.time + ship.fireRate;
+    return true;
+  }
+}
+
+export class Beam extends Phaser.Sprite {
   public color: string;
 
   constructor(game: Game, key: string) {
@@ -32,72 +85,73 @@ class Beam extends Phaser.Sprite {
   }
 }
 
-export class Weapon extends Phaser.Group {
-  public game: Game;
-  public bulletColor: string;
-  public bulletDamage: number;
-  public ship: Enemy;
 
-  private bulletVelocity = 200;
-  private fireRate: 250;
-  private yOffset: number;
-  private nextFire = 0;
+// export class Weapon extends Phaser.Group {
+//   public game: Game;
+//   public bulletColor: string;
+//   public bulletDamage: number;
+//   public ship: Enemy;
 
-  constructor(
-    ship: Enemy,
-    bulletDamage = 10,
-    bulletColor = 'R',
-    yOffset = 0,
-    angle = 0,
-  ) {
-    super(
-      ship.game,
-      ship.game.world,
-      'Single Bullet',
-      false,
-      true,
-      Phaser.Physics.ARCADE,
-    );
-    this.ship = ship;
+//   private bulletVelocity = 200;
+//   private fireRate: 250;
+//   private yOffset: number;
+//   private nextFire = 0;
 
-    this.bulletColor = bulletColor;
+//   constructor(
+//     ship: Enemy,
+//     bulletDamage = 10,
+//     bulletColor = 'R',
+//     yOffset = 0,
+//     angle = 0,
+//   ) {
+//     super(
+//       ship.game,
+//       ship.game.world,
+//       'Single Bullet',
+//       false,
+//       true,
+//       Phaser.Physics.ARCADE,
+//     );
+//     this.ship = ship;
 
-    this.nextFire = 0;
-    this.bulletDamage = bulletDamage;
-    this.bulletVelocity = -this.bulletVelocity;
-    this.yOffset = yOffset;
+//     this.bulletColor = bulletColor;
 
-    for (let i = 0; i < 64; i++) {
-      const bullet = new Beam(ship.game, `beam_${bulletColor}`);
-      bullet.angle = angle;
-      bullet.color = bulletColor;
-      this.add(bullet, true);
-    }
-  }
+//     this.nextFire = 0;
+//     this.bulletDamage = bulletDamage;
+//     this.bulletVelocity = -this.bulletVelocity;
+//     this.yOffset = yOffset;
 
-  public fire(): boolean {
-    if (this.game.time.time < this.nextFire) {
-      return false;
-    }
+//     for (let i = 0; i < 64; i++) {
+//       const bullet = new Beam(ship.game, `beam_${bulletColor}`);
+//       bullet.angle = angle;
+//       bullet.color = bulletColor;
+//       this.add(bullet, true);
+//     }
+//   }
 
-    const x = this.ship.x;
-    const y = this.ship.y + this.yOffset;
+//   public fire(): boolean {
+//     if (this.game.time.time < this.nextFire) {
+//       return false;
+//     }
 
-    const angleToPlayer = toDegrees(
-      this.game.physics.arcade.angleToXY(this.game.player, x, y),
-    );
-    this.getFirstExists(false).fire(
-      x,
-      y,
-      angleToPlayer,
-      this.bulletVelocity,
-      0,
-      600,
-    );
-    this.nextFire = this.game.time.time + this.fireRate;
-    return true;
-  }
-}
+//     const x = this.ship.x;
+//     const y = this.ship.y + this.yOffset;
+
+//     const angleToPlayer = toDegrees(
+//       this.game.physics.arcade.angleToXY(this.game.player, x, y),
+//     );
+//     this.getFirstExists(false).fire(
+//       x,
+//       y,
+//       angleToPlayer,
+//       this.bulletVelocity,
+//       0,
+//       600,
+//     );
+//     this.nextFire = this.game.time.time + this.fireRate;
+//     return true;
+//   }
+// }
 
 export class Bullet extends Phaser.Sprite {
   public color: string;

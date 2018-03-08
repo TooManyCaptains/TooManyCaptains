@@ -14,6 +14,7 @@ import {
   ColorPosition,
 } from '../../common/types';
 import PlayerShip from './entities/PlayerShip';
+import { EnemyWeapon } from './entities/Weapon';
 
 import './index.css';
 
@@ -69,6 +70,8 @@ export class Game extends Phaser.Game {
     repairs: [],
     shields: [],
   };
+
+  public enemyWeapons: EnemyWeapon;
 
   private _gameState: GameState = 'wait_for_players';
 
