@@ -5,15 +5,15 @@ const rpio = require("rpio");
 const wires = [
     {
         color: 'blue',
-        pin: 31,
+        pin: 19,
     },
     {
         color: 'red',
-        pin: 29,
+        pin: 21,
     },
     {
         color: 'yellow',
-        pin: 27,
+        pin: 23,
     },
 ];
 class PanelController {
@@ -40,9 +40,11 @@ class PanelController {
             rpio.pud(pin, rpio.PULL_DOWN);
         });
         // Set up button light pins for writing
-        _.flatten(_.map(this.panels, 'buttonLightPins')).forEach(pin => {
-            rpio.open(pin, rpio.OUTPUT, rpio.LOW);
-            rpio.pud(pin, rpio.PULL_DOWN);
+        this.panels.forEach(({ buttonLightPin }) => {
+            if (buttonLightPin) {
+                rpio.open(buttonLightPin, rpio.OUTPUT, rpio.LOW);
+                rpio.pud(buttonLightPin, rpio.PULL_DOWN);
+            }
         });
         // Set up all panel wire pins for reading
         _.flatten(_.map(this.panels, 'pins')).forEach(pin => {
@@ -57,7 +59,7 @@ class PanelController {
         if (_.isEqual(newConnections, this.connections)) {
             return;
         }
-        console.log(_.difference(newConnections, this.connections));
+        // console.log(_.difference(newConnections, this.connections));
         // Update panels
         this.panels.forEach(panel => {
             panel.connections = newConnections.filter(conn => conn.panel.subsystem === panel.subsystem);
@@ -79,7 +81,6 @@ class PanelController {
             kind: 'wiring',
             configurations,
         };
-        console.log(JSON.stringify(packet));
         this.sendPacket(packet);
     }
     getConnectionForWire(wire) {

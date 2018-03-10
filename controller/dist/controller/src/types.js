@@ -15,7 +15,6 @@ class Panel {
         this.connections = [];
         this.pins = [];
         this.lightIndicies = [];
-        this.buttonLightPins = [];
     }
 }
 exports.Panel = Panel;

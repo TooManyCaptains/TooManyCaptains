@@ -35,7 +35,7 @@ export abstract class Panel {
   public connections: Connection[] = [];
   public readonly pins: Pin[] = [];
   public readonly lightIndicies: LightIndex[] = [];
-  public readonly buttonLightPins: Pin[] = [];
+  public readonly buttonLightPin: Pin;
 
   // Update button, lights, wiring configuration (for serialization)
   public abstract update(gameState: GameState): void;

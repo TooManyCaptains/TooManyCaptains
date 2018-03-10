@@ -6,15 +6,15 @@ import { GameState, Packet, WiringPacket } from '../../common/types';
 const wires: Wire[] = [
   {
     color: 'blue',
-    pin: 31,
+    pin: 19,
   },
   {
     color: 'red',
-    pin: 29,
+    pin: 21,
   },
   {
     color: 'yellow',
-    pin: 27,
+    pin: 23,
   },
 ];
 
@@ -55,9 +55,11 @@ export class PanelController {
     });
 
     // Set up button light pins for writing
-    _.flatten(_.map(this.panels, 'buttonLightPins')).forEach(pin => {
-      rpio.open(pin, rpio.OUTPUT, rpio.LOW);
-      rpio.pud(pin, rpio.PULL_DOWN);
+    this.panels.forEach(({ buttonLightPin }) => {
+      if (buttonLightPin) {
+        rpio.open(buttonLightPin, rpio.OUTPUT, rpio.LOW);
+        rpio.pud(buttonLightPin, rpio.PULL_DOWN);
+      }
     });
 
     // Set up all panel wire pins for reading
@@ -76,7 +78,7 @@ export class PanelController {
       return;
     }
 
-    console.log(_.difference(newConnections, this.connections));
+    // console.log(_.difference(newConnections, this.connections));
 
     // Update panels
     this.panels.forEach(panel => {
@@ -104,7 +106,6 @@ export class PanelController {
       kind: 'wiring',
       configurations,
     };
-    console.log(JSON.stringify(packet));
     this.sendPacket(packet);
   }
 

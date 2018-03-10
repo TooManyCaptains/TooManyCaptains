@@ -5,16 +5,14 @@ import { GameState } from '../../common/types';
 
 class WeaponsPanel extends Panel {
   public readonly subsystem = 'weapons';
-  public readonly pins = [40, 38, 36];
+  public readonly pins = [40, 36, 38]; // Physically wired in this order. Oops.
   public readonly lightIndicies = range(6);
-  public readonly buttonLightPins = [];
+  public readonly buttonLightPin = 32;
 
   public update(gameState: GameState): void {
     // Update button light
     const isButtonLit = true;
-    this.buttonLightPins.forEach(pin => {
-      rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
-    });
+    rpio.write(this.buttonLightPin, isButtonLit ? rpio.HIGH : rpio.LOW);
 
     // Set LED lights for later batch-update
     this.lights = [];
@@ -36,13 +34,11 @@ class ThrustersPanel extends Panel {
   public readonly subsystem = 'thrusters';
   public readonly pins = [18, 16];
   public readonly lightIndicies = range(9, 13);
-  public readonly buttonLightPins = [];
+  public readonly buttonLightPin = 28;
 
   public update(gameState: GameState) {
     const isButtonLit = this.connections.length > 0 && gameState === 'in_game';
-    this.buttonLightPins.forEach(pin => {
-      rpio.write(pin, isButtonLit ? rpio.HIGH : rpio.LOW);
-    });
+    rpio.write(this.buttonLightPin, isButtonLit ? rpio.HIGH : rpio.LOW);
 
     // Set LED lights for later batch-update
     this.lights = [];
@@ -88,8 +84,8 @@ class RepairsPanel extends Panel {
 
 class ShieldsPanel extends Panel {
   public readonly subsystem = 'shields';
-  public readonly pins = [8, 12, 10];
-  public readonly lightIndicies = range(25, 32);
+  public readonly pins = [15, 13, 11];
+  public readonly lightIndicies = range(25, 33);
 
   public update(): void {
     // Set LED lights for later batch-update
