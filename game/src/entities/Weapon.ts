@@ -24,7 +24,7 @@ export class EnemyWeapon extends Phaser.Group {
       true,
       Phaser.Physics.ARCADE,
     );
-    
+
     for (let i = 0; i < 256; i++) {
       const beam = new Beam(game, 'beam_R');
       beam.color = 'red';

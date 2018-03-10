@@ -55,14 +55,9 @@ export default class PlayerShip extends Phaser.Sprite {
   public thurster: Phaser.Sprite;
 
   private nextFire = 0;
-<<<<<<< HEAD
-  private fireRate = 500;
-  
-=======
   private fireRate = 750;
-  private board: Board;
+  // private board: Board;
 
->>>>>>> 15342e248d0cb399298bbfaab521d0b17bca22ad
   constructor(board: Board, x: number, y: number) {
     super(board.game, x, y, 'player-ship');
     this.game.physics.enable(this, Phaser.Physics.ARCADE);

@@ -4,7 +4,7 @@ import { range } from 'lodash';
 import { GameCaptain } from '../types';
 
 class BlinkingButtonLabel extends Phaser.Group {
-  constructor(game: Game, x: number, y: number, actionText: string) {
+  constructor(game: Game, x: number, y: number, actionText: string = '') {
     super(game);
 
     const buttonOffset = 80;
@@ -27,7 +27,7 @@ class BlinkingButtonLabel extends Phaser.Group {
   }
 
   public blink() {
-    this.alpha = this.alpha === 0 ? 1 : 0;
+    // this.alpha = this.alpha === 0 ? 1 : 0;
   }
 }
 
@@ -173,8 +173,7 @@ export class StartScreen extends Phaser.Group {
         this.startLabel = new BlinkingButtonLabel(
           this.game,
           this.game.world.centerX,
-          250,
-          'START',
+          250
         );
         this.add(this.startLabel);
       }

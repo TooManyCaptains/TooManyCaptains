@@ -17,11 +17,9 @@ export class Enemy extends Phaser.Sprite {
   public game: Game;
   public color: Color;
 
-
   public weaponColor: Color;
   public nextFire = 0;
   public fireRate = 250;
-
 
   constructor(
     game: Game,
