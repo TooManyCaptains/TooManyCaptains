@@ -91,8 +91,8 @@ else
   cd "$dir/${name}" && npm run-script build &&
   docker-compose build $name
 
-  echo "\n🚂 Uploading ${bold}$image${normal} to ${bold}$machine${normal}\n"
-  docker save $image | pv -Ibt | docker-machine ssh $machine 'docker load'
+  echo "\n🚂 Uploading ${bold}$image${normal} to ${bold}starship${normal}\n"
+  docker save $image | pv -Ibt | docker-machine ssh starship 'docker load'
 
   eval $(docker-machine env --shell=sh starship)
 
