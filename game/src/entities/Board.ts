@@ -106,7 +106,12 @@ export default class Board extends Phaser.Group {
     const x = this.maxX;
     // XXX: Shouldn't use hard-coded consants for asteroid size.
     // Should be based on the asteroid's intrinsic size.
-    const y = (this.maxY - 100) * Math.random() + 50;
+    let y = (this.maxY - 100) * Math.random() + 50;
+    // Punish players who are shield camping
+    if (this.player.shieldColors.length === 3) {
+      y = this.player.y;
+    }
+
     this.asteroids.add(new Asteroid(this.game, x, y));
   }
 
