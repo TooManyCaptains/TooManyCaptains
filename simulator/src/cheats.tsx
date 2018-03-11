@@ -1,4 +1,11 @@
 import React from 'react';
+// Using an ES6 transpiler like Babel
+// @ts-ignore
+import Slider from 'react-rangeslider';
+
+import 'react-rangeslider/lib/index.css';
+
+// To include the default styles
 import { CheatPacket } from '../../common/types';
 import { Cheat } from '../../common/cheats';
 
@@ -8,16 +15,55 @@ interface CheatsProps {
   socket: SocketIOClient.Socket;
 }
 
+interface VolumeCheatProps {
+  onChange: (volume: number) => void;
+}
+
+interface VolumeCheatState {
+  value: number;
+}
+
+class VolumeCheat extends React.Component<VolumeCheatProps, VolumeCheatState> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      value: 10,
+    };
+  }
+
+  public render() {
+    const { value } = this.state;
+    return (
+      <div className="VolumeCheat">
+        <div className="VolumeLabel">Volume</div>
+        <div className="VolumeSlider">
+          <Slider
+            min={0}
+            max={100}
+            value={value}
+            tooltip={false}
+            onChange={(newValue: number) => {
+              this.props.onChange(newValue);
+              this.setState({
+                value: newValue,
+              });
+            }}
+          />
+          <div className="VolumeValue">{`${value}%`}</div>
+        </div>
+      </div>
+    );
+  }
+}
+
 export default class Cheats extends React.Component<CheatsProps, {}> {
   public render() {
     return (
       <div className="Cheats">
-        <div
-          className="Cheat"
-          onClick={() => this.sendCheat({ code: 'kill_player' })}
-        >
-          ☠️ Kill Player
-        </div>
+        <VolumeCheat
+          onChange={volume => this.sendCheat({ code: 'set_volume', volume })}
+        />
+
         <div
           className="Cheat"
           onClick={() => this.sendCheat({ code: 'spawn_enemy' })}
@@ -30,20 +76,12 @@ export default class Cheats extends React.Component<CheatsProps, {}> {
         >
           💥️ Spawn Asteroid
         </div>
-        {/* <div
-          className="Cheat"
-          onClick={() => this.sendCheat({ code: 'fast_enemies' })}
-        >
-          🏃🏻‍♂️ Fast Enemies
-        </div>
         <div
-          className="Cheat"
-          onClick={() =>
-            this.sendCheat({ code: 'force_state', state: 'wait_for_players' })
-          }
+          className="Cheat KillPlayer"
+          onClick={() => this.sendCheat({ code: 'kill_player' })}
         >
-          ✨ Force state
-        </div> */}
+          ☠️ Kill Player
+        </div>
       </div>
     );
   }

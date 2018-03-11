@@ -21,6 +21,11 @@ interface SpawnEnemyCheat extends BaseCheat {
   code: 'spawn_enemy';
 }
 
+interface SetVolumeCheat extends BaseCheat {
+  code: 'set_volume';
+  volume: number;
+}
+
 interface SpawnAsteroidCheat extends BaseCheat {
   code: 'spawn_asteroid';
 }
@@ -30,4 +35,5 @@ export type Cheat =
   | KillPlayerCheat
   | FastEnemiesCheat
   | SpawnEnemyCheat
+  | SetVolumeCheat
   | SpawnAsteroidCheat;

@@ -54,11 +54,6 @@ export default class Boot extends Phaser.State {
       240,
       600,
     );
-
-
-
-
-    
   }
 
   public create() {
@@ -67,5 +62,6 @@ export default class Boot extends Phaser.State {
 
     // Update gamestate
     this.game.gameState = 'wait_for_players';
+    this.game.add.audio('music_stage_1').play();
   }
 }

@@ -177,8 +177,8 @@ export class Game extends Phaser.Game {
           gameMainState.board.spawnAsteroid();
         } else if (cheat.code === 'force_state') {
           this.gameState = cheat.state;
-        } else if (cheat.code === 'fast_enemies') {
-          // TODO
+        } else if (cheat.code === 'set_volume') {
+          this.sound.volume = cheat.volume / 100;
         }
       }
     });

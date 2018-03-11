@@ -7,6 +7,7 @@
     "lodash": "^4.17.4",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
+    "react-rangeslider": "^2.2.0",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-scripts-ts": "2.13.0",
