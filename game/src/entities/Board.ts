@@ -17,6 +17,8 @@ export default class Board extends Phaser.Group {
   private collideFx: Phaser.Sound;
   private damagedFx: Phaser.Sound;
   private shieldFx: Phaser.Sound;
+  // private healthLowFx: Phaser.Sound;
+  // private healthVeryLowFx: Phaser.Sound;
   // private scoreText: Phaser.Text;
 
   constructor(game: Game, width: number, height: number) {

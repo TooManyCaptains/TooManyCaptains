@@ -1,7 +1,7 @@
 const AssetManifest = {
   images: [
     'title.png',
-    'planet.png',
+    // 'planet.png',
     'background.png',
     'gameover-text.png',
     'red-button.png',
@@ -13,26 +13,6 @@ const AssetManifest = {
     'beam_B.png',
     'beam_R.png',
     'beam_Y.png',
-
-    'bullet_B.png',
-    'bullet_R.png',
-    'bullet_Y.png',
-
-    'bullet_B.png',
-    'bullet_BY.png',
-    'bullet_BRY.png',
-    'bullet_BR.png',
-    'bullet_R.png',
-    'bullet_RY.png',
-    'bullet_Y.png',
-
-    'bullet_shoot_B.png',
-    'bullet_shoot_BY.png',
-    'bullet_shoot_BRY.png',
-    'bullet_shoot_BR.png',
-    'bullet_shoot_R.png',
-    'bullet_shoot_RY.png',
-    'bullet_shoot_Y.png',
 
     'bullet_new_R.png',
     'bullet_new_B.png',
@@ -64,12 +44,9 @@ const AssetManifest = {
     'ring-repairs.png',
     'ring-none.png',
 
-    'card.png',
-
     'mini_map.png',
     'player_icon.png',
     'boss_icon.png',
-
   ],
   sprites: [],
   audio: [
@@ -85,6 +62,21 @@ const AssetManifest = {
     'collide.wav',
     'gameover.wav',
     'scan_success.wav',
+    'scan_fail.wav',
+    'shield_hit_B.wav',
+    'shield_hit_R.wav',
+    'shield_hit_Y.wav',
+    'shield_on_B.wav',
+    'shield_on_R.wav',
+    'shield_on_Y.wav',
+    'wrong_weapon.wav',
+    'repairs.wav',
+    'health_low.wav',
+    'health_very_low.wav',
+    'music_stage_1.wav',
+    'music_stage_2.wav',
+    'music_stage_3.wav',
+    'music_stage_4.wav',
   ],
   fonts: {
     custom: {
