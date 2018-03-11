@@ -6,12 +6,12 @@ import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
-import { GameCaptain } from './types';
 import {
   Packet,
   GameState,
   Subsystem,
   ColorPosition,
+  CaptainCardID,
 } from '../../common/types';
 import PlayerShip from './entities/PlayerShip';
 import { EnemyBulletPool } from './entities/EnemyWeapon';
@@ -61,7 +61,7 @@ function getConfig() {
 export class Game extends Phaser.Game {
   public params: Config;
   public server: GameServer;
-  public captains: GameCaptain[] = [];
+  public captains: CaptainCardID[] = [];
   public score: number = 0;
   public player: PlayerShip;
   public wiringConfigurations: { [S in Subsystem]: ColorPosition[] } = {
@@ -151,21 +151,13 @@ export class Game extends Phaser.Game {
           gameMainState.onFire(packet.state);
         }
       } else if (packet.kind === 'scan') {
-        const captain = this.captains.find(c => c.cardID === packet.cardID);
+        const captain = this.captains.find(cardID => cardID === packet.cardID);
         if (this.state.current === 'Before') {
           if (!captain && packet.cardID !== 0) {
-            this.captains.push({
-              cardID: packet.cardID,
-              charge: 0,
-            });
+            this.captains.push(packet.cardID);
           } else {
             // TODO: add engineer
           }
-        } else if (this.state.current === 'Main') {
-          if (!captain) {
-            throw Error('captain not in game!');
-          }
-          gameMainState.onCaptainScan(captain, packet.subsystem);
         }
       } else if (packet.kind === 'cheat') {
         const cheat = packet.cheat;

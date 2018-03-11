@@ -1,3 +1,4 @@
+// tslint:disable-next-line:variable-name
 const AssetManifest = {
   images: [
     'title.png',

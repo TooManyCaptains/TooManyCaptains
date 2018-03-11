@@ -1,7 +1,7 @@
 import { Game } from '../index';
 import { baseStyle } from './Styles';
 import { range } from 'lodash';
-import { GameCaptain } from '../types';
+import { CaptainCardID } from '../../../common/types';
 
 class BlinkingButtonLabel extends Phaser.Group {
   constructor(game: Game, x: number, y: number, actionText: string = '') {
@@ -83,7 +83,7 @@ class BlinkingLabel extends Phaser.Group {
 export class StartScreen extends Phaser.Group {
   public game: Game;
   private cards: Phaser.Sprite[];
-  private addedCaptains: GameCaptain[] = [];
+  private addedCaptains: CaptainCardID[] = [];
   private scanCardLabel: BlinkingLabel;
   private startLabel: BlinkingButtonLabel;
   private captainJoinedFx: Phaser.Sound;
@@ -155,13 +155,12 @@ export class StartScreen extends Phaser.Group {
     }
   }
 
-  private onCaptainJoined(captain: GameCaptain) {
-
+  private onCaptainJoined(cardID: CaptainCardID) {
     // Play a sound
     this.captainJoinedFx.play();
 
     // Flip over the captain's card
-    this.cards[captain.cardID].animations.play('flip');
+    this.cards[cardID].animations.play('flip');
 
     // If more than 2 captains, show instructions to start game
     if (this.addedCaptains.length >= 2) {
@@ -172,7 +171,7 @@ export class StartScreen extends Phaser.Group {
         this.startLabel = new BlinkingButtonLabel(
           this.game,
           this.game.world.centerX,
-          250
+          250,
         );
         this.add(this.startLabel);
       }

@@ -1,7 +1,6 @@
 import Panel from './Panel';
 import { Game } from '../index';
-import { Subsystem, ColorPosition } from '../../../common/types';
-import { GameCaptain } from '../types';
+import { Subsystem, ColorPosition, CaptainCardID } from '../../../common/types';
 import { baseStyle } from './Styles';
 import manifest from '../../../common/manifest';
 import { colorPositionsToColorKey } from '../utils';
@@ -328,82 +327,22 @@ class RepairsPanel extends Panel {
 
 class CaptainEntry extends Phaser.Group {
   public game: Game;
-  private healthBar: HealthBar;
-  private captain: GameCaptain;
-  private charge = 0;
 
-  constructor(game: Game, captain: GameCaptain, index: number) {
+  constructor(game: Game, cardID: CaptainCardID, index: number) {
     super(game, undefined, 'CaptainEntry');
 
-    this.captain = captain;
-
     const nameTextSize = 30;
-    const circle = this.game.add.graphics();
-    const circleSize = 33;
-    circle.lineStyle(2, 0xffffff);
-    circle.drawCircle(circleSize / 2, 25, circleSize);
-    this.add(circle);
-    const nameText = this.game.add.text(
+    this.game.add.text(
       0,
       0,
-      `CAPT. ${manifest.find(m => m.cardID === captain.cardID)!.name}`,
+      `Captain ${manifest.find(m => m.cardID === cardID)!.name}`,
       {
         ...baseStyle,
         fontSize: nameTextSize,
         boundsAlignH: 'left',
-        fontWeight: 600,
       },
       this,
     );
-    nameText.setTextBounds(circle.width + 11, 0, 200, 50);
-
-    let nudge = -9;
-    if (index === 1) {
-      nudge += 3;
-    } else if (index === 3) {
-      nudge += 2;
-    } else if (index === 5) {
-      nudge += 1;
-    }
-    const numberText = this.game.add.text(
-      0,
-      0,
-      `${index}`,
-      { ...baseStyle, fontSize: 25, boundsAlignH: 'left', fontWeight: 600 },
-      this,
-    );
-    numberText.setTextBounds(circle.width / 2 + nudge, 2, 200, 50);
-
-    this.healthBar = new HealthBar(
-      this.game,
-      this,
-      315,
-      30,
-      0,
-      '',
-      this.captain.charge,
-    );
-    this.healthBar.y = 6;
-    this.healthBar.x = 210;
-    this.update();
-  }
-
-  public update() {
-    const updatedCaptain = this.game.captains.find(
-      captain => captain.cardID === this.captain.cardID,
-    );
-    if (updatedCaptain === undefined) {
-      throw new Error(
-        `[CaptainEntry] captain not found with card ID: ${this.captain.cardID}`,
-      );
-    }
-    if (this.charge !== updatedCaptain.charge) {
-      this.captain = updatedCaptain;
-      this.healthBar.value = this.captain.charge;
-      const fullyCharged = this.captain.charge === 1;
-      this.healthBar.color = fullyCharged ? 0x7ac943 : 0xfcee21;
-      this.healthBar.label = fullyCharged ? 'FULLY CHARGED' : 'RECHARGING';
-    }
   }
 }
 

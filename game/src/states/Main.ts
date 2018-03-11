@@ -1,10 +1,9 @@
 import Board from '../entities/Board';
 import HUD from '../interface/HUD';
-import { ButtonState, Subsystem, ColorPosition } from '../../../common/types';
+import { ButtonState, ColorPosition } from '../../../common/types';
 import PlayerShip from '../entities/PlayerShip';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
-import { GameCaptain } from '../types';
 import { sortBy } from 'lodash';
 import { EnemyBulletPool } from '../entities/EnemyWeapon';
 
@@ -14,18 +13,9 @@ export default class Main extends Phaser.State {
 
   private recentlyEnded = false;
   private player: PlayerShip;
-  private captainRechargePerSecond = 0.1;
-  private captainRechargeTimerFreq = 50;
   private doors: Doors;
-  private captainScanSuccess: Phaser.Sound;
 
   public preload() {
-    // this.load.spritesheet(
-    //   'player-ship',
-    //   'assets/sprites/player-ship.png',
-    //   200,
-    //   120,
-    // );
     this.load.spritesheet(
       'explosion',
       'assets/sprites/explosion.png',
@@ -168,12 +158,6 @@ export default class Main extends Phaser.State {
     this.board = new Board(this.game, this.game.width, 680);
     this.player = this.board.player;
 
-    // Recharge captains energy
-    this.game.time
-      .create()
-      .loop(this.captainRechargeTimerFreq, this.onRechargeCaptains, this)
-      .timer.start();
-
     // Panels for HUD
     // tslint:disable-next-line:no-unused-expression
     new HUD(this.game, 0, this.board.bottom, this.game.width, 410);
@@ -239,16 +223,6 @@ export default class Main extends Phaser.State {
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.SPACEBAR)
         .onDown.add(() => this.player.fireWeapon(), this);
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.S)
-        .onDown.add(
-          () =>
-            (this.game.captains = this.game.captains.map(
-              captain => ({ ...captain, charge: 0 }),
-              this,
-            )),
-        );
     }
 
     if (this.game.params.invulnerable) {
@@ -256,8 +230,6 @@ export default class Main extends Phaser.State {
       this.player.maxHealth = health;
       this.player.health = health;
     }
-
-    this.captainScanSuccess = this.game.add.audio('scan_success');
 
     this.game.enemyBullets = new EnemyBulletPool(this.game);
 
@@ -306,23 +278,6 @@ export default class Main extends Phaser.State {
     }
   }
 
-  public onCaptainScan(captain: GameCaptain, subsystem: Subsystem) {
-    if (captain.charge !== 1) {
-      return;
-      // TODO: play error sound
-    }
-
-    // Play success sound
-    this.captainScanSuccess.play();
-
-    // Drain charge
-    captain.charge = 0;
-
-    // Update batteries
-    const value = this.player.batteries[subsystem];
-    this.player.batteries[subsystem] = Math.min(value + 10, 15);
-  }
-
   public update() {
     const isGameEnding = !this.player.alive;
 
@@ -330,15 +285,6 @@ export default class Main extends Phaser.State {
     if (isGameEnding && this.game.gameState === 'in_game') {
       this.endGame();
     }
-  }
-
-  private onRechargeCaptains() {
-    const delta =
-      this.captainRechargePerSecond * (this.captainRechargeTimerFreq / 1000);
-    this.game.captains = this.game.captains.map(captain => {
-      captain.charge = Math.min(1, captain.charge + delta);
-      return captain;
-    });
   }
 
   private startGame() {
