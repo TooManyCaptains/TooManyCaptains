@@ -14,7 +14,7 @@ import {
   ColorPosition,
 } from '../../common/types';
 import PlayerShip from './entities/PlayerShip';
-import { EnemyWeapon } from './entities/Weapon';
+import { EnemyBulletPool } from './entities/EnemyWeapon';
 
 import './index.css';
 
@@ -71,7 +71,7 @@ export class Game extends Phaser.Game {
     shields: [],
   };
 
-  public enemyWeapons: EnemyWeapon;
+  public enemyBullets: EnemyBulletPool;
 
   private _gameState: GameState = 'wait_for_players';
 

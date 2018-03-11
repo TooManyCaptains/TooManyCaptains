@@ -10,13 +10,13 @@ const AssetManifest = {
     'door-left.png',
     'door-right.png',
 
-    'beam_B.png',
-    'beam_R.png',
-    'beam_Y.png',
+    'enemy_bullet_R.png',
+    'enemy_bullet_B.png',
+    'enemy_bullet_Y.png',
 
-    'bullet_new_R.png',
-    'bullet_new_B.png',
-    'bullet_new_Y.png',
+    'player_bullet_R.png',
+    'player_bullet_B.png',
+    'player_bullet_Y.png',
 
     'shield_B.png',
     'shield_BY.png',
@@ -53,7 +53,6 @@ const AssetManifest = {
     'shoot.mp3',
     'move_slow.mp3',
     'move_fast.mp3',
-    'charging.mp3',
     'doors_opening.mp3',
     'doors_closing.mp3',
     'explosion.mp3',

@@ -6,7 +6,7 @@ import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { GameCaptain } from '../types';
 import { sortBy } from 'lodash';
-import { EnemyWeapon } from '../entities/Weapon';
+import { EnemyBulletPool } from '../entities/EnemyWeapon';
 
 export default class Main extends Phaser.State {
   public game: Game;
@@ -259,8 +259,7 @@ export default class Main extends Phaser.State {
 
     this.captainScanSuccess = this.game.add.audio('scan_success');
 
-    // Enemy Weapon
-    this.game.enemyWeapons = new EnemyWeapon(this.game);
+    this.game.enemyBullets = new EnemyBulletPool(this.game);
 
     this.startGame();
   }
@@ -302,11 +301,8 @@ export default class Main extends Phaser.State {
     if (this.player.batteries.weapons === 0) {
       return;
     }
-    if (state === 'pressed') {
+    if (state === 'released') {
       this.player.fireWeapon();
-      // this.player.startChargingWeapon.call(this.player);
-    } else if (state === 'released') {
-      // this.player.stopChargingWeaponAndFireIfPossible();
     }
   }
 

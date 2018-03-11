@@ -1,18 +1,15 @@
 import { Subsystem, Color, ColorPosition } from './../../../common/types';
 import { mapValues } from 'lodash';
-import { PlayerWeapon } from './Weapon';
+import { PlayerWeapon } from './PlayerWeapon';
 import HealthBar from './PlayerHealthBar';
 import { Game } from '../index';
 
 import { range } from 'lodash';
 import Board from './Board';
+import { colorNameToLetter } from '../utils';
 
 const LOW_HEALTH = 20;
 const VERY_LOW_HEALTH = 10;
-
-export function colorNameToLetter(color: Color): string {
-  return color[0].toUpperCase();
-}
 
 export default class PlayerShip extends Phaser.Sprite {
   public game: Game;
@@ -20,12 +17,10 @@ export default class PlayerShip extends Phaser.Sprite {
   public repairIntervalMsec: number;
   public repairPercentagePerSecond: number;
   public repairLevel: number;
-  public chargingFx: Phaser.Sound;
   public moveFastFx: Phaser.Sound;
   public moveSlowFx: Phaser.Sound;
   public shootFx: Phaser.Sound;
   public growingBullet: Phaser.Sprite;
-  public timeChargingStarted: number;
   public weapon: PlayerWeapon | null;
   public weaponColors: Color[];
   public healthBar: HealthBar;
@@ -93,30 +88,17 @@ export default class PlayerShip extends Phaser.Sprite {
     // Health
     this.maxHealth = 100;
     this.health = 100;
-
-    // HP bar
     this.healthBar = new HealthBar(this);
 
     // Weapons
     this.weaponColors = [];
     this.weapon = null;
-
     this.weaponColorPositions = [];
-
-    // this.timeChargingStarted = 0;
-    // this.growingBullet = this.game.add.sprite(this.x + this.width / 2, this.y);
-    // this.growingBullet.anchor.setTo(0.5, 0.5);
-    // this.growingBullet.update = () => {
-    //   const scale = 0.25 * (1 + this.weaponCharge * 1.5);
-    //   this.growingBullet.scale.setTo(scale, scale);
-    //   this.growingBullet.y = this.y;
-    // };
 
     // Sound effects
     this.shootFx = this.game.add.audio('shoot');
     this.moveSlowFx = this.game.add.audio('move_slow');
     this.moveFastFx = this.game.add.audio('move_fast');
-    this.chargingFx = this.game.add.audio('charging');
     this.healthLowFx = this.game.add.audio('health_low');
     this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
@@ -130,7 +112,7 @@ export default class PlayerShip extends Phaser.Sprite {
       .timer.start();
 
     this.sprites = new Phaser.Group(board.game);
-    // 1: Thurster(BOTTOM)
+    // 1: Thruster (BOTTOM)
     this.thurster = board.game.add.sprite(this.x, this.y, 'ship-thurster');
     this.thurster.animations.add('up', [4, 5, 6, 7], 10, true);
     this.thurster.animations.add('down', [0, 1, 2, 3], 10, true);
@@ -214,7 +196,6 @@ export default class PlayerShip extends Phaser.Sprite {
 
   public setWeapons(colorPositions: ColorPosition[]) {
     this.weaponColorPositions = colorPositions;
-    // this.stopChargingWeaponAndFireIfPossible();
     if (colorPositions.length === 0) {
       this.weapon = null;
     }
@@ -233,10 +214,6 @@ export default class PlayerShip extends Phaser.Sprite {
         this.weaponLightBottom.visible = true;
       }
     });
-    // this.weapon = new PlayerWeapon(
-    //   this,
-    //   colors.map(colorNameToLetter).join(''),
-    // );
   }
 
   public startMovingDown() {
@@ -289,13 +266,6 @@ export default class PlayerShip extends Phaser.Sprite {
     }
   }
 
-  // get weaponCharge() {
-  //   const maxCharge = 4000;
-  //   return (
-  //     clamp(Date.now() - this.timeChargingStarted, 100, maxCharge) / maxCharge
-  //   );
-  // }
-
   public update() {
     this.weaponLightTop.x = this.x;
     this.weaponLightTop.y = this.y;
@@ -332,7 +302,10 @@ export default class PlayerShip extends Phaser.Sprite {
     if (this.health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
       this.healthVeryLowFx.stop();
       this.healthLowFx.play();
-    } else if (this.health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
+    } else if (
+      this.health <= VERY_LOW_HEALTH &&
+      !this.healthVeryLowFx.isPlaying
+    ) {
       this.healthLowFx.stop();
       this.healthVeryLowFx.play();
     }
@@ -358,36 +331,11 @@ export default class PlayerShip extends Phaser.Sprite {
     this.nextFire = this.game.time.time + this.fireRate;
   }
 
-  // public startChargingWeapon() {
-  //   if (!this.weapon) {
-  //     return;
-  //   }
-  //   this.timeChargingStarted = Date.now();
-  //   this.growingBullet.loadTexture(`bullet_${this.weapon.color}`);
-  //   this.growingBullet.visible = true;
-  //   this.chargingFx.play();
-  // }
-
-  // public stopChargingWeaponAndFireIfPossible() {
-  //   this.chargingFx.stop();
-  //   this.growingBullet.visible = false;
-  //   if (this.weapon && this.batteries.weapons > 0) {
-  //     this.fireWeapon();
-  //   }
-  // }
-
   public stopMoving() {
     this.body.velocity.y = 0;
     this.thurster.visible = false;
     this.moveFastFx.stop();
     this.moveSlowFx.stop();
-  }
-
-  public getHurtTint() {
-    this.tint = 0xff0000;
-    setTimeout(() => (this.tint = 0xffffff), 150);
-    const h = setInterval(() => (this.tint = 0xffffff), 50);
-    setTimeout(() => clearInterval(h), 500);
   }
 
   public setThrustersLevel(level: number) {
@@ -406,9 +354,6 @@ export default class PlayerShip extends Phaser.Sprite {
       Math.max(0, charge - delta),
     );
     this.setShields(this.shieldColors);
-    if (this.batteries.weapons === 0) {
-      // this.stopChargingWeaponAndFireIfPossible();
-    }
   }
 
   private onRepair() {

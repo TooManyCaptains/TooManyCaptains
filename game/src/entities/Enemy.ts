@@ -2,11 +2,11 @@
 import { Color } from './../../../common/types';
 import { Game } from '../index';
 import Board from './Board';
+import { colorNameToLetter } from '../utils';
 
 export class Enemy extends Phaser.Sprite {
   public explosionFx: Phaser.Sound;
-  public shipType: string;
-  public weaponType: string;
+
   public collisionDamage = 35;
   public movementSpeed = 7.5;
   public verticalDriftSpeed = 7.5;
@@ -17,32 +17,25 @@ export class Enemy extends Phaser.Sprite {
   public game: Game;
   public color: Color;
 
+  public shipColor: Color;
   public weaponColor: Color;
 
-  private baseFiringRate = 500;
+  private baseFiringRate = 10000;
   private fireTimer: Phaser.Timer;
 
   constructor(
     game: Game,
     x: number,
     y: number,
-    shipType = 'R',
-    weaponType = 'R',
+    shipColor: Color,
+    weaponColor: Color,
   ) {
-    super(game, x, y, `enemy_${shipType}${weaponType}`);
+    super(game, x, y, `enemy_${colorNameToLetter(shipColor)}${colorNameToLetter(weaponColor)}`);
     this.animations.add('move');
     this.animations.play('move', 15, true);
 
-    if (shipType === 'R') this.color = 'red';
-    else if (shipType === 'B') this.color = 'blue';
-    else if (shipType === 'Y') this.color = 'yellow';
-
-    this.shipType = shipType;
-    this.weaponType = weaponType;
-
-    if (weaponType === 'R') this.weaponColor = 'red';
-    else if (weaponType === 'B') this.weaponColor = 'blue';
-    else if (weaponType === 'Y') this.weaponColor = 'yellow';
+    this.shipColor = shipColor;
+    this.weaponColor = weaponColor;
 
     // Size and anchoring
     this.anchor.setTo(0.5, 0.5);
@@ -91,7 +84,7 @@ export class Enemy extends Phaser.Sprite {
   }
 
   public fire() {
-    this.game.enemyWeapons.fire(this.game, this);
+    this.game.enemyBullets.fire(this.game, this);
   }
 
   private explode() {

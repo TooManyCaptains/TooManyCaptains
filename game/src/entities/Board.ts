@@ -4,7 +4,9 @@ import PlayerShip from './PlayerShip';
 import { Enemy } from '../entities/Enemy';
 import Asteroid from './Asteroid';
 import { Game } from '../index';
-import { Bullet, Beam } from './Weapon';
+import { PlayerWeaponBullet } from './PlayerWeapon';
+import { EnemyBullet } from './EnemyWeapon';
+import { randomColor } from '../utils';
 
 export default class Board extends Phaser.Group {
   public minY: number;
@@ -94,11 +96,8 @@ export default class Board extends Phaser.Group {
     if (y === undefined) {
       y = this.maxY * Math.random();
     }
-    const colors = 'RYB'.split('');
-    const allEnemyTypes = _.flatten(colors.map(a => colors.map(b => a + b)));
-    const randomEnemyType: string = _.sample(allEnemyTypes)!;
     this.enemies.add(
-      new Enemy(this.game, x, y, randomEnemyType[0], randomEnemyType[1]),
+      new Enemy(this.game, x, y, randomColor(), randomColor()),
     );
   }
 
@@ -120,9 +119,9 @@ export default class Board extends Phaser.Group {
 
     // Player <-> enemy bullet collision
     this.game.physics.arcade.overlap(
-      this.game.enemyWeapons,
+      this.game.enemyBullets,
       this.player,
-      (player: PlayerShip, bullet: Beam) => {
+      (player: PlayerShip, bullet: EnemyBullet) => {
         const playerHasMatchingShield = player.shieldColors.some(
           color => color === bullet.color,
         );
@@ -132,13 +131,12 @@ export default class Board extends Phaser.Group {
           !playerHasMatchingShield ||
           !player.shield.visible
         ) {
-          player.damage(this.game.enemyWeapons.bulletDamage);
+          player.damage(this.game.enemyBullets.damage);
           this.damagedFx.play();
-          Phaser.GAMES[0].camera.shake(0.005, 400);
-          // player.getHurtTint();
+          this.game.camera.shake(0.005, 400);
           this.expolosion(bullet.x, bullet.y, 0.5);
         } else {
-          player.damage(this.game.enemyWeapons.bulletDamage * 0.05);
+          player.damage(this.game.enemyBullets.damage * 0.05);
           player.shieldTint();
           this.shieldFx.play();
         }
@@ -155,7 +153,7 @@ export default class Board extends Phaser.Group {
       this.game.physics.arcade.overlap(
         this.enemies,
         bulletGroup,
-        (enemy: Enemy, bullet: Bullet) => {
+        (enemy: Enemy, bullet: PlayerWeaponBullet) => {
           const playerBulletCanHurtEnemy = bullet.color.includes(enemy.color);
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
@@ -189,8 +187,7 @@ export default class Board extends Phaser.Group {
       (player: PlayerShip, asteroid: Asteroid) => {
         this.expolosion(asteroid.x, asteroid.y, 1.0);
         asteroid.destroy();
-        Phaser.GAMES[0].camera.shake(0.02, 800);
-        // player.getHurtTint();
+        this.game.camera.shake(0.02, 800);
         player.damage(asteroid.collisionDamage);
         this.collideFx.play();
       },
