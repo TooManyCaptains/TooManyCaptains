@@ -16,14 +16,7 @@ export class EnemyWeapon extends Phaser.Group {
   private bulletVelocity = -200;
 
   constructor(game: Game) {
-    super(
-      game,
-      game.world,
-      'Enemy Bullet',
-      false,
-      true,
-      Phaser.Physics.ARCADE,
-    );
+    super(game, game.world, 'Enemy Bullet', false, true, Phaser.Physics.ARCADE);
 
     for (let i = 0; i < 256; i++) {
       const beam = new Beam(game, 'beam_R');
@@ -33,11 +26,7 @@ export class EnemyWeapon extends Phaser.Group {
   }
 
   public fire(game: Game, ship: Enemy): boolean {
-    if (ship.game.time.time < ship.nextFire) {
-      return false;
-    }
-
-    const x = ship.x - (ship.width/2);
+    const x = ship.x - ship.width / 2;
     const y = ship.y;
 
     const angleToPlayer = toDegrees(
@@ -46,15 +35,7 @@ export class EnemyWeapon extends Phaser.Group {
     const beam = this.getFirstExists(false);
     beam.color = ship.weaponColor;
     beam.loadTexture(`beam_${ship.weaponType}`);
-    beam.fire(
-      x,
-      y,
-      angleToPlayer,
-      this.bulletVelocity,
-      0,
-      600,
-    );
-    ship.nextFire = this.game.time.time + ship.fireRate;
+    beam.fire(x, y, angleToPlayer, this.bulletVelocity, 0, 600);
     return true;
   }
 }
@@ -84,7 +65,6 @@ export class Beam extends Phaser.Sprite {
     );
   }
 }
-
 
 // export class Weapon extends Phaser.Group {
 //   public game: Game;

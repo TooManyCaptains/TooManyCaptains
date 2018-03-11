@@ -159,13 +159,8 @@ export default class Board extends Phaser.Group {
           const playerBulletCanHurtEnemy = bullet.color.includes(enemy.color);
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
-            // enemy.getHurtTint();
-            // enemy.damage(bullet.strength);
-            enemy.kill();
-            if (!enemy.alive) {
-              enemy.explode();
-              this.game.score += 150;
-            }
+            enemy.destroy();
+            this.game.score += 150;
           } else {
             this.shieldFx.play();
           }
@@ -180,7 +175,6 @@ export default class Board extends Phaser.Group {
       this.player,
       (player: PlayerShip, enemy: Enemy) => {
         enemy.destroy();
-        // player.getHurtTint();
         player.damage(enemy.collisionDamage);
       },
     );

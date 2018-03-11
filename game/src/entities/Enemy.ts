@@ -18,8 +18,9 @@ export class Enemy extends Phaser.Sprite {
   public color: Color;
 
   public weaponColor: Color;
-  public nextFire = 0;
-  public fireRate = 250;
+
+  private baseFiringRate = 500;
+  private fireTimer: Phaser.Timer;
 
   constructor(
     game: Game,
@@ -32,16 +33,16 @@ export class Enemy extends Phaser.Sprite {
     this.animations.add('move');
     this.animations.play('move', 15, true);
 
-    if (shipType == 'R') this.color = 'red';
-    else if (shipType == 'B') this.color = 'blue';
-    else if (shipType == 'Y') this.color = 'yellow';
+    if (shipType === 'R') this.color = 'red';
+    else if (shipType === 'B') this.color = 'blue';
+    else if (shipType === 'Y') this.color = 'yellow';
 
     this.shipType = shipType;
     this.weaponType = weaponType;
 
-    if (weaponType == 'R') this.weaponColor = 'red';
-    else if (weaponType == 'B') this.weaponColor = 'blue';
-    else if (weaponType == 'Y') this.weaponColor = 'yellow';
+    if (weaponType === 'R') this.weaponColor = 'red';
+    else if (weaponType === 'B') this.weaponColor = 'blue';
+    else if (weaponType === 'Y') this.weaponColor = 'yellow';
 
     // Size and anchoring
     this.anchor.setTo(0.5, 0.5);
@@ -53,12 +54,11 @@ export class Enemy extends Phaser.Sprite {
     // new HealthBar(this);
 
     // Weapon
-    const baseFiringRate = 10000;
-    const fireTimer = this.game.time.create();
-    fireTimer.loop(baseFiringRate + baseFiringRate * Math.random(), () =>
+    this.fireTimer = this.game.time.create();
+    this.fireTimer.loop(this.baseFiringRate + (this.baseFiringRate * Math.random()), () =>
       this.fire(),
     );
-    fireTimer.start();
+    this.fireTimer.start();
 
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -75,17 +75,10 @@ export class Enemy extends Phaser.Sprite {
     this.explosionFx = this.game.add.audio('explosion');
   }
 
-  public getHurtTint() {
-    this.tint = 0xff0000;
-    window.setTimeout(() => (this.tint = 0xffffff), 150);
-  }
-
-  public explode() {
-    const explosion = this.game.add.sprite(this.x, this.y, 'explosion');
-    explosion.anchor.setTo(0.5, 0.5);
-    explosion.animations.add('explosion');
-    explosion.play('explosion', 30, false, true);
-    this.explosionFx.play();
+  public destroy() {
+    this.explode();
+    this.fireTimer.stop();
+    super.destroy();
   }
 
   public update() {
@@ -99,5 +92,13 @@ export class Enemy extends Phaser.Sprite {
 
   public fire() {
     this.game.enemyWeapons.fire(this.game, this);
+  }
+
+  private explode() {
+    const explosion = this.game.add.sprite(this.x, this.y, 'explosion');
+    explosion.anchor.setTo(0.5, 0.5);
+    explosion.animations.add('explosion');
+    explosion.play('explosion', 30, false, true);
+    this.explosionFx.play();
   }
 }
