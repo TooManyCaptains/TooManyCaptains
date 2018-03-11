@@ -204,9 +204,6 @@ class WeaponsPanel extends Panel {
   }
 
   public update() {
-    // Set battery seconds
-    this.battery.seconds = this.game.player.batteries.weapons;
-
     const newColorPositions = this.game.wiringConfigurations.weapons;
     // If shield colors changed, update the color chart
     if (!isEqual(newColorPositions, this.colorChart.colorPositions)) {
@@ -219,7 +216,6 @@ class WeaponsPanel extends Panel {
 class ShieldsPanel extends Panel {
   public game: Game;
   private colorChart: ColorChart;
-  // private battery: Battery;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'SHIELDS');
@@ -236,25 +232,17 @@ class ShieldsPanel extends Panel {
   }
 
   public update() {
-    // Set battery seconds
-    this.battery.seconds = this.game.player.batteries.shields;
-
     const newColorPositions = this.game.wiringConfigurations.shields;
     // If shield colors changed, update the color chart
     if (!isEqual(newColorPositions, this.colorChart.colorPositions)) {
       this.colorChart.colorPositions = newColorPositions;
     }
   }
-
-  // public blink(isLow: boolean) {
-  //   this.battery.blink(isLow);
-  // }
 }
 
 class ThrustersPanel extends Panel {
   public game: Game;
   private chart: ThrustersChart;
-  // private battery: Battery;
   private thrustersLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
@@ -272,14 +260,7 @@ class ThrustersPanel extends Panel {
     this.add(icon);
   }
 
-  // public blink(isLow: boolean) {
-  //   this.battery.blink(isLow);
-  // }
-
   public update() {
-    // Set battery seconds
-    this.battery.seconds = this.game.player.batteries.thrusters;
-
     if (this.thrustersLevel !== this.game.player.thrustersLevel) {
       this.thrustersLevel = this.game.player.thrustersLevel;
       this.chart.setLevel(this.thrustersLevel);
@@ -291,7 +272,6 @@ class ThrustersPanel extends Panel {
 class RepairsPanel extends Panel {
   public game: Game;
   private chart: ThrustersChart;
-  // private battery: Battery;
   private repairLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
@@ -309,14 +289,7 @@ class RepairsPanel extends Panel {
     this.add(icon);
   }
 
-  // public blink(isLow: boolean) {
-  //   this.battery.blink(isLow);
-  // }
-
   public update() {
-    // Set battery seconds
-    this.battery.seconds = this.game.player.batteries.repairs;
-
     if (this.repairLevel !== this.game.player.repairLevel) {
       this.repairLevel = this.game.player.repairLevel;
       this.chart.setLevel(this.repairLevel);

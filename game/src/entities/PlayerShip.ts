@@ -1,5 +1,4 @@
-import { Subsystem, Color, ColorPosition } from './../../../common/types';
-import { mapValues } from 'lodash';
+import { Color, ColorPosition } from './../../../common/types';
 import { PlayerWeapon } from './PlayerWeapon';
 import HealthBar from './PlayerHealthBar';
 import { Game } from '../index';
@@ -25,12 +24,8 @@ export default class PlayerShip extends Phaser.Sprite {
   public weaponColors: Color[];
   public healthBar: HealthBar;
   public thrustersLevel: number;
-  public batteryDrainTimerFreq: number;
 
   public movementSpeed: number;
-
-  public batteryDrainPerSecond: number;
-  public batteries: { [subsystem in Subsystem]: number };
 
   public sprites: Phaser.Group;
   public explodsions: Phaser.Group;
@@ -64,21 +59,6 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Set hitbox size
     this.body.setSize(177.88, 76.13, 25.8, 11.93); // Set hitbox size
-
-    // Batteries
-    const baseSecs = this.game.params.noCards ? Infinity : 0;
-    this.batteries = {
-      weapons: baseSecs,
-      thrusters: baseSecs,
-      repairs: baseSecs,
-      shields: baseSecs,
-    };
-    this.batteryDrainPerSecond = 0.5;
-    this.batteryDrainTimerFreq = 60;
-    this.game.time
-      .create()
-      .loop(this.batteryDrainTimerFreq, this.onDrainSubsystemBatteries, this)
-      .timer.start();
 
     // Movement
     this.movementSpeed = 0;
@@ -287,7 +267,6 @@ export default class PlayerShip extends Phaser.Sprite {
       this.shield.exists = false;
       return;
     }
-    this.shield.visible = this.batteries.shields > 0;
     this.shield.animations.play(colors.map(colorNameToLetter).join(''));
   }
 
@@ -347,19 +326,7 @@ export default class PlayerShip extends Phaser.Sprite {
     }
   }
 
-  private onDrainSubsystemBatteries() {
-    const delta =
-      this.batteryDrainPerSecond * (this.batteryDrainTimerFreq / 1000);
-    this.batteries = mapValues(this.batteries, charge =>
-      Math.max(0, charge - delta),
-    );
-    this.setShields(this.shieldColors);
-  }
-
   private onRepair() {
-    if (this.batteries.repairs === 0) {
-      return;
-    }
     this.heal(
       this.repairPercentagePerSecond *
         this.maxHealth *

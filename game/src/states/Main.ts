@@ -237,15 +237,11 @@ export default class Main extends Phaser.State {
   }
 
   public onMoveUp() {
-    if (this.player.batteries.thrusters > 0) {
-      this.player.startMovingUp();
-    }
+    this.player.startMovingUp();
   }
 
   public onMoveDown() {
-    if (this.player.batteries.thrusters > 0) {
-      this.player.startMovingDown();
-    }
+    this.player.startMovingDown();
   }
 
   public onMoveStop() {
@@ -270,9 +266,6 @@ export default class Main extends Phaser.State {
   }
 
   public onFire(state: ButtonState) {
-    if (this.player.batteries.weapons === 0) {
-      return;
-    }
     if (state === 'released') {
       this.player.fireWeapon();
     }
