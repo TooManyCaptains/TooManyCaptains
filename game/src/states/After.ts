@@ -8,6 +8,7 @@ export default class Boot extends Phaser.State {
   public create() {
     this.game.add.existing(new Doors(this.game));
     this.game.add.existing(new EndScreen(this.game));
+    this.game.sound.stopAll();
     this.game.add.audio('gameover').play();
   }
 }

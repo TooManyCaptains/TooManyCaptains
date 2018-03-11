@@ -7,6 +7,9 @@ import { Game } from '../index';
 import { range } from 'lodash';
 import Board from './Board';
 
+const LOW_HEALTH = 20;
+const VERY_LOW_HEALTH = 10;
+
 export function colorNameToLetter(color: Color): string {
   return color[0].toUpperCase();
 }
@@ -56,7 +59,8 @@ export default class PlayerShip extends Phaser.Sprite {
 
   private nextFire = 0;
   private fireRate = 750;
-  // private board: Board;
+  private healthLowFx: Phaser.Sound;
+  private healthVeryLowFx: Phaser.Sound;
 
   constructor(board: Board, x: number, y: number) {
     super(board.game, x, y, 'player-ship');
@@ -113,6 +117,8 @@ export default class PlayerShip extends Phaser.Sprite {
     this.moveSlowFx = this.game.add.audio('move_slow');
     this.moveFastFx = this.game.add.audio('move_fast');
     this.chargingFx = this.game.add.audio('charging');
+    this.healthLowFx = this.game.add.audio('health_low');
+    this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
     // Repairs
     this.repairLevel = 0;
@@ -319,6 +325,18 @@ export default class PlayerShip extends Phaser.Sprite {
     this.shield.tint = 0x000000;
     // const h = setInterval(() => (this.shield.tint = 0xffffff), 50);
     setTimeout(() => (this.shield.tint = 0xffffff), 50);
+  }
+
+  public damage(amount: number): Phaser.Sprite {
+    super.damage(amount);
+    if (this.health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
+      this.healthVeryLowFx.stop();
+      this.healthLowFx.play();
+    } else if (this.health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
+      this.healthLowFx.stop();
+      this.healthVeryLowFx.play();
+    }
+    return this;
   }
 
   public fireWeapon() {

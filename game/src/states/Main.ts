@@ -230,7 +230,7 @@ export default class Main extends Phaser.State {
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.D)
-        .onDown.add(() => this.player.damage(5), this);
+        .onDown.add(() => this.player.damage(2.5), this);
 
       this.game.input.keyboard
       .addKey(Phaser.Keyboard.H)
