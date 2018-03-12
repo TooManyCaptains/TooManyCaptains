@@ -17,6 +17,7 @@ import PlayerShip from './entities/PlayerShip';
 import { EnemyBulletPool } from './entities/EnemyWeapon';
 
 import './index.css';
+import NetworkedState from './states/NetworkedState';
 
 function getUrlParams(search: string): { [P in string]: string } {
   const hashes = search.slice(search.indexOf('?') + 1).split('&');
@@ -119,68 +120,19 @@ export class Game extends Phaser.Game {
 
   private bindServerEvents() {
     this.server = new GameServer(this.params.serverURL);
-    const gameMainState = this.state.states.Main as Main;
 
     this.server.socket.on('packet', (packet: Packet) => {
-      if (this.params.debug) {
-        console.log(packet);
+      console.log(packet);
+
+      if (this.state.getCurrentState() instanceof NetworkedState) {
+        (this.state.getCurrentState() as NetworkedState).onPacket(packet);
       }
 
-      if (packet.kind === 'wiring' && this.state.current === 'Main') {
-        packet.configurations.map(({ subsystem, colorPositions }) => {
-          this.wiringConfigurations[subsystem] = colorPositions;
-          if (subsystem === 'weapons') {
-            gameMainState.onWeaponsConfiguration(colorPositions);
-          } else if (subsystem === 'shields') {
-            gameMainState.onShieldsConfiguration(colorPositions);
-          } else if (subsystem === 'thrusters') {
-            gameMainState.onThrustersConfiguration(colorPositions);
-          } else if (subsystem === 'repairs') {
-            gameMainState.onRepairsConfiguration(colorPositions);
-          }
-        });
-      } else if (packet.kind === 'move' && this.state.current === 'Main') {
-        if (packet.state === 'released') {
-          gameMainState.onMoveStop();
-        } else if (packet.direction === 'up') {
-          gameMainState.onMoveUp();
-        } else if (packet.direction === 'down') {
-          gameMainState.onMoveDown();
-        }
-      } else if (packet.kind === 'fire') {
-        if (this.state.current === 'Before' && packet.state === 'released') {
-          if (this.captains.length >= 2) {
-            this.state.start('Main');
-          }
-        } else if (
-          this.state.current === 'After' &&
-          packet.state === 'released'
-        ) {
-          this.state.start('Before');
-        } else if (this.state.current === 'Main') {
-          gameMainState.onFire(packet.state);
-        }
-      } else if (packet.kind === 'scan') {
-        const captain = this.captains.find(cardID => cardID === packet.cardID);
-        if (this.state.current === 'Before') {
-          if (!captain && packet.cardID !== 0) {
-            this.captains.push(packet.cardID);
-          } else {
-            // TODO: add engineer
-          }
-        }
-      } else if (packet.kind === 'cheat') {
-        const cheat = packet.cheat;
-        if (cheat.code === 'kill_player') {
-          this.player.kill();
-        } else if (cheat.code === 'spawn_enemy') {
-          gameMainState.board.spawnEnemy();
-        } else if (cheat.code === 'spawn_asteroid') {
-          gameMainState.board.spawnAsteroid();
-        } else if (cheat.code === 'force_state') {
-          this.gameState = cheat.state;
-        } else if (cheat.code === 'set_volume') {
-          this.setVolume(cheat.volume / 100);
+      if (packet.kind === 'cheat') {
+        if (packet.cheat.code === 'force_state') {
+          this.gameState = packet.cheat.state;
+        } else if (packet.cheat.code === 'set_volume') {
+          this.setVolume(packet.cheat.volume / 100);
         }
       }
     });

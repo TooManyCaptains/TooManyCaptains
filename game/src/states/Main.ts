@@ -1,19 +1,50 @@
+import NetworkedState from './NetworkedState';
 import Board from '../entities/Board';
 import HUD from '../interface/HUD';
-import { ButtonState, ColorPosition } from '../../../common/types';
+import { Packet } from '../../../common/types';
 import PlayerShip from '../entities/PlayerShip';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { sortBy } from 'lodash';
 import { EnemyBulletPool } from '../entities/EnemyWeapon';
 
-export default class Main extends Phaser.State {
+export default class Main extends NetworkedState {
   public game: Game;
   public board: Board;
 
   private recentlyEnded = false;
   private player: PlayerShip;
   private doors: Doors;
+
+  public onPacket(packet: Packet) {
+    if (packet.kind === 'wiring') {
+      packet.configurations.map(({ subsystem, colorPositions }) => {
+        this.game.wiringConfigurations[subsystem] = colorPositions;
+        if (subsystem === 'weapons') {
+          this.player.setWeapons(colorPositions);
+        } else if (subsystem === 'shields') {
+          const colors = sortBy(colorPositions, 'color').map(cp => cp.color);
+          this.player.setShields(colors);
+        } else if (subsystem === 'thrusters') {
+          this.player.setThrustersLevel(colorPositions.length);
+        } else if (subsystem === 'repairs') {
+          this.player.setRepairLevel(colorPositions.length);
+        }
+      });
+    } else if (packet.kind === 'move') {
+      if (packet.state === 'released') {
+        this.player.stopMoving();
+      } else if (packet.direction === 'up') {
+        this.player.startMovingUp();
+      } else if (packet.direction === 'down') {
+        this.player.startMovingDown();
+      }
+    } else if (packet.kind === 'fire') {
+      if (packet.state === 'released') {
+        this.player.fireWeapon();
+      }
+    }
+  }
 
   public preload() {
     this.load.spritesheet(
@@ -217,8 +248,8 @@ export default class Main extends Phaser.State {
         .onDown.add(() => this.player.damage(2.5), this);
 
       this.game.input.keyboard
-      .addKey(Phaser.Keyboard.H)
-      .onDown.add(() => this.player.heal(5), this);
+        .addKey(Phaser.Keyboard.H)
+        .onDown.add(() => this.player.heal(5), this);
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.SPACEBAR)
@@ -234,41 +265,6 @@ export default class Main extends Phaser.State {
     this.game.enemyBullets = new EnemyBulletPool(this.game);
 
     this.startGame();
-  }
-
-  public onMoveUp() {
-    this.player.startMovingUp();
-  }
-
-  public onMoveDown() {
-    this.player.startMovingDown();
-  }
-
-  public onMoveStop() {
-    this.player.stopMoving();
-  }
-
-  public onWeaponsConfiguration(colorPositions: ColorPosition[]) {
-    this.player.setWeapons(colorPositions);
-  }
-
-  public onShieldsConfiguration(colorPositions: ColorPosition[]) {
-    const colors = sortBy(colorPositions, 'color').map(cp => cp.color);
-    this.player.setShields(colors);
-  }
-
-  public onThrustersConfiguration(colorPositions: ColorPosition[]) {
-    this.player.setThrustersLevel(colorPositions.length);
-  }
-
-  public onRepairsConfiguration(colorPositions: ColorPosition[]) {
-    this.player.setRepairLevel(colorPositions.length);
-  }
-
-  public onFire(state: ButtonState) {
-    if (state === 'released') {
-      this.player.fireWeapon();
-    }
   }
 
   public update() {
