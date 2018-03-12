@@ -64,18 +64,6 @@ export default class Scanner extends React.Component<
             subsystem="weapons"
             onScan={this.onCardReaderScanned.bind(this)}
           />
-          <CardReader
-            subsystem="shields"
-            onScan={this.onCardReaderScanned.bind(this)}
-          />
-          <CardReader
-            subsystem="thrusters"
-            onScan={this.onCardReaderScanned.bind(this)}
-          />
-          <CardReader
-            subsystem="repairs"
-            onScan={this.onCardReaderScanned.bind(this)}
-          />
         </div>
       </div>
     );
