@@ -93,6 +93,18 @@ export class Game extends Phaser.Game {
     }
   }
 
+  public setVolume(volume?: number) {
+    if (volume !== undefined) {
+      localStorage.setItem('volume', String(volume));
+      this.sound.volume = volume;
+    } else {
+      const previousVolume = localStorage.getItem('volume');
+      if (previousVolume !== null) {
+        this.setVolume(Number(previousVolume));
+      }
+    }
+  }
+
   get gameState(): GameState {
     return this._gameState;
   }
@@ -168,7 +180,7 @@ export class Game extends Phaser.Game {
         } else if (cheat.code === 'force_state') {
           this.gameState = cheat.state;
         } else if (cheat.code === 'set_volume') {
-          this.sound.volume = cheat.volume / 100;
+          this.setVolume(cheat.volume / 100);
         }
       }
     });
