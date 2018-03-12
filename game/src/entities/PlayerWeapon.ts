@@ -4,11 +4,11 @@ import PlayerShip from './PlayerShip';
 import { colorNameToLetter } from '../utils';
 
 export class PlayerWeaponBullet extends Phaser.Sprite {
-  public color: string;
+  public color: Color;
   public strength = 0;
 
-  constructor(game: Game, key: string) {
-    super(game, 0, 0, key);
+  constructor(game: Game, color: Color) {
+    super(game, 0, 0, `player_bullet_${colorNameToLetter(color)}`);
     this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
     this.anchor.set(0.5);
     this.checkWorldBounds = true;
@@ -36,7 +36,6 @@ export class PlayerWeapon extends Phaser.Group {
   public bulletVelocity = 400;
   public fireRate = 500;
   public color: Color;
-  public colorType: string;
 
   constructor(ship: PlayerShip, color: Color) {
     super(
@@ -48,12 +47,9 @@ export class PlayerWeapon extends Phaser.Group {
       Phaser.Physics.ARCADE,
     );
     this.ship = ship;
-    this.colorType = colorNameToLetter(color);
     this.bulletVelocity = this.bulletVelocity;
     for (let i = 0; i < 64; i++) {
-      const bullet = new PlayerWeaponBullet(this.game, `player_bullet_${this.colorType}`);
-      bullet.color = color;
-      this.add(bullet, true);
+      this.add(new PlayerWeaponBullet(this.game, color), true);
     }
   }
 

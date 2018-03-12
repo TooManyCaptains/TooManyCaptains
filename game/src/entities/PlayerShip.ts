@@ -7,7 +7,7 @@ import { range } from 'lodash';
 import Board from './Board';
 import { colorNameToLetter } from '../utils';
 
-const LOW_HEALTH = 20;
+const LOW_HEALTH = 25;
 const VERY_LOW_HEALTH = 10;
 
 export default class PlayerShip extends Phaser.Sprite {
@@ -45,7 +45,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
   public repair: Phaser.Sprite;
   public ship: Phaser.Sprite;
-  public thurster: Phaser.Sprite;
+  public thruster: Phaser.Sprite;
 
   private nextFire = 0;
   private fireRate = 750;
@@ -58,7 +58,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.anchor.setTo(0.5, 0.5);
 
     // Set hitbox size
-    this.body.setSize(177.88, 76.13, 25.8, 11.93); // Set hitbox size
+    this.body.setSize(177.88, 76.13, 25.8, 11.93);
 
     // Movement
     this.movementSpeed = 0;
@@ -93,11 +93,11 @@ export default class PlayerShip extends Phaser.Sprite {
 
     this.sprites = new Phaser.Group(board.game);
     // 1: Thruster (BOTTOM)
-    this.thurster = board.game.add.sprite(this.x, this.y, 'ship-thurster');
-    this.thurster.animations.add('up', [4, 5, 6, 7], 10, true);
-    this.thurster.animations.add('down', [0, 1, 2, 3], 10, true);
-    this.thurster.visible = false;
-    this.thurster.anchor.setTo(0.5, 0.5);
+    this.thruster = board.game.add.sprite(this.x, this.y, 'ship-thruster');
+    this.thruster.animations.add('up', [4, 5, 6, 7], 10, true);
+    this.thruster.animations.add('down', [0, 1, 2, 3], 10, true);
+    this.thruster.visible = false;
+    this.thruster.anchor.setTo(0.5, 0.5);
     // 2: Ship
     // this.loadTexture('player-ship');
     // this.anchor.setTo(0.5, 0.5);
@@ -167,7 +167,7 @@ export default class PlayerShip extends Phaser.Sprite {
     // 6: Explosion(TOP)
     this.explodsions = new Phaser.Group(board.game);
 
-    this.sprites.add(this.thurster);
+    this.sprites.add(this.thruster);
     this.sprites.add(this.repair);
     this.sprites.add(this.weapons);
     this.sprites.add(this.shield);
@@ -199,17 +199,17 @@ export default class PlayerShip extends Phaser.Sprite {
   public startMovingDown() {
     // Can't move up with 0 thrusters
     if (this.thrustersLevel === 0) {
-      this.thurster.visible = false;
+      this.thruster.visible = false;
       return;
     }
     this.body.velocity.y = this.movementSpeed;
-    this.thurster.visible = true;
-    this.thurster.animations.play('down');
+    this.thruster.visible = true;
+    this.thruster.animations.play('down');
     if (this.thrustersLevel === 1) {
-      this.thurster.animations.getAnimation('down').speed = 10;
+      this.thruster.animations.getAnimation('down').speed = 10;
       this.moveFastFx.play();
     } else if (this.thrustersLevel === 2) {
-      this.thurster.animations.getAnimation('down').speed = 30;
+      this.thruster.animations.getAnimation('down').speed = 30;
       this.moveSlowFx.play();
     }
   }
@@ -217,17 +217,17 @@ export default class PlayerShip extends Phaser.Sprite {
   public startMovingUp() {
     // Can't move with 0 thrusters
     if (this.thrustersLevel === 0) {
-      this.thurster.visible = false;
+      this.thruster.visible = false;
       return;
     }
     this.body.velocity.y = -this.movementSpeed;
-    this.thurster.visible = true;
-    this.thurster.animations.play('up');
+    this.thruster.visible = true;
+    this.thruster.animations.play('up');
     if (this.thrustersLevel === 1) {
-      this.thurster.animations.getAnimation('up').speed = 10;
+      this.thruster.animations.getAnimation('up').speed = 10;
       this.moveFastFx.play();
     } else if (this.thrustersLevel === 2) {
-      this.thurster.animations.getAnimation('up').speed = 30;
+      this.thruster.animations.getAnimation('up').speed = 30;
       this.moveSlowFx.play();
     }
   }
@@ -255,8 +255,8 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weaponLightBottom.y = this.y;
     this.shield.x = this.x;
     this.shield.y = this.y;
-    this.thurster.x = this.x;
-    this.thurster.y = this.y;
+    this.thruster.x = this.x;
+    this.thruster.y = this.y;
     this.repair.x = this.x;
     this.repair.y = this.y;
   }
@@ -312,7 +312,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
   public stopMoving() {
     this.body.velocity.y = 0;
-    this.thurster.visible = false;
+    this.thruster.visible = false;
     this.moveFastFx.stop();
     this.moveSlowFx.stop();
   }

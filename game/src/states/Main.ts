@@ -127,8 +127,8 @@ export default class Main extends Phaser.State {
     );
 
     this.load.spritesheet(
-      'ship-thurster',
-      'assets/sprites/ship_thurster_220x100.png',
+      'ship-thruster',
+      'assets/sprites/ship_thruster_220x100.png',
       220,
       100,
     );

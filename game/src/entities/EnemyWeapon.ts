@@ -45,7 +45,6 @@ export class EnemyBullet extends Phaser.Sprite {
 
 export class EnemyBulletPool extends Phaser.Group {
   public game: Game;
-  public color: Color;
   public damage = 10;
 
   private bulletVelocity = -200;
