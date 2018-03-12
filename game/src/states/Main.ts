@@ -281,6 +281,7 @@ export default class Main extends Phaser.State {
   }
 
   private startGame() {
+    this.game.score = 0;
     this.game.world.bringToTop(this.doors);
     this.doors.open(() => {
       this.game.gameState = 'in_game';
