@@ -62,6 +62,6 @@ export default class Boot extends Phaser.State {
 
     // Update gamestate
     this.game.gameState = 'wait_for_players';
-    this.game.add.audio('music_stage_1').play();
+    this.game.add.audio('music_background').play(undefined, undefined, undefined, true);
   }
 }

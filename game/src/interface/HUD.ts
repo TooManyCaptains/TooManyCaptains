@@ -322,7 +322,6 @@ class CaptainEntry extends Phaser.Group {
 class CaptainsLog extends Phaser.Group {
   public game: Game;
   private entries: CaptainEntry[];
-  private numCaptains: any;
   private title: Phaser.Text;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
@@ -350,24 +349,6 @@ class CaptainsLog extends Phaser.Group {
 
     this.entries = [];
     this.addCaptains();
-    this.numCaptains = this.game.captains.length;
-  }
-
-  public update() {
-    if (this.game.captains.length !== this.numCaptains) {
-      this.numCaptains = this.game.captains.length;
-      if (this.numCaptains > 6) {
-        alert('ERROR: too many captains!');
-      }
-      this.entries.forEach(entry => {
-        if (entry.name === 'CaptainEntry') {
-          this.removeChild(entry);
-        }
-      });
-      this.entries = [];
-      this.addCaptains();
-    }
-    super.update();
   }
 
   private addCaptains() {
@@ -387,7 +368,6 @@ export default class HUD extends Phaser.Group {
   public game: Game;
   private healthBar: BigHealthBar;
   private panels: Panel[];
-  private isBlinkLow = false;
 
   constructor(game: Game, x: number, y: number, width: number, height: number) {
     super(game, undefined, 'HUD');
@@ -412,10 +392,6 @@ export default class HUD extends Phaser.Group {
     captainsLog.x = lastPanel.right + innerPadding;
     captainsLog.y = innerPadding;
 
-    const blinkTimer = this.game.time.create();
-    blinkTimer.loop(650, this.blink, this);
-    blinkTimer.start();
-
     this.healthBar = new BigHealthBar(this.game, this, 1260);
     this.healthBar.y = 340;
     this.healthBar.x = innerPadding * 2;
@@ -433,12 +409,5 @@ export default class HUD extends Phaser.Group {
       this.healthBar.label = `HEALTH ${label}%`;
     }
     super.update();
-  }
-
-  public blink() {
-    this.panels.forEach(panel => {
-      panel.blink(this.isBlinkLow);
-    });
-    this.isBlinkLow = !this.isBlinkLow;
   }
 }

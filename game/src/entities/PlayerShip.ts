@@ -234,7 +234,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
   public setRepairLevel(level: number) {
     this.repairLevel = level;
-    const repairSpeedMap = [0, 0.02, 0.04, 0.06];
+    const repairSpeedMap = [0, 0.02, 0.035, 0.05];
     const repairAnimationSpeedMap = [0, 10, 30, 90];
     this.repairPercentagePerSecond = repairSpeedMap[level];
     if (level > 0) {

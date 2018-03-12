@@ -73,6 +73,7 @@ const AssetManifest = {
     'repairs.mp3',
     'health_low.mp3',
     'health_very_low.mp3',
+    'music_background.mp3',
     'music_stage_1.mp3',
     'music_stage_2.mp3',
     'music_stage_3.mp3',

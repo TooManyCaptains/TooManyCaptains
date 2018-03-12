@@ -106,8 +106,8 @@ export default class Board extends Phaser.Group {
     // XXX: Shouldn't use hard-coded consants for asteroid size.
     // Should be based on the asteroid's intrinsic size.
     let y = (this.maxY - 100) * Math.random() + 50;
-    // Punish players who are shield camping
-    if (this.player.shieldColors.length === 3) {
+    // Punish players who are camping
+    if (this.player.shieldColors.length === 3 || this.player.repairLevel === 3) {
       y = this.player.y;
     }
 

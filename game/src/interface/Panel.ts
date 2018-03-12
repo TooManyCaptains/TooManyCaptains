@@ -25,8 +25,4 @@ export default class Panel extends Phaser.Group {
     text.setTextBounds(0, 125, width, 40);
     text.addColor('black', 0);
   }
-
-  public blink(isLow: boolean) {
-    // console.log('blink');
-  }
 }
