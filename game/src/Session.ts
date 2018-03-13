@@ -1,12 +1,10 @@
 import {
   Color,
   ColorPosition,
-  // Subsystem,
   GameState,
-  CaptainCardID,
-  EngineerCardID,
   WiringConfiguration,
   Packet,
+  CardID,
 } from '../../common/types';
 import GameServer from './GameServer';
 import { sortBy } from 'lodash';
@@ -38,6 +36,7 @@ export default class Session {
   public onScoreChanged: Phaser.Signal;
   public onSubsystemsChanged: Phaser.Signal;
   public onCardsChanged: Phaser.Signal;
+  public onStateChanged: Phaser.Signal;
 
   // Weapons
   public weaponColorPositions: ColorPosition[];
@@ -52,8 +51,7 @@ export default class Session {
   public thrusterLevel: ThrusterLevel;
 
   // Cards
-  public captains: CaptainCardID[];
-  public engineer: EngineerCardID | undefined;
+  public cards: CardID[];
 
   // Score
   public _score: number;
@@ -69,6 +67,7 @@ export default class Session {
     this.onHealthChanged = new Phaser.Signal();
     this.onSubsystemsChanged = new Phaser.Signal();
     this.onCardsChanged = new Phaser.Signal();
+    this.onStateChanged = new Phaser.Signal();
     this.onFire = new Phaser.Signal();
     this.onMove = new Phaser.Signal();
     this.reset();
@@ -80,8 +79,7 @@ export default class Session {
     this.repairLevel = RepairLevel.Off;
     this.thrusterLevel = ThrusterLevel.Off;
     this.shieldColors = [];
-    this.engineer = undefined;
-    this.captains = [];
+    this.cards = [];
     this.weaponColorPositions = [];
     this.score = 0;
     this.health = this.maxHealth;
@@ -126,6 +124,7 @@ export default class Session {
   }
 
   set state(state: GameState) {
+    this.onStateChanged.dispatch(state);
     this.server.notifyGameState(state);
     this._state = state;
   }
@@ -145,35 +144,24 @@ export default class Session {
       })();
       this.onMove.dispatch(thrusterDirection);
     } else if (packet.kind === 'fire') {
-      if (packet.state === 'released') {
-        this.onFire.dispatch();
+      // ignore button-down events, only care about button-up events
+      if (packet.state !== 'released') {
+        return;
       }
+      this.onFire.dispatch();
     } else if (packet.kind === 'scan') {
-      //   if (packet.kind === 'cheat') {
-      //     if (packet.cheat.code === 'force_state') {
-      //       this.session.state = packet.cheat.state;
-      //     } else if (packet.cheat.code === 'set_volume') {
-      //       this.setVolume(packet.cheat.volume / 100);
-      //     }
-      //   }
-      // });
-      // else if (packet.kind === 'fire') {
-      //   if (packet.state === 'released') {
-      //     if (captains.length >= 2) {
-      //       this.state.start('Main');
-      //     }
-      //   }
-      if (packet.cardID === 0) {
-        this.engineer = packet.cardID;
-      } else {
-        const existingCaptain = this.captains.find(
-          cardID => cardID === packet.cardID,
-        );
-        if (!existingCaptain) {
-          this.captains.push(packet.cardID);
-        }
-        this.onCardsChanged.dispatch();
+      const existingCard = this.cards.find(cardID => cardID === packet.cardID);
+      if (!existingCard) {
+        this.cards.push(packet.cardID);
       }
+      this.onCardsChanged.dispatch(packet.cardID);
     }
+    // else if (packet.kind === 'cheat') {
+    //   if (packet.cheat.code === 'force_state') {
+    //     this.session.state = packet.cheat.state;
+    //   } else if (packet.cheat.code === 'set_volume') {
+    //     this.setVolume(packet.cheat.volume / 100);
+    //   }
+    // }
   }
 }

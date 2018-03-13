@@ -20,12 +20,7 @@ class ColorChart extends Phaser.Sprite {
   public game: Game;
   private _colors: Color[];
 
-  constructor(
-    game: Game,
-    x: number,
-    y: number,
-    colors: Color[] = [],
-  ) {
+  constructor(game: Game, x: number, y: number, colors: Color[] = []) {
     super(game, x, y);
     this.anchor.setTo(0.5, 0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -120,7 +115,9 @@ class WeaponsPanel extends Panel {
     this.add(icon);
 
     this.game.session.onSubsystemsChanged.add(() => {
-      this.colorChart.colors = colorPositionsToColors(this.game.session.weaponColorPositions);
+      this.colorChart.colors = colorPositionsToColors(
+        this.game.session.weaponColorPositions,
+      );
     });
   }
 }
@@ -248,14 +245,16 @@ class CaptainsLog extends Phaser.Group {
   }
 
   private addCaptains() {
-    const captains = this.game.session.captains;
+    const captains = this.game.session.cards;
     this.title.setText(`${captains.length} CAPTAINS ONBOARD`);
     captains.forEach((captain, i) => {
-      const entry = new CaptainEntry(this.game, captain, i);
-      entry.x = 22;
-      entry.y = 80 + 43 * i;
-      this.add(entry);
-      this.entries.push(entry);
+      if (captain !== 0) {
+        const entry = new CaptainEntry(this.game, captain, i);
+        entry.x = 22;
+        entry.y = 80 + 43 * i;
+        this.add(entry);
+        this.entries.push(entry);
+      }
     });
   }
 }
