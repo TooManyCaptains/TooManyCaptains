@@ -84,6 +84,7 @@ export default class Board extends Phaser.Group {
   }
 
   public update() {
+    super.update();
     // Player <-> enemy bullet collision
     this.game.physics.arcade.overlap(
       this.enemyBulletPool,

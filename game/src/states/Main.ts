@@ -262,7 +262,9 @@ export default class Main extends Phaser.State {
     }
 
     if (this.game.params.invulnerable) {
-      this.game.session.health = 10_000;
+      const health = 10_000;
+      this.game.session.maxHealth = health;
+      this.game.session.health = health;
     }
 
     this.startNewSession();
