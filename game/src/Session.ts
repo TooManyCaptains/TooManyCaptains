@@ -60,7 +60,7 @@ export default class Session {
   public _score: number;
 
   // Health
-  public readonly maxHealth = 100;
+  public maxHealth = 100;
   private _health: number;
 
   private _state: GameState;
@@ -125,7 +125,7 @@ export default class Session {
   }
 
   set health(health) {
-    this._health = health;
+    this._health = Math.min(this.maxHealth, health);
     this.onHealthChanged.dispatch();
   }
 
