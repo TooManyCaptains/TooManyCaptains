@@ -3,6 +3,7 @@ import HUD from '../interface/HUD';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { ColorPosition } from '../../../common/types';
+import { ThrusterDirection } from '../Session';
 // import { ThrusterDirection } from '../Session';
 
 import Map from '../interface/Map';
@@ -228,21 +229,33 @@ export default class Main extends Phaser.State {
         ];
       }, this);
 
-      // this.game.input.keyboard
-      //   .addKey(Phaser.Keyboard.UP)
-      //   .onDown.add(() => this.player.startMovingUp(), this);
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.UP)
+        .onDown.add(
+          () => this.game.session.onMove.dispatch(ThrusterDirection.Up),
+          this,
+        );
 
-      // this.game.input.keyboard
-      //   .addKey(Phaser.Keyboard.UP)
-      //   .onUp.add(() => this.player.stopMoving(), this);
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.UP)
+        .onUp.add(
+          () => this.game.session.onMove.dispatch(ThrusterDirection.Stopped),
+          this,
+        );
 
-      // this.game.input.keyboard
-      //   .addKey(Phaser.Keyboard.DOWN)
-      //   .onUp.add(() => this.player.stopMoving(), this);
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.DOWN)
+        .onUp.add(
+          () => this.game.session.onMove.dispatch(ThrusterDirection.Stopped),
+          this,
+        );
 
-      //   this.game.input.keyboard
-      //     .addKey(Phaser.Keyboard.DOWN)
-      //     .onDown.add(() => this.player.startMovingDown(), this);
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.DOWN)
+        .onDown.add(
+          () => this.game.session.onMove.dispatch(ThrusterDirection.Down),
+          this,
+        );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.K)
@@ -256,9 +269,9 @@ export default class Main extends Phaser.State {
         .addKey(Phaser.Keyboard.H)
         .onDown.add(() => (this.game.session.health += 5), this);
 
-      //   this.game.input.keyboard
-      //     .addKey(Phaser.Keyboard.SPACEBAR)
-      //     .onDown.add(() => this.player.fireWeapon(), this);
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard.SPACEBAR)
+        .onDown.add(() => this.game.session.onFire.dispatch(), this);
     }
 
     if (this.game.params.invulnerable) {

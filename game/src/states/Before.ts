@@ -64,5 +64,17 @@ export default class Before extends Phaser.State {
     this.game.add
       .audio('music_background')
       .play(undefined, undefined, undefined, true);
+
+    this.game.session.onFire.add(() => {
+      if (this.canStart) {
+        this.state.start('Main');
+      }
+    });
+  }
+
+  private canStart(): boolean {
+    return (
+      this.game.session.cards.length >= 3 && this.game.session.cards.includes(0)
+    );
   }
 }
