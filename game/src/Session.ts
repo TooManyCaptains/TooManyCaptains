@@ -50,7 +50,6 @@ export default class Session {
 
   // Thrusters
   public thrusterLevel: ThrusterLevel;
-  public thrusterDirection: ThrusterDirection;
 
   // Cards
   public captains: CaptainCardID[];
@@ -70,7 +69,7 @@ export default class Session {
     this.onHealthChanged = new Phaser.Signal();
     this.onSubsystemsChanged = new Phaser.Signal();
     this.onCardsChanged = new Phaser.Signal();
-    this.onMove = new Phaser.Signal();
+    this.onFire = new Phaser.Signal();
     this.onMove = new Phaser.Signal();
     this.reset();
     this.server.socket.on('packet', this.onPacket.bind(this));
@@ -78,7 +77,6 @@ export default class Session {
 
   public reset() {
     this.state = 'wait_for_players';
-    this.thrusterDirection = ThrusterDirection.Stopped;
     this.repairLevel = RepairLevel.Off;
     this.thrusterLevel = ThrusterLevel.Off;
     this.shieldColors = [];
@@ -87,12 +85,6 @@ export default class Session {
     this.weaponColorPositions = [];
     this.score = 0;
     this.health = this.maxHealth;
-    // this.wiringConfigurations = {
-    //   weapons: [],
-    //   thrusters: [],
-    //   repairs: [],
-    //   shields: [],
-    // };
   }
 
   set configurations(configurations: WiringConfiguration[]) {
@@ -142,19 +134,20 @@ export default class Session {
     if (packet.kind === 'wiring') {
       this.configurations = packet.configurations;
     } else if (packet.kind === 'move') {
-      // if (packet.state === 'released') {
-      //   // this.
-      //   // this.game.session.thrusterDirection = ThrusterDirection.Stopped;
-      // } else if (packet.direction === 'up') {
-      //   // this.game.session.thrusterDirection = ThrusterDirection.Up;
-      // } else if (packet.direction === 'down') {
-      //   // this.game.session.thrusterDirection = ThrusterDirection.Down;
-      // }
+      const thrusterDirection = (() => {
+        if (packet.state === 'released') {
+          return ThrusterDirection.Stopped;
+        }
+        if (packet.direction === 'up') {
+          return ThrusterDirection.Up;
+        }
+        return ThrusterDirection.Down;
+      })();
+      this.onMove.dispatch(thrusterDirection);
     } else if (packet.kind === 'fire') {
-      this.onFire.dispatch();
-      // if (packet.state === 'released') {
-      //   this.player.fireWeapon();
-      // }
+      if (packet.state === 'released') {
+        this.onFire.dispatch();
+      }
     } else if (packet.kind === 'scan') {
       //   if (packet.kind === 'cheat') {
       //     if (packet.cheat.code === 'force_state') {

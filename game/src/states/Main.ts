@@ -268,6 +268,19 @@ export default class Main extends Phaser.State {
     }
 
     this.startNewSession();
+
+    this.game.session.onHealthChanged.add(this.onHealthChanged, this);
+  }
+
+  private onHealthChanged() {
+    const health = this.game.session.health;
+    if (health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
+      this.healthVeryLowFx.stop();
+      this.healthLowFx.play();
+    } else if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
+      this.healthLowFx.stop();
+      this.healthVeryLowFx.play();
+    }
   }
 
   private onScoreTimer() {
