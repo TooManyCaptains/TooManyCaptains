@@ -1,53 +1,19 @@
-import NetworkedState from './NetworkedState';
 import Board from '../entities/Board';
 import HUD from '../interface/HUD';
-import { Packet } from '../../../common/types';
-import PlayerShip from '../entities/PlayerShip';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
-import { sortBy } from 'lodash';
-import { EnemyBulletPool } from '../entities/EnemyWeapon';
+import { ColorPosition } from '../../../common/types';
+// import { ThrusterDirection } from '../Session';
 
 import Map from '../interface/Map';
 
 export default class Main extends Phaser.State {
   public game: Game;
-  public board: Board;
 
-  private recentlyEnded = false;
-  private player: PlayerShip;
+  private board: Board;
+  // private recentlyEnded = false;
   private doors: Doors;
   private map: Map;
-
-  public onPacket(packet: Packet) {
-    if (packet.kind === 'wiring') {
-      packet.configurations.map(({ subsystem, colorPositions }) => {
-        this.game.wiringConfigurations[subsystem] = colorPositions;
-        if (subsystem === 'weapons') {
-          this.player.setWeapons(colorPositions);
-        } else if (subsystem === 'shields') {
-          const colors = sortBy(colorPositions, 'color').map(cp => cp.color);
-          this.player.setShields(colors);
-        } else if (subsystem === 'thrusters') {
-          this.player.setThrustersLevel(colorPositions.length);
-        } else if (subsystem === 'repairs') {
-          this.player.setRepairLevel(colorPositions.length);
-        }
-      });
-    } else if (packet.kind === 'move') {
-      if (packet.state === 'released') {
-        this.player.stopMoving();
-      } else if (packet.direction === 'up') {
-        this.player.startMovingUp();
-      } else if (packet.direction === 'down') {
-        this.player.startMovingDown();
-      }
-    } else if (packet.kind === 'fire') {
-      if (packet.state === 'released') {
-        this.player.fireWeapon();
-      }
-    }
-  }
 
   public preload() {
     this.load.spritesheet(
@@ -194,13 +160,14 @@ export default class Main extends Phaser.State {
       .tileSprite(0, 0, this.game.width, 730, 'background', undefined)
       .autoScroll(-10, 0);
 
+    const boardHeight = 680;
+
     // Add the game board
-    this.board = new Board(this.game, this.game.width, 680);
-    this.player = this.board.player;
+    this.board = new Board(this.game, this.game.width, boardHeight);
 
     // Panels for HUD
     // tslint:disable-next-line:no-unused-expression
-    new HUD(this.game, 0, this.board.bottom, this.game.width, 410);
+    new HUD(this.game, 0, this.board.bottom);
 
     this.map = new Map(this.game);
 
@@ -220,6 +187,11 @@ export default class Main extends Phaser.State {
     );
     enemyTimer.start();
 
+    // Score timer
+    const scoreTimer = this.game.time.create();
+    scoreTimer.loop(250, this.onScoreTimer, this);
+    scoreTimer.start();
+
     if (this.game.params.debug) {
       // Keyboard shortcuts (for debugging)
       this.game.input.keyboard
@@ -230,83 +202,91 @@ export default class Main extends Phaser.State {
         .addKey(Phaser.Keyboard.A)
         .onDown.add(() => this.board.spawnAsteroid(), this);
 
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.T)
-        .onDown.add(() => this.player.setThrustersLevel(2), this);
+      this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(() => {
+        const allPositions: ColorPosition[] = [
+          { color: 'blue', position: 0 },
+          { color: 'red', position: 1 },
+          { color: 'yellow', position: 2 },
+        ];
+        this.game.session.configurations = [
+          {
+            subsystem: 'weapons',
+            colorPositions: allPositions,
+          },
+          {
+            subsystem: 'shields',
+            colorPositions: allPositions,
+          },
+          {
+            subsystem: 'repairs',
+            colorPositions: allPositions,
+          },
+          {
+            subsystem: 'thrusters',
+            colorPositions: allPositions.slice(0, 2),
+          },
+        ];
+      }, this);
 
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.UP)
-        .onDown.add(() => this.player.startMovingUp(), this);
+      // this.game.input.keyboard
+      //   .addKey(Phaser.Keyboard.UP)
+      //   .onDown.add(() => this.player.startMovingUp(), this);
 
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.UP)
-        .onUp.add(() => this.player.stopMoving(), this);
+      // this.game.input.keyboard
+      //   .addKey(Phaser.Keyboard.UP)
+      //   .onUp.add(() => this.player.stopMoving(), this);
 
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.DOWN)
-        .onUp.add(() => this.player.stopMoving(), this);
+      // this.game.input.keyboard
+      //   .addKey(Phaser.Keyboard.DOWN)
+      //   .onUp.add(() => this.player.stopMoving(), this);
 
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.DOWN)
-        .onDown.add(() => this.player.startMovingDown(), this);
+      //   this.game.input.keyboard
+      //     .addKey(Phaser.Keyboard.DOWN)
+      //     .onDown.add(() => this.player.startMovingDown(), this);
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.K)
-        .onDown.add(() => this.player.kill(), this);
+        .onDown.add(() => (this.game.session.health = 0), this);
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.D)
-        .onDown.add(() => this.player.damage(2.5), this);
+        .onDown.add(() => (this.game.session.health -= 5), this);
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.H)
-        .onDown.add(() => this.player.heal(5), this);
+        .onDown.add(() => (this.game.session.health += 5), this);
 
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.SPACEBAR)
-        .onDown.add(() => this.player.fireWeapon(), this);
+      //   this.game.input.keyboard
+      //     .addKey(Phaser.Keyboard.SPACEBAR)
+      //     .onDown.add(() => this.player.fireWeapon(), this);
     }
 
     if (this.game.params.invulnerable) {
-      const health = 100 * 1000;
-      this.player.maxHealth = health;
-      this.player.health = health;
+      this.game.session.health = 10_000;
     }
 
-    this.game.enemyBullets = new EnemyBulletPool(this.game);
-
-    this.startGame();
+    this.startNewSession();
   }
 
-  public update() {
-    const isGameEnding = !this.player.alive;
-
-    // Did the game just end now (i.e. it was previously not ended)?
-    if (isGameEnding && this.game.gameState === 'in_game') {
-      this.endGame();
-    }
+  private onScoreTimer() {
+    this.game.session.score += 1;
+    // this.scoreText.text = `SCORE: ${this.score}`;
   }
 
-  public render() {
-    this.game.debug.bodyInfo(this.player, 32, 32);
-    this.game.debug.body(this.player);
-  }
-
-  private startGame() {
-    this.game.score = 0;
+  private startNewSession() {
     this.game.world.bringToTop(this.doors);
     this.doors.open(() => {
-      this.game.gameState = 'in_game';
+      this.game.session.state = 'in_game';
     });
   }
 
-  private endGame() {
-    this.game.gameState = 'game_over';
-    this.recentlyEnded = true;
-    this.game.world.bringToTop(this.doors);
-    this.doors.close(() => {
-      this.game.state.start('After');
-    });
-    window.setTimeout(() => (this.recentlyEnded = false), 7500);
-  }
+  // private endSession() {
+  //   this.game.session.state = 'game_over';
+  //   this.recentlyEnded = true;
+  //   this.game.world.bringToTop(this.doors);
+  //   this.doors.close(() => {
+  //     this.game.state.start('After');
+  //   });
+  //   window.setTimeout(() => (this.recentlyEnded = false), 7500);
+  // }
 }

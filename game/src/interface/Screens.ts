@@ -145,8 +145,8 @@ export class StartScreen extends Phaser.Group {
   }
 
   private checkForNewCaptains() {
-    if (this.addedCaptains.length !== this.game.captains.length) {
-      this.game.captains.forEach(captain => {
+    if (this.addedCaptains.length !== this.game.session.captains.length) {
+      this.game.session.captains.forEach(captain => {
         if (!this.addedCaptains.includes(captain)) {
           this.addedCaptains.push(captain);
           this.onCaptainJoined(captain);
@@ -189,7 +189,7 @@ export class EndScreen extends Phaser.Group {
     // Score
     const x = this.game.world.centerX;
     const y = this.game.world.centerY * 0.5;
-    const text = this.game.add.text(x, y, `SCORE: ${this.game.score}`, {
+    const text = this.game.add.text(x, y, `SCORE: ${this.game.session.score}`, {
       ...baseStyle,
       fontSize: 110,
     });

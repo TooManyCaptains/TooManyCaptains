@@ -2,10 +2,12 @@ import { Color } from './../../../common/types';
 import { Game } from '../index';
 import { Enemy } from './Enemy';
 import { colorNameToLetter } from '../utils';
+import Player from './Player';
 
 const toDegrees = (radians: number) => radians * 180 / Math.PI;
 
 export class EnemyBullet extends Phaser.Sprite {
+  public strength: number;
   private _color: Color;
 
   constructor(game: Game, color?: Color) {
@@ -32,8 +34,15 @@ export class EnemyBullet extends Phaser.Sprite {
     return this._color;
   }
 
-  public fire(x: number, y: number, angle: number, speed: number) {
+  public fire(
+    x: number,
+    y: number,
+    angle: number,
+    speed: number,
+    strength: number,
+  ) {
     this.reset(x, y);
+    this.strength = strength;
     this.angle = angle;
     this.game.physics.arcade.velocityFromAngle(
       angle,
@@ -45,28 +54,33 @@ export class EnemyBullet extends Phaser.Sprite {
 
 export class EnemyBulletPool extends Phaser.Group {
   public game: Game;
-  public damage = 10;
+  private player: Player;
 
-  private bulletVelocity = -200;
-
-  constructor(game: Game) {
+  constructor(game: Game, player: Player) {
     super(game, game.world, 'Enemy Bullet', false, true, Phaser.Physics.ARCADE);
+
+    this.player = player;
 
     for (let i = 0; i < 256; i++) {
       this.add(new EnemyBullet(game), true);
     }
   }
 
-  public fire(game: Game, ship: Enemy): boolean {
-    const x = ship.x - ship.width / 2;
-    const y = ship.y;
+  public fire(enemy: Enemy) {
+    const x = enemy.x - enemy.width / 2;
+    const y = enemy.y;
 
     const angleToPlayer = toDegrees(
-      game.physics.arcade.angleToXY(game.player, x, y),
+      this.game.physics.arcade.angleToXY(this.player, x, y),
     );
-    const beam = this.getFirstExists(false);
-    beam.color = ship.weaponColor;
-    beam.fire(x, y, angleToPlayer, this.bulletVelocity, 0, 600);
-    return true;
+    const enemyBullet = this.getFirstExists(false);
+    enemyBullet.color = enemy.weaponColor;
+    enemyBullet.fire(
+      x,
+      y,
+      angleToPlayer,
+      enemy.bulletVelocity,
+      enemy.bulletStrength,
+    );
   }
 }

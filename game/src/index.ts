@@ -6,18 +6,9 @@ import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
-import {
-  Packet,
-  GameState,
-  Subsystem,
-  ColorPosition,
-  CaptainCardID,
-} from '../../common/types';
-import PlayerShip from './entities/PlayerShip';
-import { EnemyBulletPool } from './entities/EnemyWeapon';
 
 import './index.css';
-import NetworkedState from './states/NetworkedState';
+import Session from './Session';
 
 function getUrlParams(search: string): { [P in string]: string } {
   const hashes = search.slice(search.indexOf('?') + 1).split('&');
@@ -59,20 +50,8 @@ function getConfig() {
 
 export class Game extends Phaser.Game {
   public params: Config;
-  public server: GameServer;
-  public captains: CaptainCardID[] = [];
-  public score: number = 0;
-  public player: PlayerShip;
-  public wiringConfigurations: { [S in Subsystem]: ColorPosition[] } = {
-    weapons: [],
-    thrusters: [],
-    repairs: [],
-    shields: [],
-  };
-
-  public enemyBullets: EnemyBulletPool;
-
-  private _gameState: GameState = 'wait_for_players';
+  public session: Session;
+  private server: GameServer;
 
   constructor() {
     super(1920, 1080, Phaser.CANVAS, 'surface');
@@ -85,13 +64,15 @@ export class Game extends Phaser.Game {
     this.params = getConfig();
     console.log(this.params);
 
-    // Kick things off with the boot state.
-    this.state.start('Boot');
-    this.bindServerEvents();
-
     if (this.params.debug) {
       this.setupPerformanceStatistics();
     }
+
+    this.server = new GameServer(this.params.serverURL);
+    this.session = new Session(this.server);
+
+    // Kick things off with the boot state.
+    this.state.start('Boot');
   }
 
   public setVolume(volume?: number) {
@@ -104,38 +85,6 @@ export class Game extends Phaser.Game {
         this.setVolume(Number(previousVolume));
       }
     }
-  }
-
-  get gameState(): GameState {
-    return this._gameState;
-  }
-
-  set gameState(gameState: GameState) {
-    this._gameState = gameState;
-    if (gameState === 'wait_for_players') {
-      this.captains = [];
-    }
-    this.server.notifyGameState(gameState);
-  }
-
-  private bindServerEvents() {
-    this.server = new GameServer(this.params.serverURL);
-
-    this.server.socket.on('packet', (packet: Packet) => {
-      console.log(packet);
-
-      if (this.state.getCurrentState() instanceof NetworkedState) {
-        (this.state.getCurrentState() as NetworkedState).onPacket(packet);
-      }
-
-      if (packet.kind === 'cheat') {
-        if (packet.cheat.code === 'force_state') {
-          this.gameState = packet.cheat.state;
-        } else if (packet.cheat.code === 'set_volume') {
-          this.setVolume(packet.cheat.volume / 100);
-        }
-      }
-    });
   }
 
   private setupPerformanceStatistics() {
