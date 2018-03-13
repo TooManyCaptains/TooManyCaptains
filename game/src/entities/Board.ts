@@ -1,28 +1,31 @@
 import _ from 'lodash';
 
-import PlayerShip from './PlayerShip';
+import Player from './Player';
 import { Enemy } from '../entities/Enemy';
 import Asteroid from './Asteroid';
 import { Game } from '../index';
 import { PlayerWeaponBullet } from './PlayerWeapon';
-import { EnemyBullet } from './EnemyWeapon';
+import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
 import { randomColor } from '../utils';
 
 export default class Board extends Phaser.Group {
-  public minY: number;
-  public maxX: number;
-  public maxY: number;
   public game: Game;
-  public player: PlayerShip;
-  public enemies: Phaser.Group;
+
+  private enemyBulletPool: EnemyBulletPool;
+  private player: Player;
+  private enemies: Phaser.Group;
   private asteroids: Phaser.Group;
   private collideFx: Phaser.Sound;
   private damagedFx: Phaser.Sound;
   private shieldFx: Phaser.Sound;
-  // private scoreText: Phaser.Text;
 
   constructor(game: Game, width: number, height: number) {
     super(game);
+
+    this.player = new Player(this.game, 150, height / 2);
+
+    // Keep game sprites (which respect bounds) within the bounds of the board
+    this.game.world.setBounds(0, 0, width, height);
 
     // Sound FX
     this.shieldFx = this.game.add.audio('shield');
@@ -39,46 +42,8 @@ export default class Board extends Phaser.Group {
     mask.drawRect(0, 0, width, height);
     this.mask = mask;
 
-    // // Score text
-    // const rectWidth = 260;
-    // const rectHeight = 69;
-    // const rectOffsetFromEdge = 15;
-    // const offsetLeft = 21;
-    // const offsetTop = 14;
-    // const graphics = this.game.add.graphics(
-    //   width - rectWidth - rectOffsetFromEdge,
-    //   height / 2 - rectHeight / 2,
-    //   this,
-    // );
-    // graphics.lineStyle(2, 0x000000, 1);
-    // graphics.beginFill(0xffffff);
-    // graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 37.5);
-    // this.scoreText = this.game.add.text(
-    //   width - rectWidth - rectOffsetFromEdge + offsetLeft,
-    //   height / 2 - rectHeight / 2 + offsetTop,
-    //   '',
-    //   {
-    //     font: `${32}px Exo 2`,
-    //     fill: 'black',
-    //     fontWeight: 900,
-    //   },
-    //   this,
-    // );
-
-    // Boundaries for the playable game area
-    this.minY = 90;
-    this.maxX = width - 100;
-    this.maxY = height - 50;
-
-    // Score timer
-    const scoreTimer = this.game.time.create();
-    scoreTimer.loop(250, this.onScoreTimer, this);
-    scoreTimer.start();
-
-    // Player ship
-    this.player = new PlayerShip(this, 125, height / 2);
-    this.game.player = this.player;
-    this.add(this.player);
+    // Create recycled bullet pool for enemy bullets
+    this.enemyBulletPool = new EnemyBulletPool(this.game, this.player);
 
     // Add starting enemies
     this.enemies = new Phaser.Group(this.game, undefined, 'enemies');
@@ -89,55 +54,57 @@ export default class Board extends Phaser.Group {
       );
     });
     this.add(this.enemies);
+
+    // Player ship
+    this.add(this.player);
   }
 
   public spawnEnemy(y?: number) {
-    const x = this.maxX;
-    if (y === undefined) {
-      y = this.maxY * Math.random();
-    }
     this.enemies.add(
-      new Enemy(this.game, x, y, randomColor(), randomColor()),
+      new Enemy(
+        this.game,
+        this.width,
+        y || this.centerY,
+        randomColor(),
+        randomColor(),
+        this.enemyBulletPool,
+      ),
     );
   }
 
   public spawnAsteroid() {
-    const x = this.maxX;
-    // XXX: Shouldn't use hard-coded consants for asteroid size.
-    // Should be based on the asteroid's intrinsic size.
-    let y = (this.maxY - 100) * Math.random() + 50;
+    const isPlayerCamping =
+      this.game.session.shieldColors.length === 3 ||
+      this.game.session.repairLevel === 3;
     // Punish players who are camping
-    if (this.player.shieldColors.length === 3 || this.player.repairLevel === 3) {
-      y = this.player.y;
-    }
-
-    this.asteroids.add(new Asteroid(this.game, x, y));
+    const y = isPlayerCamping ? this.player.y : this.width * Math.random();
+    const asteroid = new Asteroid(this.game, this.width, y);
+    this.asteroids.add(asteroid);
+    asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
   }
 
   public update() {
-    super.update();
-
     // Player <-> enemy bullet collision
     this.game.physics.arcade.overlap(
-      this.game.enemyBullets,
-      this.player,
-      (player: PlayerShip, bullet: EnemyBullet) => {
-        const playerHasMatchingShield = player.shieldColors.some(
+      this.enemyBulletPool,
+      this.player.ship,
+      (playerShip: Phaser.Sprite, bullet: EnemyBullet) => {
+        const playerHasMatchingShield = this.game.session.shieldColors.some(
           color => color === bullet.color,
         );
         // Bullet hits
         if (
-          player.shieldColors.length === 0 ||
-          !playerHasMatchingShield ||
-          !player.shield.visible
+          this.game.session.shieldColors.length === 0 ||
+          !playerHasMatchingShield
         ) {
-          player.damage(this.game.enemyBullets.damage);
+          this.game.session.health -= bullet.strength;
           this.damagedFx.play();
           this.game.camera.shake(0.005, 400);
           this.expolosion(bullet.x, bullet.y, 0.5);
         } else {
-          player.damage(this.game.enemyBullets.damage * 0.05);
-          player.shieldTint();
+          this.game.session.health -= bullet.strength * 0.05;
+          // player.damage(bullet.strength * 0.05);
+          // player.shieldTint();
           this.shieldFx.play();
         }
         bullet.kill();
@@ -154,11 +121,13 @@ export default class Board extends Phaser.Group {
         this.enemies,
         bulletGroup,
         (enemy: Enemy, bullet: PlayerWeaponBullet) => {
-          const playerBulletCanHurtEnemy = bullet.color.includes(enemy.color);
+          const playerBulletCanHurtEnemy = bullet.color.includes(
+            enemy.shipColor,
+          );
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
             enemy.destroy();
-            this.game.score += 150;
+            this.game.session.score += 150;
           } else {
             this.shieldFx.play();
           }
@@ -170,10 +139,10 @@ export default class Board extends Phaser.Group {
     // Enemy <-> player ship (no shield) collision
     this.game.physics.arcade.overlap(
       this.enemies,
-      this.player,
-      (player: PlayerShip, enemy: Enemy) => {
+      this.player.ship,
+      (playerShip: Phaser.Sprite, enemy: Enemy) => {
         enemy.destroy();
-        player.damage(enemy.collisionDamage);
+        this.game.session.health -= enemy.collisionDamage;
       },
     );
 
@@ -183,15 +152,19 @@ export default class Board extends Phaser.Group {
     // Player <-> asteroid collision
     this.game.physics.arcade.overlap(
       this.asteroids,
-      this.player,
-      (player: PlayerShip, asteroid: Asteroid) => {
+      this.player.ship,
+      (playerShip: Phaser.Sprite, asteroid: Asteroid) => {
         this.expolosion(asteroid.x, asteroid.y, 1.0);
         asteroid.destroy();
         this.game.camera.shake(0.02, 800);
-        player.damage(asteroid.collisionDamage);
+        this.game.session.health -= asteroid.collisionDamage;
         this.collideFx.play();
       },
     );
+  }
+
+  private onAsteroidOutOfBounds(asteroid: Asteroid) {
+    this.game.session.score += 250;
   }
 
   private expolosion(x: number, y: number, scale: number) {
@@ -200,10 +173,5 @@ export default class Board extends Phaser.Group {
     explosion.anchor.setTo(0.75, 0.5);
     explosion.animations.add('explosion');
     explosion.play('explosion', 30, false, true);
-  }
-
-  private onScoreTimer() {
-    this.game.score += 1;
-    // this.scoreText.text = `SCORE: ${this.game.score}`;
   }
 }

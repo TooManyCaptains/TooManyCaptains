@@ -1,6 +1,6 @@
 import { Color } from './../../../common/types';
 import { Game } from '../index';
-import PlayerShip from './PlayerShip';
+import Player from './Player';
 import { colorNameToLetter } from '../utils';
 
 export class PlayerWeaponBullet extends Phaser.Sprite {
@@ -31,22 +31,22 @@ export class PlayerWeaponBullet extends Phaser.Sprite {
 
 export class PlayerWeapon extends Phaser.Group {
   public game: Game;
-  public ship: PlayerShip;
+  public player: Player;
   public nextFire = 0;
   public bulletVelocity = 400;
   public fireRate = 500;
   public color: Color;
 
-  constructor(ship: PlayerShip, color: Color) {
+  constructor(player: Player, color: Color) {
     super(
-      ship.game,
-      ship.game.world,
+      player.game,
+      player.game.world,
       'Player Bullet',
       false,
       true,
       Phaser.Physics.ARCADE,
     );
-    this.ship = ship;
+    this.player = player;
     this.bulletVelocity = this.bulletVelocity;
     for (let i = 0; i < 64; i++) {
       this.add(new PlayerWeaponBullet(this.game, color), true);
@@ -56,11 +56,11 @@ export class PlayerWeapon extends Phaser.Group {
   public fire(strength: number, canon: number) {
     console.info(`firing with strength: ${strength}`);
     const x = [
-      this.ship.x + this.ship.width / 2 - 48,
-      this.ship.x + this.ship.width / 2,
-      this.ship.x + this.ship.width / 2 - 48,
+      this.player.ship.x + this.player.ship.width / 2 - 48,
+      this.player.ship.x + this.player.ship.width / 2,
+      this.player.ship.x + this.player.ship.width / 2 - 48,
     ];
-    const y = [this.ship.y - 33.5, this.ship.y, this.ship.y + 33.5];
+    const y = [this.player.ship.y - 33.5, this.player.ship.y, this.player.ship.y + 33.5];
     this.getFirstExists(false).fire(
       x[canon],
       y[canon],

@@ -1,93 +1,10 @@
 import Panel from './Panel';
 import { Game } from '../index';
-import { Subsystem, ColorPosition, CaptainCardID } from '../../../common/types';
+import { Subsystem, CaptainCardID, Color } from '../../../common/types';
 import { baseStyle } from './Styles';
 import manifest from '../../../common/manifest';
-import { colorPositionsToColorKey } from '../utils';
-import { isEqual } from 'lodash';
-
-class HealthBar {
-  public game: Game;
-  public text: Phaser.Text;
-  private width: number;
-  private height: number;
-  private bar: Phaser.Graphics;
-  private barMask: Phaser.Graphics;
-  private background: Phaser.Graphics;
-
-  constructor(
-    game: Game,
-    parent: Phaser.Group,
-    width = 100,
-    height = 20,
-    color = 0,
-    label = '',
-    value = 0,
-  ) {
-    this.game = game;
-    this.width = width;
-    this.height = height;
-
-    this.background = game.add.graphics();
-    this.background.beginFill(0x999999, 1);
-    this.background.drawRoundedRect(0, 0, this.width, this.height, 25);
-
-    this.bar = game.add.graphics();
-    this.bar.beginFill(color, 1);
-
-    this.barMask = game.add.graphics();
-
-    this.color = color;
-
-    parent.add(this.background);
-    parent.add(this.bar);
-    parent.add(this.barMask);
-
-    this.text = game.add.text(0, 0, label, {
-      ...baseStyle,
-      fontSize: 28,
-      boundsAlignH: 'center',
-      fontWeight: 600,
-      fill: 'black',
-    });
-    this.text.setTextBounds(0, 0, this.width, this.height + 2);
-    parent.add(this.text);
-
-    this.bar.mask = this.barMask;
-    this.value = value;
-  }
-
-  set x(x: number) {
-    this.barMask.x = x;
-    this.bar.x = x;
-    this.text.x = x;
-    this.background.x = x;
-  }
-
-  set y(y: number) {
-    this.barMask.y = y;
-    this.bar.y = y;
-    this.text.y = y;
-    this.background.y = y;
-  }
-
-  set color(color: number) {
-    this.bar.clear();
-    this.bar.beginFill(color, 1);
-    this.bar.drawRoundedRect(0, 0, this.width, this.height, 25);
-    this.barMask.clear();
-    this.barMask.beginFill(color, 1);
-    this.barMask.drawRect(0, 0, this.width, this.height);
-  }
-
-  set label(label: string) {
-    this.text.setText(label);
-  }
-
-  set value(value: number) {
-    this.barMask.scale.x = value;
-  }
-}
+import { colorsToColorKey, colorPositionsToColors } from '../utils';
+import HealthBar from '../entities/HealthBar';
 
 class BigHealthBar extends HealthBar {
   public game: Game;
@@ -101,28 +18,28 @@ class BigHealthBar extends HealthBar {
 
 class ColorChart extends Phaser.Sprite {
   public game: Game;
-  private _colorPositions: ColorPosition[];
+  private _colors: Color[];
 
   constructor(
     game: Game,
     x: number,
     y: number,
-    colorPositions: ColorPosition[] = [],
+    colors: Color[] = [],
   ) {
     super(game, x, y);
     this.anchor.setTo(0.5, 0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.colorPositions = colorPositions;
+    this.colors = colors;
   }
 
-  get colorPositions() {
-    return this._colorPositions;
+  get colors() {
+    return this._colors;
   }
 
-  set colorPositions(colorPositions: ColorPosition[]) {
-    this._colorPositions = colorPositions;
-    const colorKey = colorPositionsToColorKey(colorPositions);
-    if (colorPositions.length > 0) {
+  set colors(colors: Color[]) {
+    this._colors = colors;
+    const colorKey = colorsToColorKey(colors);
+    if (colors.length > 0) {
       this.body.angularVelocity = 75;
     } else {
       this.body.angularVelocity = 0;
@@ -201,15 +118,10 @@ class WeaponsPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'weapons');
     this.add(icon);
-  }
 
-  public update() {
-    const newColorPositions = this.game.wiringConfigurations.weapons;
-    // If shield colors changed, update the color chart
-    if (!isEqual(newColorPositions, this.colorChart.colorPositions)) {
-      this.colorChart.colorPositions = newColorPositions;
-    }
-    super.update();
+    this.game.session.onSubsystemsChanged.add(() => {
+      this.colorChart.colors = colorPositionsToColors(this.game.session.weaponColorPositions);
+    });
   }
 }
 
@@ -229,21 +141,16 @@ class ShieldsPanel extends Panel {
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'shields');
     this.add(icon);
-  }
 
-  public update() {
-    const newColorPositions = this.game.wiringConfigurations.shields;
-    // If shield colors changed, update the color chart
-    if (!isEqual(newColorPositions, this.colorChart.colorPositions)) {
-      this.colorChart.colorPositions = newColorPositions;
-    }
+    this.game.session.onSubsystemsChanged.add(() => {
+      this.colorChart.colors = this.game.session.shieldColors;
+    });
   }
 }
 
 class ThrustersPanel extends Panel {
   public game: Game;
-  private chart: ThrustersChart;
-  private thrustersLevel = 0;
+  public chart: ThrustersChart;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'THRUSTERS');
@@ -253,26 +160,20 @@ class ThrustersPanel extends Panel {
     const oldBottom = this.bottom;
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
     mask.anchor.setTo(0.5, 0.75);
-    // mask.scale.setTo(1.5, 1.5)
     this.add(mask);
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'thrusters');
     this.add(icon);
-  }
 
-  public update() {
-    if (this.thrustersLevel !== this.game.player.thrustersLevel) {
-      this.thrustersLevel = this.game.player.thrustersLevel;
-      this.chart.setLevel(this.thrustersLevel);
-    }
-    super.update();
+    this.game.session.onSubsystemsChanged.add(() => {
+      this.chart.setLevel(this.game.session.thrusterLevel);
+    });
   }
 }
 
 class RepairsPanel extends Panel {
   public game: Game;
   private chart: ThrustersChart;
-  private repairLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'REPAIRS');
@@ -282,19 +183,14 @@ class RepairsPanel extends Panel {
     const oldBottom = this.bottom;
     const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
     mask.anchor.setTo(0.5, 0.75);
-    // mask.scale.setTo(1.5, 1.5)
     this.add(mask);
 
     const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'repairs');
     this.add(icon);
-  }
 
-  public update() {
-    if (this.repairLevel !== this.game.player.repairLevel) {
-      this.repairLevel = this.game.player.repairLevel;
-      this.chart.setLevel(this.repairLevel);
-    }
-    super.update();
+    this.game.session.onSubsystemsChanged.add(() => {
+      this.chart.setLevel(this.game.session.repairLevel);
+    });
   }
 }
 
@@ -352,7 +248,7 @@ class CaptainsLog extends Phaser.Group {
   }
 
   private addCaptains() {
-    const captains = this.game.captains;
+    const captains = this.game.session.captains;
     this.title.setText(`${captains.length} CAPTAINS ONBOARD`);
     captains.forEach((captain, i) => {
       const entry = new CaptainEntry(this.game, captain, i);
@@ -369,7 +265,7 @@ export default class HUD extends Phaser.Group {
   private healthBar: BigHealthBar;
   private panels: Panel[];
 
-  constructor(game: Game, x: number, y: number, width: number, height: number) {
+  constructor(game: Game, x: number, y: number) {
     super(game, undefined, 'HUD');
     this.x = x;
     this.y = y;
@@ -396,18 +292,17 @@ export default class HUD extends Phaser.Group {
     this.healthBar.y = 340;
     this.healthBar.x = innerPadding * 2;
     this.bringToTop(this.healthBar);
+
+    this.game.session.onHealthChanged.add(this.onHealthChanged, this);
   }
 
-  public update() {
-    const playerHealth = this.game.player.health;
-    if (this.healthBar.value !== playerHealth) {
-      this.healthBar.value = playerHealth / this.game.player.maxHealth;
+  private onHealthChanged() {
+    const health = this.game.session.health;
+    if (this.healthBar.value !== health) {
+      this.healthBar.value = health / this.game.session.maxHealth;
       const label =
-        playerHealth > 25
-          ? Math.ceil(playerHealth).toFixed(0)
-          : playerHealth.toFixed(1);
+        health > 25 ? Math.ceil(health).toFixed(0) : health.toFixed(1);
       this.healthBar.label = `HEALTH ${label}%`;
     }
-    super.update();
   }
 }

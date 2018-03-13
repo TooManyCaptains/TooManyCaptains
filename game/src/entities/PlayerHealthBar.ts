@@ -1,5 +1,3 @@
-import PlayerShip from './PlayerShip';
-
 // XXX: This code should be merged
 // with the healthbar in HUD.ts. It should also
 // probably be rewritten to use a group instead
@@ -7,12 +5,12 @@ import PlayerShip from './PlayerShip';
 export default class PlayerHealthBar {
   private height = 15;
   private width: number;
-  private ship: PlayerShip;
+  private ship: Phaser.Sprite;
   private bar: Phaser.Graphics;
   private barMask: Phaser.Graphics;
   private background: Phaser.Graphics;
 
-  constructor(ship: PlayerShip, color = 0x30ee02) {
+  constructor(ship: Phaser.Sprite, color = 0x30ee02) {
     const game = ship.game;
     this.ship = ship;
     this.width = this.ship.width * 0.65;
