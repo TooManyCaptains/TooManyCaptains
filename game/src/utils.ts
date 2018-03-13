@@ -1,7 +1,7 @@
 import { sortBy, sample } from 'lodash';
 import { ColorPosition, Color } from '../../common/types';
 
-const COLORS: Color[] = ['blue', 'red', 'yellow'];
+export const COLORS: Color[] = ['blue', 'red', 'yellow'];
 
 export function colorNameToLetter(color: Color): string {
   return color[0].toUpperCase();

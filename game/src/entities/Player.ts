@@ -3,34 +3,27 @@ import { PlayerWeapon } from './PlayerWeapon';
 import { Game } from '../index';
 
 import { range } from 'lodash';
-import { ThrusterDirection, ThrusterLevel } from '../Session';
-import { colorsToColorKey } from '../utils';
-
-// const LOW_HEALTH = 25;
-// const VERY_LOW_HEALTH = 10;
+import { ThrusterLevel, ThrusterDirection } from '../Session';
+import { colorsToColorKey, COLORS } from '../utils';
+import { Color } from '../../../common/types';
 
 export default class PlayerShip extends Phaser.Group {
   public game: Game;
-
-  public repairIntervalMsec: number;
-  public repairPercentagePerSecond: number;
-
   public ship: Phaser.Sprite;
-  public shield: Phaser.Sprite;
-  public repair: Phaser.Sprite;
-  public thruster: Phaser.Sprite;
-  public weapons: Phaser.Group;
+  public weapons: { [C in Color]: PlayerWeapon | undefined } = {
+    red: undefined,
+    blue: undefined,
+    yellow: undefined,
+  };
 
-  public explosions: Phaser.Group;
-
-  public redBullets: PlayerWeapon;
-  public blueBullets: PlayerWeapon;
-  public yellowBullets: PlayerWeapon;
-
+  private shield: Phaser.Sprite;
+  private repair: Phaser.Sprite;
+  private thruster: Phaser.Sprite;
+  private explosions: Phaser.Group;
+  private repairIntervalMsec: number;
+  private repairPercentagePerSecond: number;
   private nextFire = 0;
   private fireRate = 750;
-  // private healthLowFx: Phaser.Sound;
-  // private healthVeryLowFx: Phaser.Sound;
   // private healthBar: HealthBar;
   private weaponLightTop: Phaser.Sprite;
   private weaponLightMiddle: Phaser.Sprite;
@@ -62,8 +55,6 @@ export default class PlayerShip extends Phaser.Group {
     this.shootFx = this.game.add.audio('shoot');
     this.moveSlowFx = this.game.add.audio('move_slow');
     this.moveFastFx = this.game.add.audio('move_fast');
-    // this.healthLowFx = this.game.add.audio('health_low');
-    // this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
     // Repairs
     this.repairPercentagePerSecond = 0;
@@ -77,8 +68,8 @@ export default class PlayerShip extends Phaser.Group {
     this.thruster = this.game.add.sprite(0, 0, 'ship-thruster');
     this.thruster.animations.add('up', [4, 5, 6, 7], 10, true);
     this.thruster.animations.add('down', [0, 1, 2, 3], 10, true);
-    this.thruster.visible = false;
     this.thruster.anchor.setTo(0.5, 0.5);
+    this.thruster.visible = false;
     // 2: Ship
     this.ship.animations.add('move');
     this.ship.animations.play('move', 20, true);
@@ -86,10 +77,8 @@ export default class PlayerShip extends Phaser.Group {
     this.repair = this.game.add.sprite(0, 0, 'ship-repair');
     this.repair.animations.add('repairing', range(6), 10, true);
     this.repair.animations.play('repairing');
-    this.repair.visible = false;
     this.repair.anchor.setTo(0.5, 0.5);
     // 4. Weapon
-    this.weapons = new Phaser.Group(this.game);
     this.weaponLightTop = this.game.add.sprite(0, 0, 'ship-weapon-light-top');
     this.weaponLightMiddle = this.game.add.sprite(
       0,
@@ -101,32 +90,24 @@ export default class PlayerShip extends Phaser.Group {
       0,
       'ship-weapon-light-bottom',
     );
-    this.weaponLightTop.animations.add('red', [0], 60, false);
-    this.weaponLightTop.animations.add('yellow', [1], 60, false);
-    this.weaponLightTop.animations.add('blue', [2], 60, false);
-    this.weaponLightMiddle.animations.add('red', [0], 60, false);
-    this.weaponLightMiddle.animations.add('yellow', [1], 60, false);
-    this.weaponLightMiddle.animations.add('blue', [2], 60, false);
-    this.weaponLightBottom.animations.add('red', [0], 60, false);
-    this.weaponLightBottom.animations.add('yellow', [1], 60, false);
-    this.weaponLightBottom.animations.add('blue', [2], 60, false);
-    this.weaponLightTop.visible = false;
-    this.weaponLightMiddle.visible = false;
-    this.weaponLightBottom.visible = false;
     this.weaponLightTop.anchor.setTo(0.5, 0.5);
     this.weaponLightMiddle.anchor.setTo(0.5, 0.5);
     this.weaponLightBottom.anchor.setTo(0.5, 0.5);
-    this.weapons.add(this.weaponLightTop);
-    this.weapons.add(this.weaponLightMiddle);
-    this.weapons.add(this.weaponLightBottom);
+    this.add(this.weaponLightTop);
+    this.add(this.weaponLightMiddle);
+    this.add(this.weaponLightBottom);
 
-    this.redBullets = new PlayerWeapon(this, 'red');
-    this.blueBullets = new PlayerWeapon(this, 'blue');
-    this.yellowBullets = new PlayerWeapon(this, 'yellow');
-
-    this.redBullets.forEach(this.game.debug.body, this.game.debug, true);
-    this.yellowBullets.forEach(this.game.debug.body, this.game.debug, true);
-    this.blueBullets.forEach(this.game.debug.body, this.game.debug, true);
+    const frameMap = {
+      red: [0],
+      yellow: [1],
+      blue: [2],
+    };
+    COLORS.forEach(color => {
+      this.weapons[color] = new PlayerWeapon(this, color);
+      this.weaponLightTop.animations.add(color, frameMap[color], 60, false);
+      this.weaponLightMiddle.animations.add(color, frameMap[color], 60, false);
+      this.weaponLightBottom.animations.add(color, frameMap[color], 60, false);
+    });
 
     // 5. Shield
     this.shield = this.game.add.sprite(0, 0, 'ship-shield');
@@ -137,20 +118,21 @@ export default class PlayerShip extends Phaser.Group {
     this.shield.animations.add('BR', [4], 60, false);
     this.shield.animations.add('RY', [5], 60, false);
     this.shield.animations.add('BRY', [6], 60, false);
-    this.shield.visible = false;
     this.shield.anchor.setTo(0.5, 0.5);
     this.game.physics.enable(this.shield, Phaser.Physics.ARCADE);
 
-    // 6: Explosion(TOP)
+    // 6: Explosion (TOP)
     this.explosions = new Phaser.Group(this.game);
 
     this.add(this.thruster);
     this.add(this.repair);
-    this.add(this.weapons);
     this.add(this.shield);
     this.add(this.explosions);
 
     this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+    this.game.session.onFire.add(this.fireWeapon, this);
+    this.game.session.onMove.add(this.onMove, this);
+    this.onSubsystemsChanged();
   }
 
   get x() {
@@ -161,9 +143,23 @@ export default class PlayerShip extends Phaser.Group {
     return this.ship.y;
   }
 
-  public thrustersChanged() {
+  public update() {
+    // Update the group's other children to use the ship's coordinates
+    this.children.forEach(child => {
+      if (child !== this.ship) {
+        child.x = this.x;
+        child.y = this.y;
+      }
+    });
+  }
+
+  public shieldTint() {
+    this.shield.tint = 0x000000;
+    setTimeout(() => (this.shield.tint = 0xffffff), 50);
+  }
+
+  private onMove(direction: ThrusterDirection) {
     const level = this.game.session.thrusterLevel;
-    const direction = ThrusterDirection.Stopped;
     const movementSpeed = [0, 25, 100][level];
     const animationSpeed = [0, 10, 30][level];
     console.log('level', level);
@@ -197,8 +193,8 @@ export default class PlayerShip extends Phaser.Group {
     }
   }
 
-  public onSubsystemsChanged() {
-    console.log('onsubysstems changed');
+  private onSubsystemsChanged() {
+    // Thrusters have no visible change when enabled
 
     // Weapons
     this.weaponLightTop.visible = false;
@@ -218,13 +214,10 @@ export default class PlayerShip extends Phaser.Group {
     });
 
     // Shields
-    if (this.game.session.shieldColors.length === 0) {
-      this.shield.exists = false;
-    } else {
-      this.shield.animations.play(
-        colorsToColorKey(this.game.session.shieldColors),
-      );
-    }
+    this.shield.visible = this.game.session.shieldColors.length > 0;
+    this.shield.animations.play(
+      colorsToColorKey(this.game.session.shieldColors),
+    );
 
     // Repairs
     const level = this.game.session.repairLevel;
@@ -240,47 +233,15 @@ export default class PlayerShip extends Phaser.Group {
     }
   }
 
-  public update() {
-    // Update the group's other children to use the ship's coordinates
-    this.children.forEach(child => {
-      if (child !== this.ship) {
-        child.x = this.x;
-        child.y = this.y;
-      }
-    });
-  }
-
-  public shieldTint() {
-    this.shield.tint = 0x000000;
-    setTimeout(() => (this.shield.tint = 0xffffff), 50);
-  }
-
-  public damage(amount: number) {
-    // const health = this.game.session.health - amount;
-    // this.ship.health = health;
-    // if (health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
-    //   this.healthVeryLowFx.stop();
-    //   this.healthLowFx.play();
-    // } else if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
-    //   this.healthLowFx.stop();
-    //   this.healthVeryLowFx.play();
-    // }
-    // return this;
-  }
-
-  public fireWeapon() {
+  private fireWeapon() {
+    const strength = 20;
     if (this.game.time.time < this.nextFire) {
       return;
     }
     this.game.session.weaponColorPositions.map(({ color, position }) => {
-      if (color === 'blue') {
-        this.blueBullets.fire(20, position);
-      } else if (color === 'red') {
-        this.redBullets.fire(20, position);
-      } else if (color === 'yellow') {
-        this.yellowBullets.fire(20, position);
-      }
+      this.weapons[color]!.fire(strength, position);
     });
+
     if (this.game.session.weaponColorPositions.length > 0) {
       this.shootFx.play();
     }

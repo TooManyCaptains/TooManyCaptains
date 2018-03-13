@@ -104,8 +104,7 @@ export default class Board extends Phaser.Group {
           this.expolosion(bullet.x, bullet.y, 0.5);
         } else {
           this.game.session.health -= bullet.strength * 0.05;
-          // player.damage(bullet.strength * 0.05);
-          // player.shieldTint();
+          this.player.shieldTint();
           this.shieldFx.play();
         }
         bullet.kill();
@@ -113,16 +112,12 @@ export default class Board extends Phaser.Group {
     );
 
     // Enemy <-> player bullet collision
-    [
-      this.player.redBullets,
-      this.player.blueBullets,
-      this.player.yellowBullets,
-    ].map(bulletGroup => {
+    _.values(this.player.weapons).map(bulletGroup => {
       this.game.physics.arcade.overlap(
         this.enemies,
         bulletGroup,
-        (enemy: Enemy, bullet: PlayerWeaponBullet) => {
-          const playerBulletCanHurtEnemy = bullet.color.includes(
+        (enemy: Enemy, playerBullet: PlayerWeaponBullet) => {
+          const playerBulletCanHurtEnemy = playerBullet.color.includes(
             enemy.shipColor,
           );
           // Bullet hits
@@ -132,7 +127,7 @@ export default class Board extends Phaser.Group {
           } else {
             this.shieldFx.play();
           }
-          bullet.kill();
+          playerBullet.kill();
         },
       );
     });

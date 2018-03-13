@@ -5,12 +5,17 @@ import Doors from '../interface/Doors';
 import { ColorPosition } from '../../../common/types';
 // import { ThrusterDirection } from '../Session';
 
+const LOW_HEALTH = 25;
+const VERY_LOW_HEALTH = 10;
+
 export default class Main extends Phaser.State {
   public game: Game;
 
   private board: Board;
   // private recentlyEnded = false;
   private doors: Doors;
+  private healthLowFx: Phaser.Sound;
+  private healthVeryLowFx: Phaser.Sound;
 
   public preload() {
     this.load.spritesheet(
@@ -257,6 +262,19 @@ export default class Main extends Phaser.State {
     }
 
     this.startNewSession();
+
+    this.game.session.onHealthChanged.add(this.onHealthChanged, this);
+  }
+
+  private onHealthChanged() {
+    const health = this.game.session.health;
+    if (health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
+      this.healthVeryLowFx.stop();
+      this.healthLowFx.play();
+    } else if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
+      this.healthLowFx.stop();
+      this.healthVeryLowFx.play();
+    }
   }
 
   private onScoreTimer() {
