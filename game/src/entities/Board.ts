@@ -9,6 +9,7 @@ import { EnemyBullet } from './EnemyWeapon';
 import { randomColor } from '../utils';
 
 export default class Board extends Phaser.Group {
+  public minX: number;
   public minY: number;
   public maxX: number;
   public maxY: number;
@@ -66,9 +67,12 @@ export default class Board extends Phaser.Group {
     // );
 
     // Boundaries for the playable game area
-    this.minY = 90;
+    this.minX = 0;
+    this.minY = 100;
     this.maxX = width - 100;
-    this.maxY = height - 50;
+    this.maxY = height - 100;
+    this.game.physics.arcade.setBounds(this.minX, this.minY, this.maxX, this.maxY);
+    console.log(this.minY, this.maxX, this.maxY);
 
     // Score timer
     const scoreTimer = this.game.time.create();

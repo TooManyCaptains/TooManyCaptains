@@ -55,7 +55,7 @@ const AssetManifest = {
     'ring-repairs.png',
     'ring-none.png',
 
-    'mini_map.png',
+    'map.png',
     'player_icon.png',
     'boss_icon.png',
   ],

@@ -7,6 +7,8 @@ import Doors from '../interface/Doors';
 import { sortBy } from 'lodash';
 import { EnemyBulletPool } from '../entities/EnemyWeapon';
 
+import Map from '../interface/Map';
+
 export default class Main extends Phaser.State {
   public game: Game;
   public board: Board;
@@ -14,6 +16,7 @@ export default class Main extends Phaser.State {
   private recentlyEnded = false;
   private player: PlayerShip;
   private doors: Doors;
+  private map: Map;
 
   public preload() {
     this.load.spritesheet(
@@ -146,6 +149,12 @@ export default class Main extends Phaser.State {
       160,
       160,
     );
+
+
+
+
+
+    
   }
 
   public create() {
@@ -161,6 +170,8 @@ export default class Main extends Phaser.State {
     // Panels for HUD
     // tslint:disable-next-line:no-unused-expression
     new HUD(this.game, 0, this.board.bottom, this.game.width, 410);
+
+    this.map = new Map(this.game);
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20;
