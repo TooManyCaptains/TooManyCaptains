@@ -98,7 +98,7 @@ export default class Board extends Phaser.Group {
   public spawnEnemy(y?: number) {
     const x = this.maxX;
     if (y === undefined) {
-      y = this.maxY * Math.random();
+      y = (this.maxY - 200) * Math.random() + 100;
     }
     this.enemies.add(
       new Enemy(this.game, x, y, randomColor(), randomColor()),
@@ -109,7 +109,7 @@ export default class Board extends Phaser.Group {
     const x = this.maxX;
     // XXX: Shouldn't use hard-coded consants for asteroid size.
     // Should be based on the asteroid's intrinsic size.
-    let y = (this.maxY - 100) * Math.random() + 50;
+    let y = (this.maxY - 200) * Math.random() + 100;
     // Punish players who are camping
     if (this.player.shieldColors.length === 3 || this.player.repairLevel === 3) {
       y = this.player.y;
