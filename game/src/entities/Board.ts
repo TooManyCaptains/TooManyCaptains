@@ -25,7 +25,8 @@ export default class Board extends Phaser.Group {
     this.player = new Player(this.game, 150, height / 2);
 
     // Keep game sprites (which respect bounds) within the bounds of the board
-    this.game.world.setBounds(0, 0, width, height);
+    // this.game.world.setBounds(0, 0, width, height);
+    this.game.physics.arcade.setBounds(0, 90, width - 100, height - 125);
 
     // Sound FX
     this.shieldFx = this.game.add.audio('shield');

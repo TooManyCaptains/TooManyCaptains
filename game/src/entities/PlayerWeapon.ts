@@ -33,7 +33,6 @@ export class PlayerWeapon extends Phaser.Group {
   public game: Game;
   public nextFire = 0;
   public bulletVelocity = 400;
-  public fireRate = 500;
 
   constructor(private playerShip: PlayerShip, public color: Color) {
     super(
