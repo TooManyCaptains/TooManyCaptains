@@ -8,7 +8,7 @@ const phaser = path.join(phaserModule, './build/custom/phaser-split.js');
 const pixi = path.join(phaserModule, './build/custom/pixi.js');
 const p2 = path.join(phaserModule, './build/custom/p2.js');
 
-const src = path.join(__dirname, '../src')
+const src = path.join(__dirname, '../src');
 
 module.exports = {
   entry: {
@@ -59,15 +59,10 @@ module.exports = {
       },
       {
         test: /\.(gif|png|jpe?g|svg)$/i,
-        use: [
-          'file-loader',
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              bypassOnDebug: true,
-            },
-          },
-        ],
+        loader: 'file-loader',
+        options: {
+          name: 'images/[name].[ext]',
+        },
       },
       {
         test: /\.css$/,
