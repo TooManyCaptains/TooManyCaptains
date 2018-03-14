@@ -8,13 +8,19 @@ import { ThrusterDirection } from '../Session';
 
 import Map from '../interface/Map';
 
+const LOW_HEALTH = 25;
+const VERY_LOW_HEALTH = 10;
+
 export default class Main extends Phaser.State {
   public game: Game;
 
   private board: Board;
   // private recentlyEnded = false;
   private doors: Doors;
+  // @ts-ignore next-line
   private map: Map;
+  private healthLowFx: Phaser.Sound;
+  private healthVeryLowFx: Phaser.Sound;
 
   public preload() {
     this.load.spritesheet(
@@ -147,12 +153,6 @@ export default class Main extends Phaser.State {
       160,
       160,
     );
-
-
-
-
-
-
   }
 
   public create() {
@@ -279,6 +279,9 @@ export default class Main extends Phaser.State {
       this.game.session.maxHealth = health;
       this.game.session.health = health;
     }
+
+    this.healthLowFx = this.game.add.audio('health_low');
+    this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
     this.startNewSession();
 

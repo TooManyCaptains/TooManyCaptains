@@ -121,30 +121,15 @@ class WeaponsPanel extends Panel {
 
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'weapons');
     this.add(this.icon);
-    this.updateIconAlpha();
+    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
   }
 
-  public update() {
-    const newColorPositions = this.game.wiringConfigurations.weapons;
-    // If shield colors changed, update the color chart
-    if (!isEqual(newColorPositions, this.colorChart.colorPositions)) {
-      this.colorChart.colorPositions = newColorPositions;
-      this.updateIconAlpha();
-    }
-    super.update();
-  }
-
-  private updateIconAlpha() {
-    if (colorPositionsToColorKey(this.game.wiringConfigurations.weapons) == 'none') {
-      this.icon.alpha = 0.2;
-    } else {
-      this.icon.alpha = 1;
-    }
-    this.game.session.onSubsystemsChanged.add(() => {
-      this.colorChart.colors = colorPositionsToColors(
-        this.game.session.weaponColorPositions,
-      );
-    });
+  private onSubsystemsChanged() {
+    this.colorChart.colors = colorPositionsToColors(
+      this.game.session.weaponColorPositions,
+    );
+    const shieldEnabled = this.game.session.weaponColorPositions.length === 0;
+    this.icon.alpha = shieldEnabled ? 1 : 0.2;
   }
 }
 
@@ -164,20 +149,14 @@ class ShieldsPanel extends Panel {
 
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'shields');
     this.add(this.icon);
-    this.updateIconAlpha();
+
+    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
   }
 
-    this.game.session.onSubsystemsChanged.add(() => {
-      this.colorChart.colors = this.game.session.shieldColors;
-    });
-  }
-
-  private updateIconAlpha() {
-    if (colorPositionsToColorKey(this.game.wiringConfigurations.weapons) == 'none') {
-      this.icon.alpha = 0.2;
-    } else {
-      this.icon.alpha = 1;
-    }
+  private onSubsystemsChanged() {
+    this.colorChart.colors = this.game.session.shieldColors;
+    const shieldEnabled = this.game.session.shieldColors.length === 0;
+    this.icon.alpha = shieldEnabled ? 1 : 0.2;
   }
 }
 
@@ -185,7 +164,6 @@ class ThrustersPanel extends Panel {
   public game: Game;
   private chart: ThrustersChart;
   private icon: Phaser.Sprite;
-  private thrustersLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'THRUSTERS');
@@ -196,24 +174,13 @@ class ThrustersPanel extends Panel {
     this.add(mask);
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'thrusters');
     this.add(this.icon);
-    this.updateIconAlpha();
+    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
   }
 
-  public update() {
-    if (this.thrustersLevel !== this.game.player.thrustersLevel) {
-      this.thrustersLevel = this.game.player.thrustersLevel;
-      this.chart.setLevel(this.thrustersLevel);
-      this.updateIconAlpha();
-    }
-    super.update();
-  }
-
-  private updateIconAlpha() {
-    if (this.game.player.thrustersLevel == 0) {
-      this.icon.alpha = 0.2;
-    } else {
-      this.icon.alpha = 1;
-    }
+  private onSubsystemsChanged() {
+    this.chart.setLevel(this.game.session.thrusterLevel);
+    const shieldEnabled = this.game.session.shieldColors.length === 0;
+    this.icon.alpha = shieldEnabled ? 1 : 0.2;
   }
 }
 
@@ -221,7 +188,6 @@ class RepairsPanel extends Panel {
   public game: Game;
   private chart: RepairsChart;
   private icon: Phaser.Sprite;
-  private repairLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'REPAIRS');
@@ -232,24 +198,13 @@ class RepairsPanel extends Panel {
     this.add(mask);
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'repairs');
     this.add(this.icon);
-    this.updateIconAlpha();
+    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
   }
 
-  public update() {
-    if (this.repairLevel !== this.game.player.repairLevel) {
-      this.repairLevel = this.game.player.repairLevel;
-      this.chart.setLevel(this.repairLevel);
-      this.updateIconAlpha()
-    }
-    super.update();
-  }
-
-  private updateIconAlpha() {
-    if (this.game.player.repairLevel == 0) {
-      this.icon.alpha = 0.2;
-    } else {
-      this.icon.alpha = 1;
-    }
+  private onSubsystemsChanged() {
+    this.chart.setLevel(this.game.session.repairLevel);
+    const shieldEnabled = this.game.session.shieldColors.length === 0;
+    this.icon.alpha = shieldEnabled ? 1 : 0.2;
   }
 }
 
