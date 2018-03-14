@@ -8,9 +8,9 @@ const toDegrees = (radians: number) => radians * 180 / Math.PI;
 
 export class EnemyBullet extends Phaser.Sprite {
   public strength: number;
-  private _color: Color;
+  public color: Color;
 
-  constructor(game: Game, color?: Color) {
+  constructor(game: Game) {
     super(game, 0, 0);
     this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
     this.anchor.set(0.5);
@@ -20,18 +20,6 @@ export class EnemyBullet extends Phaser.Sprite {
     this.scale.set(1.5, 1.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.setSize(28, 3.5, 15.5, 15.5);
-    if (color) {
-      this.color = color;
-    }
-  }
-
-  set color(newColor: Color) {
-    this._color = newColor;
-    this.loadTexture(`enemy_bullet_${colorNameToLetter(newColor)}`);
-  }
-
-  get color() {
-    return this._color;
   }
 
   public fire(
@@ -40,7 +28,10 @@ export class EnemyBullet extends Phaser.Sprite {
     angle: number,
     speed: number,
     strength: number,
+    color: Color,
   ) {
+    this.color = color;
+    this.loadTexture(`enemy_bullet_${colorNameToLetter(color)}`);
     this.reset(x, y);
     this.strength = strength;
     this.angle = angle;
@@ -57,7 +48,7 @@ export class EnemyBulletPool extends Phaser.Group {
   private player: Player;
 
   constructor(game: Game, player: Player) {
-    super(game, game.world, 'Enemy Bullet', false, true, Phaser.Physics.ARCADE);
+    super(game, game.world, 'Enemy Weapon', false, true, Phaser.Physics.ARCADE);
 
     this.player = player;
 
@@ -73,7 +64,7 @@ export class EnemyBulletPool extends Phaser.Group {
     const angleToPlayer = toDegrees(
       this.game.physics.arcade.angleToXY(this.player, x, y),
     );
-    const enemyBullet = this.getFirstExists(false);
+    const enemyBullet = this.getFirstExists(false) as EnemyBullet;
     enemyBullet.color = enemy.weaponColor;
     enemyBullet.fire(
       x,
@@ -81,6 +72,7 @@ export class EnemyBulletPool extends Phaser.Group {
       angleToPlayer,
       enemy.bulletVelocity,
       enemy.bulletStrength,
+      enemy.weaponColor,
     );
   }
 }

@@ -5,16 +5,11 @@ import { Game } from '../index';
 import { range } from 'lodash';
 import { ThrusterLevel, ThrusterDirection } from '../Session';
 import { colorsToColorKey, COLORS } from '../utils';
-import { Color } from '../../../common/types';
 
 export default class PlayerShip extends Phaser.Group {
   public game: Game;
   public ship: Phaser.Sprite;
-  public weapons: { [C in Color]: PlayerWeapon | undefined } = {
-    red: undefined,
-    blue: undefined,
-    yellow: undefined,
-  };
+  public weapon: PlayerWeapon;
 
   private shield: Phaser.Sprite;
   private repair: Phaser.Sprite;
@@ -98,7 +93,6 @@ export default class PlayerShip extends Phaser.Group {
     this.add(this.repair);
     this.add(this.shield);
 
-
     // 4. Weapon
     this.weaponLightTop = this.game.add.sprite(0, 0, 'ship-weapon-light-top');
     this.weaponLightMiddle = this.game.add.sprite(
@@ -123,13 +117,12 @@ export default class PlayerShip extends Phaser.Group {
       yellow: [1],
       blue: [2],
     };
+    this.weapon = new PlayerWeapon(this);
     COLORS.forEach(color => {
-      this.weapons[color] = new PlayerWeapon(this, color);
       this.weaponLightTop.animations.add(color, frameMap[color], 60, false);
       this.weaponLightMiddle.animations.add(color, frameMap[color], 60, false);
       this.weaponLightBottom.animations.add(color, frameMap[color], 60, false);
     });
-
 
     this.add(this.explosions);
 
@@ -243,7 +236,7 @@ export default class PlayerShip extends Phaser.Group {
       return;
     }
     this.game.session.weaponColorPositions.map(({ color, position }) => {
-      this.weapons[color]!.fire(strength, position);
+      this.weapon.fire(strength, position, color);
     });
 
     if (this.game.session.weaponColorPositions.length > 0) {

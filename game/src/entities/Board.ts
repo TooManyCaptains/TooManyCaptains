@@ -4,9 +4,9 @@ import Player from './Player';
 import { Enemy } from '../entities/Enemy';
 import Asteroid from './Asteroid';
 import { Game } from '../index';
-import { PlayerWeaponBullet } from './PlayerWeapon';
 import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
 import { randomColor } from '../utils';
+import { PlayerBullet } from './PlayerWeapon';
 
 export default class Board extends Phaser.Group {
   public game: Game;
@@ -18,6 +18,8 @@ export default class Board extends Phaser.Group {
   private collideFx: Phaser.Sound;
   private damagedFx: Phaser.Sound;
   private shieldFx: Phaser.Sound;
+
+  private spritesToDestroy: Set<Phaser.Sprite> = new Set();
 
   constructor(game: Game, width: number, height: number) {
     super(game);
@@ -85,7 +87,6 @@ export default class Board extends Phaser.Group {
   }
 
   public update() {
-    super.update();
     // Player <-> enemy bullet collision
     this.game.physics.arcade.overlap(
       this.enemyBulletPool,
@@ -112,52 +113,61 @@ export default class Board extends Phaser.Group {
       },
     );
 
+    // Enemy <-> enemy collision
+    this.game.physics.arcade.collide(this.enemies, this.enemies);
+
     // Enemy <-> player bullet collision
-    _.values(this.player.weapons).map(bulletGroup => {
-      this.game.physics.arcade.overlap(
-        this.enemies,
-        bulletGroup,
-        (enemy: Enemy, playerBullet: PlayerWeaponBullet) => {
-          const playerBulletCanHurtEnemy = playerBullet.color.includes(
-            enemy.shipColor,
-          );
-          // Bullet hits
-          if (playerBulletCanHurtEnemy) {
-            enemy.destroy();
-            this.game.session.score += 150;
-          } else {
-            this.shieldFx.play();
-          }
-          playerBullet.kill();
-        },
-      );
-    });
+    this.game.physics.arcade.overlap(
+      this.enemies,
+      this.player.weapon,
+      (enemy: Enemy, playerBullet: PlayerBullet) => {
+        const playerBulletCanHurtEnemy = playerBullet.color.includes(
+          enemy.shipColor,
+        );
+        // Bullet hits
+        if (playerBulletCanHurtEnemy) {
+          this.spritesToDestroy.add(enemy);
+          this.game.session.score += 150;
+        } else {
+          this.shieldFx.play();
+        }
+        playerBullet.kill();
+      },
+    );
 
     // Enemy <-> player ship (no shield) collision
     this.game.physics.arcade.overlap(
       this.enemies,
       this.player.ship,
       (playerShip: Phaser.Sprite, enemy: Enemy) => {
-        enemy.destroy();
+        this.spritesToDestroy.add(enemy);
         this.game.session.health -= enemy.collisionDamage;
       },
     );
-
-    // Enemy <-> enemy collision
-    this.game.physics.arcade.collide(this.enemies, this.enemies);
-
     // Player <-> asteroid collision
     this.game.physics.arcade.overlap(
       this.asteroids,
       this.player.ship,
       (playerShip: Phaser.Sprite, asteroid: Asteroid) => {
         this.expolosion(asteroid.x, asteroid.y, 1.0);
-        asteroid.destroy();
+        this.spritesToDestroy.add(asteroid);
         this.game.camera.shake(0.02, 800);
         this.game.session.health -= asteroid.collisionDamage;
         this.collideFx.play();
       },
     );
+
+    // Destroying a sprite sets all of its properties to null,
+    // causing any subsequent operations on the sprite to fail.
+    // This can happen if a sprite is destroyed "twice", such as if
+    // multiple bullets hit a target causing it to be destroyed.
+    // Therefore, rather than destroying the target immediately,
+    // we mark it for destruction by adding it to a set.
+    // Then, afterwords, we destroy the targets exactly once.
+    this.spritesToDestroy.forEach(sprite => sprite.destroy());
+    this.spritesToDestroy.clear();
+
+    super.update();
   }
 
   private onAsteroidOutOfBounds(asteroid: Asteroid) {
