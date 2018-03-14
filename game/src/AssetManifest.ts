@@ -31,8 +31,18 @@ const AssetManifest = {
     'icon-shields.png',
     'icon-thrusters.png',
     'icon-repairs.png',
+    // new BIG icons -- March 13th
+    'icon-big-weapons.png',
+    'icon-big-shields.png',
+    'icon-big-thrusters.png',
+    'icon-big-repairs.png',
 
     'icon-mask.png',
+    // new masks with names of subsystem -- March 13th
+    'icon-mask-weapons.png',
+    'icon-mask-shields.png',
+    'icon-mask-thrusters.png',
+    'icon-mask-repairs.png',
 
     'ring-B.png',
     'ring-BY.png',

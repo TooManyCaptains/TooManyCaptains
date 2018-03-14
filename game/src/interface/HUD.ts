@@ -180,8 +180,16 @@ class RepairsChart extends Phaser.Sprite {
 class SubsystemIcon extends Phaser.Sprite {
   constructor(game: Game, x: number, y: number, subsystem: Subsystem) {
     super(game, x, y);
-    this.anchor.setTo(0.5, 1);
-    this.loadTexture(`icon-${subsystem}`);
+    this.loadTexture(`icon-big-${subsystem}`);
+    this.anchor.setTo(0.5, 0.5);
+  }
+}
+
+class SubsystemMask extends Phaser.Sprite {
+  constructor(game: Game, x: number, y: number, subsystem: Subsystem) {
+    super(game, x, y);
+    this.loadTexture(`icon-mask-${subsystem}`);
+    this.anchor.setTo(0.5, 0);
   }
 }
 
@@ -194,12 +202,11 @@ class WeaponsPanel extends Panel {
 
     this.colorChart = new ColorChart(game, this.centerX, this.centerY);
     this.add(this.colorChart);
-    const oldBottom = this.bottom;
-    const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
-    mask.anchor.setTo(0.5, 0.75);
+
+    const mask = new SubsystemMask(game, this.centerX, 150, 'weapons');
     this.add(mask);
 
-    const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'weapons');
+    const icon = new SubsystemIcon(game, this.centerX, 150, 'weapons');
     this.add(icon);
   }
 
@@ -222,12 +229,11 @@ class ShieldsPanel extends Panel {
 
     this.colorChart = new ColorChart(game, this.centerX, this.centerY);
     this.add(this.colorChart);
-    const oldBottom = this.bottom;
-    const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
-    mask.anchor.setTo(0.5, 0.75);
+
+    const mask = new SubsystemMask(game, this.centerX, 150, 'shields');
     this.add(mask);
 
-    const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'shields');
+    const icon = new SubsystemIcon(game, this.centerX, 150, 'shields');
     this.add(icon);
   }
 
@@ -250,13 +256,9 @@ class ThrustersPanel extends Panel {
 
     this.chart = new ThrustersChart(game, this.centerX, this.centerY);
     this.add(this.chart);
-    const oldBottom = this.bottom;
-    const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
-    mask.anchor.setTo(0.5, 0.75);
-    // mask.scale.setTo(1.5, 1.5)
+    const mask = new SubsystemMask(game, this.centerX, 150, 'thrusters');
     this.add(mask);
-
-    const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'thrusters');
+    const icon = new SubsystemIcon(game, this.centerX, 150, 'thrusters');
     this.add(icon);
   }
 
@@ -276,16 +278,10 @@ class RepairsPanel extends Panel {
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'REPAIRS');
-
-    this.chart = new RepairsChart(game, this.centerX, this.centerY);
-    this.add(this.chart);
-    const oldBottom = this.bottom;
-    const mask = this.game.add.sprite(this.centerX, this.bottom, 'icon-mask');
-    mask.anchor.setTo(0.5, 0.75);
-    // mask.scale.setTo(1.5, 1.5)
+    
+    const mask = new SubsystemMask(game, this.centerX, 150, 'repairs');
     this.add(mask);
-
-    const icon = new SubsystemIcon(game, this.centerX, oldBottom, 'repairs');
+    const icon = new SubsystemIcon(game, this.centerX, 150, 'repairs');
     this.add(icon);
   }
 
