@@ -78,6 +78,27 @@ export default class PlayerShip extends Phaser.Group {
     this.repair.animations.add('repairing', range(6), 10, true);
     this.repair.animations.play('repairing');
     this.repair.anchor.setTo(0.5, 0.5);
+
+    // 5. Shield
+    this.shield = this.game.add.sprite(0, 0, 'ship-shield');
+    this.shield.animations.add('R', [0], 60, false);
+    this.shield.animations.add('Y', [1], 60, false);
+    this.shield.animations.add('B', [2], 60, false);
+    this.shield.animations.add('BY', [3], 60, false);
+    this.shield.animations.add('BR', [4], 60, false);
+    this.shield.animations.add('RY', [5], 60, false);
+    this.shield.animations.add('BRY', [6], 60, false);
+    this.shield.anchor.setTo(0.5, 0.5);
+    this.game.physics.enable(this.shield, Phaser.Physics.ARCADE);
+
+    // 6: Explosion (TOP)
+    this.explosions = new Phaser.Group(this.game);
+
+    this.add(this.thruster);
+    this.add(this.repair);
+    this.add(this.shield);
+
+
     // 4. Weapon
     this.weaponLightTop = this.game.add.sprite(0, 0, 'ship-weapon-light-top');
     this.weaponLightMiddle = this.game.add.sprite(
@@ -109,24 +130,7 @@ export default class PlayerShip extends Phaser.Group {
       this.weaponLightBottom.animations.add(color, frameMap[color], 60, false);
     });
 
-    // 5. Shield
-    this.shield = this.game.add.sprite(0, 0, 'ship-shield');
-    this.shield.animations.add('R', [0], 60, false);
-    this.shield.animations.add('Y', [1], 60, false);
-    this.shield.animations.add('B', [2], 60, false);
-    this.shield.animations.add('BY', [3], 60, false);
-    this.shield.animations.add('BR', [4], 60, false);
-    this.shield.animations.add('RY', [5], 60, false);
-    this.shield.animations.add('BRY', [6], 60, false);
-    this.shield.anchor.setTo(0.5, 0.5);
-    this.game.physics.enable(this.shield, Phaser.Physics.ARCADE);
 
-    // 6: Explosion (TOP)
-    this.explosions = new Phaser.Group(this.game);
-
-    this.add(this.thruster);
-    this.add(this.repair);
-    this.add(this.shield);
     this.add(this.explosions);
 
     this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
