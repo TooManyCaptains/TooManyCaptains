@@ -111,7 +111,7 @@ class WeaponsPanel extends Panel {
 
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'weapons');
     this.add(this.icon);
-    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+    this.game.session.signals.subsystems.add(this.onSubsystemsChanged, this);
     this.onSubsystemsChanged();
   }
 
@@ -141,7 +141,7 @@ class ShieldsPanel extends Panel {
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'shields');
     this.add(this.icon);
 
-    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+    this.game.session.signals.subsystems.add(this.onSubsystemsChanged, this);
 
     this.onSubsystemsChanged();
   }
@@ -167,7 +167,7 @@ class ThrustersPanel extends Panel {
     this.add(mask);
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'thrusters');
     this.add(this.icon);
-    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+    this.game.session.signals.subsystems.add(this.onSubsystemsChanged, this);
 
     this.onSubsystemsChanged();
   }
@@ -193,7 +193,7 @@ class RepairsPanel extends Panel {
     this.add(mask);
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'repairs');
     this.add(this.icon);
-    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+    this.game.session.signals.subsystems.add(this.onSubsystemsChanged, this);
 
     this.onSubsystemsChanged();
   }
@@ -314,7 +314,7 @@ export default class HUD extends Phaser.Group {
     this.add(this.healthBar);
     this.bringToTop(this.healthBar);
 
-    this.game.session.onHealthChanged.add(this.onHealthChanged, this);
+    this.game.session.signals.health.add(this.onHealthChanged, this);
   }
 
   private onHealthChanged() {

@@ -30,13 +30,15 @@ export enum ThrusterDirection {
 
 export default class Session {
   // Signals
-  public onFire: Phaser.Signal;
-  public onMove: Phaser.Signal;
-  public onHealthChanged: Phaser.Signal;
-  public onScoreChanged: Phaser.Signal;
-  public onSubsystemsChanged: Phaser.Signal;
-  public onCardsChanged: Phaser.Signal;
-  public onStateChanged: Phaser.Signal;
+  public signals = {
+    score: new Phaser.Signal(),
+    health: new Phaser.Signal(),
+    subsystems: new Phaser.Signal(),
+    cards: new Phaser.Signal(),
+    state: new Phaser.Signal(),
+    fire: new Phaser.Signal(),
+    move: new Phaser.Signal(),
+  };
 
   // Weapons
   public weaponColorPositions: ColorPosition[];
@@ -63,13 +65,6 @@ export default class Session {
   private _state: GameState;
 
   constructor(private server: GameServer) {
-    this.onScoreChanged = new Phaser.Signal();
-    this.onHealthChanged = new Phaser.Signal();
-    this.onSubsystemsChanged = new Phaser.Signal();
-    this.onCardsChanged = new Phaser.Signal();
-    this.onStateChanged = new Phaser.Signal();
-    this.onFire = new Phaser.Signal();
-    this.onMove = new Phaser.Signal();
     this.reset();
     this.server.socket.on('packet', this.onPacket.bind(this));
   }
@@ -98,7 +93,7 @@ export default class Session {
         this.repairLevel = colorPositions.length;
       }
     });
-    this.onSubsystemsChanged.dispatch();
+    this.signals.subsystems.dispatch();
   }
 
   get score(): number {
@@ -107,7 +102,7 @@ export default class Session {
 
   set score(score) {
     this._score = score;
-    this.onScoreChanged.dispatch();
+    this.signals.score.dispatch();
   }
 
   get health(): number {
@@ -116,7 +111,7 @@ export default class Session {
 
   set health(health) {
     this._health = Math.min(this.maxHealth, health);
-    this.onHealthChanged.dispatch();
+    this.signals.health.dispatch();
   }
 
   get state(): GameState {
@@ -124,7 +119,7 @@ export default class Session {
   }
 
   set state(state: GameState) {
-    this.onStateChanged.dispatch(state);
+    this.signals.state.dispatch(state);
     this.server.notifyGameState(state);
     this._state = state;
   }
@@ -142,19 +137,19 @@ export default class Session {
         }
         return ThrusterDirection.Down;
       })();
-      this.onMove.dispatch(thrusterDirection);
+      this.signals.move.dispatch(thrusterDirection);
     } else if (packet.kind === 'fire') {
       // ignore button-down events, only care about button-up events
       if (packet.state !== 'released') {
         return;
       }
-      this.onFire.dispatch();
+      this.signals.fire.dispatch(packet.state);
     } else if (packet.kind === 'scan') {
       const existingCard = this.cards.find(cardID => cardID === packet.cardID);
       if (!existingCard) {
         this.cards.push(packet.cardID);
       }
-      this.onCardsChanged.dispatch(packet.cardID);
+      this.signals.cards.dispatch(packet.cardID);
     }
     // else if (packet.kind === 'cheat') {
     //   if (packet.cheat.code === 'force_state') {

@@ -127,11 +127,10 @@ export default class PlayerShip extends Phaser.Group {
 
     this.add(this.explosions);
 
-    this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
-    this.game.session.onFire.add(this.fireWeapon, this);
-    this.game.session.onMove.add(this.onMove, this);
-    this.onSubsystemsChanged();
-    this.game.session.onHealthChanged.add(this.onHealthChanged, this);
+    this.game.session.signals.subsystems.add(this.onSubsystemsChanged, this);
+    this.game.session.signals.fire.add(this.fireWeapon, this);
+    this.game.session.signals.move.add(this.onMove, this);
+    this.game.session.signals.health.add(this.onHealthChanged, this);
   }
 
   get x() {
@@ -256,9 +255,11 @@ export default class PlayerShip extends Phaser.Group {
   }
 
   private onRepair() {
-    this.game.session.health +=
-      this.repairPercentagePerSecond *
-      this.game.session.maxHealth *
-      (this.repairIntervalMsec / 1000);
+    if (this.game.session.repairLevel > 0) {
+      this.game.session.health +=
+        this.repairPercentagePerSecond *
+        this.game.session.maxHealth *
+        (this.repairIntervalMsec / 1000);
+    }
   }
 }

@@ -130,7 +130,7 @@ export class StartScreen extends Phaser.Group {
 
     this.add(this.scanCardLabel);
 
-    this.game.session.onCardsChanged.add(this.onCaptainJoined, this);
+    this.game.session.signals.cards.add(this.onCaptainJoined, this);
   }
 
   private onCaptainJoined(cardID: CardID) {

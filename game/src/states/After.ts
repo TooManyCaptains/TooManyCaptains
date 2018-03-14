@@ -10,5 +10,13 @@ export default class After extends Phaser.State {
     this.game.add.existing(new EndScreen(this.game));
     this.game.sound.stopAll();
     this.game.add.audio('gameover').play();
+    this.game.session.signals.fire.add(this.onFire, this);
+  }
+
+  private onFire() {
+    const canRestart = true;
+    if (canRestart) {
+      this.state.start('Before');
+    }
   }
 }

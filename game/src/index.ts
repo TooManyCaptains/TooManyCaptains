@@ -1,4 +1,4 @@
-import { has } from 'lodash';
+import { has, values } from 'lodash';
 import Stats from 'stats.js';
 import Main from './states/Main';
 import Boot from './states/Boot';
@@ -73,6 +73,8 @@ export class Game extends Phaser.Game {
 
     // Kick things off with the boot state.
     this.state.start('Boot');
+
+    this.state.onStateChange.add(this.onStateChange, this);
   }
 
   public setVolume(volume?: number) {
@@ -99,6 +101,14 @@ export class Game extends Phaser.Game {
       updateLoop.apply(this, args);
       stats.end();
     };
+  }
+
+  private onStateChange() {
+    // When the phaser state (NOT gamestate) changes,
+    // we need to un-bind all of the existing signals!
+    values(this.session.signals).forEach(signal => {
+      signal.removeAll();
+    });
   }
 }
 

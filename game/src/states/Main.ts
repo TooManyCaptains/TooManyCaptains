@@ -4,7 +4,6 @@ import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { ColorPosition } from '../../../common/types';
 import { ThrusterDirection } from '../Session';
-// import { ThrusterDirection } from '../Session';
 
 import Map from '../interface/Map';
 
@@ -175,14 +174,14 @@ export default class Main extends Phaser.State {
     asteroidTimer.loop(
       asteroidSpawnIntervalSecs * 1000,
       this.board.spawnAsteroid,
-      this,
+      this.board,
     );
     asteroidTimer.start();
 
     // Periodically spawn a new enemy
     const enemySpawnIntervalSecs = 35;
     const enemyTimer = this.game.time.create();
-    enemyTimer.loop(enemySpawnIntervalSecs * 1000, this.board.spawnEnemy, this);
+    enemyTimer.loop(enemySpawnIntervalSecs * 1000, this.board.spawnEnemy, this.board);
     enemyTimer.start();
 
     // Score timer
@@ -229,28 +228,28 @@ export default class Main extends Phaser.State {
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.UP)
         .onDown.add(
-          () => this.game.session.onMove.dispatch(ThrusterDirection.Up),
+          () => this.game.session.signals.move.dispatch(ThrusterDirection.Up),
           this,
         );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.UP)
         .onUp.add(
-          () => this.game.session.onMove.dispatch(ThrusterDirection.Stopped),
+          () => this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
           this,
         );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.DOWN)
         .onUp.add(
-          () => this.game.session.onMove.dispatch(ThrusterDirection.Stopped),
+          () => this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
           this,
         );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.DOWN)
         .onDown.add(
-          () => this.game.session.onMove.dispatch(ThrusterDirection.Down),
+          () => this.game.session.signals.move.dispatch(ThrusterDirection.Down),
           this,
         );
 
@@ -268,7 +267,7 @@ export default class Main extends Phaser.State {
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.SPACEBAR)
-        .onDown.add(() => this.game.session.onFire.dispatch(), this);
+        .onDown.add(() => this.game.session.signals.fire.dispatch(), this);
     }
 
     if (this.game.params.invulnerable) {
@@ -280,7 +279,7 @@ export default class Main extends Phaser.State {
     this.healthLowFx = this.game.add.audio('health_low');
     this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
-    this.game.session.onHealthChanged.add(this.onHealthChanged, this);
+    this.game.session.signals.health.add(this.onHealthChanged, this);
 
     this.game.world.bringToTop(this.doors);
     this.doors.open(() => {
