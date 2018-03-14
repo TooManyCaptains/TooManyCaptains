@@ -70,6 +70,8 @@ export default class PlayerShip extends Phaser.Sprite {
     this.health = 100;
     this.healthBar = new HealthBar(this);
 
+    this.game.debug.body(this);
+
     // Weapons
     this.weaponColors = [];
     this.weapon = null;
@@ -234,7 +236,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
   public setRepairLevel(level: number) {
     this.repairLevel = level;
-    const repairSpeedMap = [0, 0.02, 0.035, 0.05];
+    const repairSpeedMap = [0, 0.02, 0.0325, 0.05];
     const repairAnimationSpeedMap = [0, 10, 30, 90];
     this.repairPercentagePerSecond = repairSpeedMap[level];
     if (level > 0) {

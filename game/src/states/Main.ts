@@ -154,7 +154,7 @@ export default class Main extends Phaser.State {
 
 
 
-    
+
   }
 
   public create() {
@@ -289,6 +289,11 @@ export default class Main extends Phaser.State {
     if (isGameEnding && this.game.gameState === 'in_game') {
       this.endGame();
     }
+  }
+
+  public render() {
+    this.game.debug.bodyInfo(this.player, 32, 32);
+    this.game.debug.body(this.player);
   }
 
   private startGame() {

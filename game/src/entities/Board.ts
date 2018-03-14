@@ -68,9 +68,9 @@ export default class Board extends Phaser.Group {
 
     // Boundaries for the playable game area
     this.minX = 0;
-    this.minY = 100;
+    this.minY = 50;
     this.maxX = width - 100;
-    this.maxY = height - 100;
+    this.maxY = height - 50;
     this.game.physics.arcade.setBounds(this.minX, this.minY, this.maxX, this.maxY);
     console.log(this.minY, this.maxX, this.maxY);
 

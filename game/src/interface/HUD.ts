@@ -196,6 +196,7 @@ class SubsystemMask extends Phaser.Sprite {
 class WeaponsPanel extends Panel {
   public game: Game;
   private colorChart: ColorChart;
+  private icon: Phaser.Sprite;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'WEAPONS');
@@ -206,8 +207,9 @@ class WeaponsPanel extends Panel {
     const mask = new SubsystemMask(game, this.centerX, 150, 'weapons');
     this.add(mask);
 
-    const icon = new SubsystemIcon(game, this.centerX, 150, 'weapons');
-    this.add(icon);
+    this.icon = new SubsystemIcon(game, this.centerX, 150, 'weapons');
+    this.add(this.icon);
+    this.updateIconAlpha();
   }
 
   public update() {
@@ -215,14 +217,24 @@ class WeaponsPanel extends Panel {
     // If shield colors changed, update the color chart
     if (!isEqual(newColorPositions, this.colorChart.colorPositions)) {
       this.colorChart.colorPositions = newColorPositions;
+      this.updateIconAlpha();
     }
     super.update();
+  }
+
+  private updateIconAlpha() {
+    if (colorPositionsToColorKey(this.game.wiringConfigurations.weapons) == 'none') {
+      this.icon.alpha = 0.2;
+    } else {
+      this.icon.alpha = 1;
+    }
   }
 }
 
 class ShieldsPanel extends Panel {
   public game: Game;
   private colorChart: ColorChart;
+  private icon: Phaser.Sprite;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'SHIELDS');
@@ -233,8 +245,9 @@ class ShieldsPanel extends Panel {
     const mask = new SubsystemMask(game, this.centerX, 150, 'shields');
     this.add(mask);
 
-    const icon = new SubsystemIcon(game, this.centerX, 150, 'shields');
-    this.add(icon);
+    this.icon = new SubsystemIcon(game, this.centerX, 150, 'shields');
+    this.add(this.icon);
+    this.updateIconAlpha();
   }
 
   public update() {
@@ -244,11 +257,20 @@ class ShieldsPanel extends Panel {
       this.colorChart.colorPositions = newColorPositions;
     }
   }
+
+  private updateIconAlpha() {
+    if (colorPositionsToColorKey(this.game.wiringConfigurations.weapons) == 'none') {
+      this.icon.alpha = 0.2;
+    } else {
+      this.icon.alpha = 1;
+    }
+  }
 }
 
 class ThrustersPanel extends Panel {
   public game: Game;
   private chart: ThrustersChart;
+  private icon: Phaser.Sprite;
   private thrustersLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
@@ -258,39 +280,62 @@ class ThrustersPanel extends Panel {
     this.add(this.chart);
     const mask = new SubsystemMask(game, this.centerX, 150, 'thrusters');
     this.add(mask);
-    const icon = new SubsystemIcon(game, this.centerX, 150, 'thrusters');
-    this.add(icon);
+    this.icon = new SubsystemIcon(game, this.centerX, 150, 'thrusters');
+    this.add(this.icon);
+    this.updateIconAlpha();
   }
 
   public update() {
     if (this.thrustersLevel !== this.game.player.thrustersLevel) {
       this.thrustersLevel = this.game.player.thrustersLevel;
       this.chart.setLevel(this.thrustersLevel);
+      this.updateIconAlpha();
     }
     super.update();
+  }
+
+  private updateIconAlpha() {
+    if (this.game.player.thrustersLevel == 0) {
+      this.icon.alpha = 0.2;
+    } else {
+      this.icon.alpha = 1;
+    }
   }
 }
 
 class RepairsPanel extends Panel {
   public game: Game;
-  private chart: ThrustersChart;
+  private chart: RepairsChart;
+  private icon: Phaser.Sprite;
   private repairLevel = 0;
 
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, width, height, 'REPAIRS');
-    
+
+    this.chart = new RepairsChart(game, this.centerX, this.centerY);
+    this.add(this.chart);
     const mask = new SubsystemMask(game, this.centerX, 150, 'repairs');
     this.add(mask);
-    const icon = new SubsystemIcon(game, this.centerX, 150, 'repairs');
-    this.add(icon);
+    this.icon = new SubsystemIcon(game, this.centerX, 150, 'repairs');
+    this.add(this.icon);
+    this.updateIconAlpha();
   }
 
   public update() {
     if (this.repairLevel !== this.game.player.repairLevel) {
       this.repairLevel = this.game.player.repairLevel;
       this.chart.setLevel(this.repairLevel);
+      this.updateIconAlpha()
     }
     super.update();
+  }
+
+  private updateIconAlpha() {
+    if (this.game.player.repairLevel == 0) {
+      this.icon.alpha = 0.2;
+    } else {
+      this.icon.alpha = 1;
+    }
   }
 }
 
