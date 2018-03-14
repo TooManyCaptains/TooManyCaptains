@@ -1,55 +1,54 @@
 import { Game } from '..';
 import { baseStyle } from '../interface/Styles';
 
-export default class HealthBar {
+export default class HealthBar extends Phaser.Group {
   public game: Game;
   public text: Phaser.Text;
-  private width: number;
-  private height: number;
+
   private bar: Phaser.Graphics;
   private barMask: Phaser.Graphics;
   private background: Phaser.Graphics;
 
+  private _width: number;
+  private _height: number;
+
   constructor(
     game: Game,
-    parent: Phaser.Group,
     width = 100,
     height = 20,
-    color = 0,
+    color = 0x30ee02,
     label = '',
-    value = 0,
+    value = 50,
   ) {
-    this.game = game;
-    this.width = width;
-    this.height = height;
+    super(game);
+    this._width = width;
+    this._height = height;
 
     this.background = game.add.graphics();
     this.background.beginFill(0x999999, 1);
-    this.background.drawRoundedRect(0, 0, this.width, this.height, 25);
+    this.background.drawRoundedRect(0, 0, width, height, 25);
 
     this.bar = game.add.graphics();
-    this.bar.beginFill(color, 1);
-
     this.barMask = game.add.graphics();
 
     this.color = color;
 
-    parent.add(this.background);
-    parent.add(this.bar);
-    parent.add(this.barMask);
-
-    this.text = game.add.text(0, 0, label, {
+    this.text = new Phaser.Text(game, 0, 0, label, {
       ...baseStyle,
-      fontSize: 28,
+      fontSize: 40,
       boundsAlignH: 'center',
-      fontWeight: 600,
+      fontWeight: 800,
       fill: 'black',
     });
-    this.text.setTextBounds(0, 0, this.width, this.height + 2);
-    parent.add(this.text);
+    this.text.setTextBounds(0, 0, width, height + 2);
 
     this.bar.mask = this.barMask;
     this.value = value;
+
+    this.add(this.background);
+    this.add(this.bar);
+    this.add(this.barMask);
+    this.add(this.text);
   }
 
   set x(x: number) {
@@ -69,10 +68,10 @@ export default class HealthBar {
   set color(color: number) {
     this.bar.clear();
     this.bar.beginFill(color, 1);
-    this.bar.drawRoundedRect(0, 0, this.width, this.height, 25);
+    this.bar.drawRoundedRect(0, 0, this._width, this._height, 0);
     this.barMask.clear();
     this.barMask.beginFill(color, 1);
-    this.barMask.drawRect(0, 0, this.width, this.height);
+    this.barMask.drawRect(0, 0, this._width, this._height);
   }
 
   set label(label: string) {

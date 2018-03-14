@@ -1,8 +1,8 @@
-import { PlayerWeapon } from './PlayerWeapon';
-// import HealthBar from './PlayerHealthBar';
-import { Game } from '../index';
-
 import { range } from 'lodash';
+
+import { PlayerWeapon } from './PlayerWeapon';
+import { Game } from '../index';
+import HealthBar from './HealthBar';
 import { ThrusterLevel, ThrusterDirection } from '../Session';
 import { colorsToColorKey, COLORS } from '../utils';
 
@@ -19,7 +19,8 @@ export default class PlayerShip extends Phaser.Group {
   private repairPercentagePerSecond: number;
   private nextFire = 0;
   private fireRate = 350;
-  // private healthBar: HealthBar;
+  // @ts-ignore
+  private healthBar: HealthBar;
   private weaponLightTop: Phaser.Sprite;
   private weaponLightMiddle: Phaser.Sprite;
   private weaponLightBottom: Phaser.Sprite;
@@ -43,8 +44,7 @@ export default class PlayerShip extends Phaser.Group {
     this.ship.body.collideWorldBounds = true;
 
     // Health
-    // tslint:disable-next-line:no-unused-expression
-    // new HealthBar(this.ship);
+    this.healthBar = new HealthBar(game, 125, 20);
 
     // Sound effects
     this.shootFx = this.game.add.audio('shoot');
@@ -92,6 +92,7 @@ export default class PlayerShip extends Phaser.Group {
     this.add(this.thruster);
     this.add(this.repair);
     this.add(this.shield);
+    this.add(this.healthBar);
 
     // 4. Weapon
     this.weaponLightTop = this.game.add.sprite(0, 0, 'ship-weapon-light-top');
@@ -130,6 +131,7 @@ export default class PlayerShip extends Phaser.Group {
     this.game.session.onFire.add(this.fireWeapon, this);
     this.game.session.onMove.add(this.onMove, this);
     this.onSubsystemsChanged();
+    this.game.session.onHealthChanged.add(this.onHealthChanged, this);
   }
 
   get x() {
@@ -146,6 +148,10 @@ export default class PlayerShip extends Phaser.Group {
       if (child !== this.ship) {
         child.x = this.x;
         child.y = this.y;
+      }
+      if (child === this.healthBar) {
+        child.y = this.y - 75;
+        child.x = this.x - 80;
       }
     });
   }
@@ -188,6 +194,10 @@ export default class PlayerShip extends Phaser.Group {
     } else if (level === ThrusterLevel.Fast) {
       this.moveSlowFx.play();
     }
+  }
+
+  private onHealthChanged() {
+    this.healthBar.value = this.game.session.health / this.game.session.maxHealth;
   }
 
   private onSubsystemsChanged() {

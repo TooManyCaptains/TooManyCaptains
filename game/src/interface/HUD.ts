@@ -6,16 +6,6 @@ import manifest from '../../../common/manifest';
 import { colorsToColorKey, colorPositionsToColors } from '../utils';
 import HealthBar from '../entities/HealthBar';
 
-class BigHealthBar extends HealthBar {
-  public game: Game;
-
-  constructor(game: Game, parent: Phaser.Group, width: number) {
-    super(game, parent, width, 50, 0x30ee02, 'HEALTH 100%', 1);
-    this.text.fontSize = 40;
-    this.text.fontWeight = 800;
-  }
-}
-
 class ColorChart extends Phaser.Sprite {
   public game: Game;
   private _colors: Color[];
@@ -285,7 +275,7 @@ class CaptainsLog extends Phaser.Group {
 
 export default class HUD extends Phaser.Group {
   public game: Game;
-  private healthBar: BigHealthBar;
+  private healthBar: HealthBar;
   private panels: Panel[];
 
   constructor(game: Game, x: number, y: number) {
@@ -311,9 +301,17 @@ export default class HUD extends Phaser.Group {
     captainsLog.x = lastPanel.right + innerPadding;
     captainsLog.y = innerPadding;
 
-    this.healthBar = new BigHealthBar(this.game, this, 1260);
+    this.healthBar = new HealthBar(
+      this.game,
+      1260,
+      50,
+      0x30ee02,
+      'HEALTH 100%',
+      200,
+    );
     this.healthBar.y = 340;
     this.healthBar.x = innerPadding * 2;
+    this.add(this.healthBar);
     this.bringToTop(this.healthBar);
 
     this.game.session.onHealthChanged.add(this.onHealthChanged, this);
@@ -321,11 +319,9 @@ export default class HUD extends Phaser.Group {
 
   private onHealthChanged() {
     const health = this.game.session.health;
-    if (this.healthBar.value !== health) {
-      this.healthBar.value = health / this.game.session.maxHealth;
-      const label =
-        health > 25 ? Math.ceil(health).toFixed(0) : health.toFixed(1);
-      this.healthBar.label = `HEALTH ${label}%`;
-    }
+    this.healthBar.value = health / this.game.session.maxHealth;
+    const label =
+      health > 25 ? Math.ceil(health).toFixed(0) : health.toFixed(1);
+    this.healthBar.label = `HEALTH ${label}%`;
   }
 }
