@@ -15,7 +15,6 @@ export default class Main extends Phaser.State {
   public game: Game;
 
   private board: Board;
-  // private recentlyEnded = false;
   private doors: Doors;
   private healthLowFx: Phaser.Sound;
   private healthVeryLowFx: Phaser.Sound;
@@ -159,32 +158,31 @@ export default class Main extends Phaser.State {
       .tileSprite(0, 0, this.game.width, 730, 'background', undefined)
       .autoScroll(-10, 0);
 
-    const boardHeight = 680;
-
     // Add the game board
-    this.board = new Board(this.game, this.game.width, boardHeight);
+    this.board = new Board(this.game, this.game.width, 680);
 
     // HUD at bottom of screen
     // tslint:disable-next-line:no-unused-expression
     new HUD(this.game, 0, this.board.bottom);
 
+    // Minimap
     // tslint:disable-next-line:no-unused-expression
     new Map(this.game);
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20;
     const asteroidTimer = this.game.time.create();
-    asteroidTimer.loop(asteroidSpawnIntervalSecs * 1000, () =>
-      this.board.spawnAsteroid(),
+    asteroidTimer.loop(
+      asteroidSpawnIntervalSecs * 1000,
+      this.board.spawnAsteroid,
+      this,
     );
     asteroidTimer.start();
 
     // Periodically spawn a new enemy
     const enemySpawnIntervalSecs = 35;
     const enemyTimer = this.game.time.create();
-    enemyTimer.loop(enemySpawnIntervalSecs * 1000, () =>
-      this.board.spawnEnemy(),
-    );
+    enemyTimer.loop(enemySpawnIntervalSecs * 1000, this.board.spawnEnemy, this);
     enemyTimer.start();
 
     // Score timer
@@ -282,9 +280,12 @@ export default class Main extends Phaser.State {
     this.healthLowFx = this.game.add.audio('health_low');
     this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
-    this.startNewSession();
-
     this.game.session.onHealthChanged.add(this.onHealthChanged, this);
+
+    this.game.world.bringToTop(this.doors);
+    this.doors.open(() => {
+      this.game.session.state = 'in_game';
+    });
   }
 
   private onHealthChanged() {
@@ -296,6 +297,11 @@ export default class Main extends Phaser.State {
       this.healthLowFx.stop();
       this.healthVeryLowFx.play();
     }
+
+    // Player is dead!
+    if (health === 0) {
+      this.onPlayerDead();
+    }
   }
 
   private onScoreTimer() {
@@ -303,20 +309,15 @@ export default class Main extends Phaser.State {
     // this.scoreText.text = `SCORE: ${this.score}`;
   }
 
-  private startNewSession() {
+  private onPlayerDead() {
+    // If game already ending, this function is a no-op.
+    if (this.game.session.state === 'game_over') {
+      return;
+    }
+    this.game.session.state = 'game_over';
     this.game.world.bringToTop(this.doors);
-    this.doors.open(() => {
-      this.game.session.state = 'in_game';
+    this.doors.close(() => {
+      this.game.state.start('After');
     });
   }
-
-  // private endSession() {
-  //   this.game.session.state = 'game_over';
-  //   this.recentlyEnded = true;
-  //   this.game.world.bringToTop(this.doors);
-  //   this.doors.close(() => {
-  //     this.game.state.start('After');
-  //   });
-  //   window.setTimeout(() => (this.recentlyEnded = false), 7500);
-  // }
 }
