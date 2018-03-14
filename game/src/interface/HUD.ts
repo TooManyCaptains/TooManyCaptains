@@ -122,14 +122,15 @@ class WeaponsPanel extends Panel {
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'weapons');
     this.add(this.icon);
     this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+    this.onSubsystemsChanged();
   }
 
   private onSubsystemsChanged() {
     this.colorChart.colors = colorPositionsToColors(
       this.game.session.weaponColorPositions,
     );
-    const shieldEnabled = this.game.session.weaponColorPositions.length === 0;
-    this.icon.alpha = shieldEnabled ? 1 : 0.2;
+    const isEnabled = this.game.session.weaponColorPositions.length > 0;
+    this.icon.alpha = isEnabled ? 1 : 0.2;
   }
 }
 
@@ -151,12 +152,14 @@ class ShieldsPanel extends Panel {
     this.add(this.icon);
 
     this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+
+    this.onSubsystemsChanged();
   }
 
   private onSubsystemsChanged() {
     this.colorChart.colors = this.game.session.shieldColors;
-    const shieldEnabled = this.game.session.shieldColors.length === 0;
-    this.icon.alpha = shieldEnabled ? 1 : 0.2;
+    const isEnabled = this.game.session.shieldColors.length > 0;
+    this.icon.alpha = isEnabled ? 1 : 0.2;
   }
 }
 
@@ -175,12 +178,14 @@ class ThrustersPanel extends Panel {
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'thrusters');
     this.add(this.icon);
     this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+
+    this.onSubsystemsChanged();
   }
 
   private onSubsystemsChanged() {
     this.chart.setLevel(this.game.session.thrusterLevel);
-    const shieldEnabled = this.game.session.shieldColors.length === 0;
-    this.icon.alpha = shieldEnabled ? 1 : 0.2;
+    const isEnabled = this.game.session.thrusterLevel > 0;
+    this.icon.alpha = isEnabled ? 1 : 0.2;
   }
 }
 
@@ -199,12 +204,14 @@ class RepairsPanel extends Panel {
     this.icon = new SubsystemIcon(game, this.centerX, 150, 'repairs');
     this.add(this.icon);
     this.game.session.onSubsystemsChanged.add(this.onSubsystemsChanged, this);
+
+    this.onSubsystemsChanged();
   }
 
   private onSubsystemsChanged() {
     this.chart.setLevel(this.game.session.repairLevel);
-    const shieldEnabled = this.game.session.shieldColors.length === 0;
-    this.icon.alpha = shieldEnabled ? 1 : 0.2;
+    const isEnabled = this.game.session.repairLevel > 0;
+    this.icon.alpha = isEnabled ? 1 : 0.2;
   }
 }
 

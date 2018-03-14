@@ -17,8 +17,6 @@ export default class Main extends Phaser.State {
   private board: Board;
   // private recentlyEnded = false;
   private doors: Doors;
-  // @ts-ignore next-line
-  private map: Map;
   private healthLowFx: Phaser.Sound;
   private healthVeryLowFx: Phaser.Sound;
 
@@ -166,11 +164,12 @@ export default class Main extends Phaser.State {
     // Add the game board
     this.board = new Board(this.game, this.game.width, boardHeight);
 
-    // Panels for HUD
+    // HUD at bottom of screen
     // tslint:disable-next-line:no-unused-expression
     new HUD(this.game, 0, this.board.bottom);
 
-    this.map = new Map(this.game);
+    // tslint:disable-next-line:no-unused-expression
+    new Map(this.game);
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20;
