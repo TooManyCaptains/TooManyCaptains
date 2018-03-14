@@ -221,7 +221,7 @@ export default class PlayerShip extends Phaser.Group {
 
     // Repairs
     const level = this.game.session.repairLevel;
-    const repairSpeedMap = [0, 0.02, 0.035, 0.05];
+    const repairSpeedMap = [0, 0.02, 0.0325, 0.05];
     const repairAnimationSpeedMap = [0, 10, 30, 90];
     this.repairPercentagePerSecond = repairSpeedMap[level];
     if (level > 0) {
