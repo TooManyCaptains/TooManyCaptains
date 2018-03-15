@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import Player from './Player';
 import { Enemy } from '../entities/Enemy';
 import Asteroid from './Asteroid';
@@ -49,13 +47,13 @@ export default class Board extends Phaser.Group {
     this.enemyBulletPool = new EnemyBulletPool(this.game, this.player);
 
     // Add starting enemies
+    // const numStartingEnemies = 3;
+    // _.times(numStartingEnemies, i => {
+      //   this.spawnEnemy(
+        //     height / numStartingEnemies * (i + 1) - height / numStartingEnemies / 2,
+        //   );
+        // });
     this.enemies = new Phaser.Group(this.game, undefined, 'enemies');
-    const numStartingEnemies = 3;
-    _.times(numStartingEnemies, i => {
-      this.spawnEnemy(
-        height / numStartingEnemies * (i + 1) - height / numStartingEnemies / 2,
-      );
-    });
     this.add(this.enemies);
 
     // Player ship

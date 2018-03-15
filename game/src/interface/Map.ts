@@ -1,5 +1,4 @@
 import { Game } from '../index';
-import { TOTAL_ROUND_TIME_MS } from '../Session';
 
 const MIN_X = 50;
 const MAX_X = 1870;
@@ -27,7 +26,7 @@ export default class Map extends Phaser.Group {
     const tween = this.game.add.tween(this.iconPlayer);
     tween.to(
       { x: MAX_X },
-      TOTAL_ROUND_TIME_MS,
+      this.game.session.totalTimeToBoss,
       Phaser.Easing.Linear.None,
       true,
     );

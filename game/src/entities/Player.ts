@@ -167,8 +167,6 @@ export default class PlayerShip extends Phaser.Group {
     const level = this.game.session.thrusterLevel;
     const movementSpeed = [0, 25, 100][level];
     const animationSpeed = [0, 10, 30][level];
-    console.log('level', level);
-    console.log('direction', direction);
 
     if (
       level === ThrusterLevel.Off ||

@@ -9,9 +9,40 @@ import {
 import GameServer from './GameServer';
 import { sortBy } from 'lodash';
 
-export const TOTAL_ROUND_TIME_MS = 480_000; // milliseconds
+const minutes = (millis: number) => millis * 60_000;
 
-export type Phase = 1 | 2 | 3 | 4;
+export interface Wave {
+  startTime: number;
+  name: number | 'boss';
+  enemies?: number;
+}
+
+const WAVES: Wave[] = [
+  {
+    startTime: minutes(0.1),
+    name: 1,
+    enemies: 2,
+  },
+  {
+    startTime: minutes(0.5),
+    name: 2,
+    enemies: 5,
+  },
+  {
+    startTime: minutes(1.7),
+    name: 3,
+    enemies: 10,
+  },
+  {
+    startTime: minutes(3.5),
+    name: 4,
+    enemies: 15,
+  },
+  {
+    startTime: minutes(5.4),
+    name: 'boss',
+  },
+];
 
 export enum RepairLevel {
   Off = 0,
@@ -43,7 +74,7 @@ export default class Session {
     fire: new Phaser.Signal(),
     move: new Phaser.Signal(),
     cheat: new Phaser.Signal(),
-    distance: new Phaser.Signal(),
+    wave: new Phaser.Signal(),
   };
 
   // Weapons
@@ -71,8 +102,10 @@ export default class Session {
   // Game state
   private _state: GameState;
 
-  // Phase and timer stuff (for minimap)
-  private _timeRoundStarted: number;
+  // Waves and timers
+  private _wave: Wave;
+  private _waveTimers: number[] = [];
+  // private _timeRoundStarted: number;
 
   constructor(private server: GameServer) {
     this.reset();
@@ -87,8 +120,8 @@ export default class Session {
     this.cards = [];
     this.weaponColorPositions = [];
     this.score = 0;
-    // this.distance = 0;
-    this._timeRoundStarted = 0;
+    this.wave = WAVES[0];
+    this._waveTimers = [];
     this.health = this.maxHealth;
   }
 
@@ -108,14 +141,6 @@ export default class Session {
     this.signals.subsystems.dispatch();
   }
 
-  get timeRoundStarted() {
-    return this._timeRoundStarted;
-  }
-
-  get phase() {
-    return this._timeRoundStarted;
-  }
-
   get score(): number {
     return this._score;
   }
@@ -125,14 +150,18 @@ export default class Session {
     this.signals.score.dispatch();
   }
 
-  // get distance(): number {
-  //   return this._distance;
-  // }
+  get totalTimeToBoss() {
+    return WAVES.find(({ name }) => name === 'boss')!.startTime;
+  }
 
-  // set distance(distance) {
-  //   this._distance = distance;
-  //   this.signals.distance.dispatch();
-  // }
+  get wave() {
+    return this._wave;
+  }
+
+  set wave(wave: Wave) {
+    this._wave = wave;
+    this.signals.wave.dispatch(this.wave);
+  }
 
   get health(): number {
     return this._health;
@@ -149,8 +178,18 @@ export default class Session {
 
   set state(state: GameState) {
     this.signals.state.dispatch(state);
+    if (state === 'in_game') {
+      this.setWaveTimers();
+    }
     this.server.notifyGameState(state);
     this._state = state;
+  }
+
+  private setWaveTimers() {
+    WAVES.forEach(wave => {
+      const timer = setTimeout(() => (this.wave = wave), wave.startTime);
+      this._waveTimers.push(timer);
+    });
   }
 
   private onPacket(packet: Packet) {

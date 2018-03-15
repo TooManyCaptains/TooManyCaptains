@@ -3,11 +3,12 @@ import HUD from '../interface/HUD';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { ColorPosition } from '../../../common/types';
-import { ThrusterDirection } from '../Session';
+import { ThrusterDirection, Wave } from '../Session';
 
 import Map from '../interface/Map';
 import { COLORS, colorNameToLetter } from '../utils';
 import { Cheat } from '../../../common/cheats';
+import { times } from 'lodash';
 
 const LOW_HEALTH = 25;
 const VERY_LOW_HEALTH = 10;
@@ -137,15 +138,15 @@ export default class Main extends Phaser.State {
     );
     asteroidTimer.start();
 
-    // Periodically spawn a new enemy
-    const enemySpawnIntervalSecs = 35;
-    const enemyTimer = this.game.time.create();
-    enemyTimer.loop(
-      enemySpawnIntervalSecs * 1000,
-      this.board.spawnEnemy,
-      this.board,
-    );
-    enemyTimer.start();
+    // // Periodically spawn a new enemy
+    // const enemySpawnIntervalSecs = 35;
+    // const enemyTimer = this.game.time.create();
+    // enemyTimer.loop(
+    //   enemySpawnIntervalSecs * 1000,
+    //   this.board.spawnEnemy,
+    //   this.board,
+    // );
+    // enemyTimer.start();
 
     // Score timer
     const scoreTimer = this.game.time.create();
@@ -244,9 +245,10 @@ export default class Main extends Phaser.State {
     this.healthLowFx = this.game.add.audio('health_low');
     this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
+    // Bind signals
     this.game.session.signals.health.add(this.onHealthChanged, this);
-
     this.game.session.signals.cheat.add(this.onCheat, this);
+    this.game.session.signals.wave.add(this.onWaveChanged, this);
 
     this.game.world.bringToTop(this.doors);
     this.doors.open(() => {
@@ -277,6 +279,21 @@ export default class Main extends Phaser.State {
     // Player is dead!
     if (health <= 0) {
       this.onPlayerDead();
+    }
+  }
+
+  private onWaveChanged(wave: Wave) {
+    console.log('wave changed', wave);
+    if (wave.name === 'boss') {
+      console.log('BOSS!');
+    } else {
+      const numEnemies = wave.enemies!;
+      times(numEnemies, i => {
+        this.board.spawnEnemy(
+          this.board.height / numEnemies * (i + 1) -
+            this.board.height / numEnemies / 2,
+        );
+      });
     }
   }
 
