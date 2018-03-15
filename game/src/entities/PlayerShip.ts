@@ -51,6 +51,7 @@ export default class PlayerShip extends Phaser.Sprite {
   private fireRate = 750;
   private healthLowFx: Phaser.Sound;
   private healthVeryLowFx: Phaser.Sound;
+  private healthLowTimer: Phaser.Timer;
 
   constructor(board: Board, x: number, y: number) {
     super(board.game, x, y, 'player-ship');
@@ -69,8 +70,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.maxHealth = 100;
     this.health = 100;
     this.healthBar = new HealthBar(this);
-
-    this.game.debug.body(this);
+    this.healthLowTimer = this.game.time.create();
 
     // Weapons
     this.weaponColors = [];
@@ -101,8 +101,6 @@ export default class PlayerShip extends Phaser.Sprite {
     this.thruster.visible = false;
     this.thruster.anchor.setTo(0.5, 0.5);
     // 2: Ship
-    // this.loadTexture('player-ship');
-    // this.anchor.setTo(0.5, 0.5);
     this.animations.add('move');
     this.animations.play('move', 20, true);
     // 3: Repair
@@ -147,10 +145,6 @@ export default class PlayerShip extends Phaser.Sprite {
     this.redBullets = new PlayerWeapon(this, 'red');
     this.blueBullets = new PlayerWeapon(this, 'blue');
     this.yellowBullets = new PlayerWeapon(this, 'yellow');
-
-    this.redBullets.forEach(this.game.debug.body, this.game.debug, true);
-    this.yellowBullets.forEach(this.game.debug.body, this.game.debug, true);
-    this.blueBullets.forEach(this.game.debug.body, this.game.debug, true);
 
     // 5. Shield
     this.shield = board.game.add.sprite(this.x, this.y, 'ship-shield');
@@ -283,12 +277,21 @@ export default class PlayerShip extends Phaser.Sprite {
     if (this.health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
       this.healthVeryLowFx.stop();
       this.healthLowFx.play();
+      this.healthLowTimer.loop(2000, () => {
+        console.log('hahaha');
+        this.game.camera.flash(0xff0000, 500);
+      });
+      this.healthLowTimer.start();
     } else if (
       this.health <= VERY_LOW_HEALTH &&
       !this.healthVeryLowFx.isPlaying
     ) {
       this.healthLowFx.stop();
       this.healthVeryLowFx.play();
+      this.healthLowTimer.loop(1000, () => this.game.camera.flash(0xff0000, 500));
+      this.healthLowTimer.start();
+    } else {
+      // this.healthLowTimer.stop(true);
     }
     return this;
   }

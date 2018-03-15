@@ -5,6 +5,7 @@ export default class Map extends Phaser.Group {
   public miniMap: Phaser.Sprite;
   public iconPlayer: Phaser.Sprite;
   public iconBoss: Phaser.Sprite;
+  
 
   constructor(game: Game) {
     super(game);
@@ -14,6 +15,12 @@ export default class Map extends Phaser.Group {
     this.iconPlayer = this.create(100, 0, 'map-icon-player');
     this.iconPlayer.anchor.setTo(0.5, 0);
 
+    console.log('hi', this.game.time.time);
+
+  }
+
+  public update() {
+      this.iconPlayer.x += 0.05;
   }
   
   

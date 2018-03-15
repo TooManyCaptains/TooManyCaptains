@@ -8,6 +8,7 @@ import { sortBy } from 'lodash';
 import { EnemyBulletPool } from '../entities/EnemyWeapon';
 
 import Map from '../interface/Map';
+import { PlayerWeapon } from '../entities/PlayerWeapon';
 
 export default class Main extends Phaser.State {
   public game: Game;
@@ -292,8 +293,15 @@ export default class Main extends Phaser.State {
   }
 
   public render() {
-    this.game.debug.bodyInfo(this.player, 32, 32);
-    this.game.debug.body(this.player);
+    if (this.game.params.debug) {
+      this.game.debug.bodyInfo(this.player, 32, 32);
+      this.game.debug.body(this.player);
+      this.board.enemies.forEachAlive(this.game.debug.body, this.game.debug, true);
+      this.player.redBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
+      this.player.blueBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
+      this.player.yellowBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
+      this.game.enemyBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
+    }
   }
 
   private startGame() {
