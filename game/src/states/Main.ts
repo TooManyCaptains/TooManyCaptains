@@ -275,7 +275,7 @@ export default class Main extends Phaser.State {
     }
 
     // Player is dead!
-    if (health === 0) {
+    if (health <= 0) {
       this.onPlayerDead();
     }
   }
