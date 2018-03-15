@@ -1,90 +1,55 @@
 import Board from '../entities/Board';
 import HUD from '../interface/HUD';
-import { ButtonState, ColorPosition } from '../../../common/types';
-import PlayerShip from '../entities/PlayerShip';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
-import { sortBy } from 'lodash';
-import { EnemyBulletPool } from '../entities/EnemyWeapon';
+import { ColorPosition } from '../../../common/types';
+import { ThrusterDirection, Wave } from '../Session';
 
 import Map from '../interface/Map';
+<<<<<<< HEAD
 import { PlayerWeapon } from '../entities/PlayerWeapon';
+=======
+import { COLORS, colorNameToLetter } from '../utils';
+import { Cheat } from '../../../common/cheats';
+import { times } from 'lodash';
+
+const LOW_HEALTH = 25;
+const VERY_LOW_HEALTH = 10;
+>>>>>>> 53c892fd1568d5581e8103df7bc97ab996095552
 
 export default class Main extends Phaser.State {
   public game: Game;
-  public board: Board;
 
-  private recentlyEnded = false;
-  private player: PlayerShip;
+  private board: Board;
   private doors: Doors;
-  private map: Map;
+  private healthLowFx: Phaser.Sound;
+  private healthVeryLowFx: Phaser.Sound;
 
   public preload() {
+    // Load all enemies
+    const enemyWidth = 150;
+    const enemyHeight = 65;
+    const letters = COLORS.map(colorNameToLetter);
+    letters.forEach(char1 => {
+      letters.forEach(char2 => {
+        const key = `enemy_${char1}${char2}`;
+        this.load.spritesheet(
+          key,
+          `assets/sprites/${key}.png`,
+          enemyWidth,
+          enemyHeight,
+        );
+      });
+    });
+
     this.load.spritesheet(
       'explosion',
       'assets/sprites/explosion.png',
       160,
       160,
     );
-    const enemyWidth = 150;
-    const enemyHeight = 65;
-    this.load.spritesheet(
-      'enemy_RR',
-      'assets/sprites/enemy_RR.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_RY',
-      'assets/sprites/enemy_RY.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_RB',
-      'assets/sprites/enemy_RB.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_YR',
-      'assets/sprites/enemy_YR.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_YY',
-      'assets/sprites/enemy_YY.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_YB',
-      'assets/sprites/enemy_YB.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_BR',
-      'assets/sprites/enemy_BR.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_BY',
-      'assets/sprites/enemy_BY.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_BB',
-      'assets/sprites/enemy_BB.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.doors = new Doors(this.game);
 
-    this.load.spritesheet('lock', 'assets/sprites/lock145x155.png', 145, 155);
+    this.doors = new Doors(this.game);
 
     this.load.spritesheet(
       'id_card_0',
@@ -92,8 +57,6 @@ export default class Main extends Phaser.State {
       240,
       600,
     );
-
-    // New Sprites (Feb.24)
 
     this.load.spritesheet(
       'player-ship',
@@ -150,12 +113,6 @@ export default class Main extends Phaser.State {
       160,
       160,
     );
-
-
-
-
-
-
   }
 
   public create() {
@@ -166,29 +123,39 @@ export default class Main extends Phaser.State {
 
     // Add the game board
     this.board = new Board(this.game, this.game.width, 680);
-    this.player = this.board.player;
 
-    // Panels for HUD
+    // HUD at bottom of screen
     // tslint:disable-next-line:no-unused-expression
-    new HUD(this.game, 0, this.board.bottom, this.game.width, 410);
+    new HUD(this.game, 0, this.board.bottom);
 
-    this.map = new Map(this.game);
+    // Minimap
+    // tslint:disable-next-line:no-unused-expression
+    new Map(this.game);
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20;
     const asteroidTimer = this.game.time.create();
-    asteroidTimer.loop(asteroidSpawnIntervalSecs * 1000, () =>
-      this.board.spawnAsteroid(),
+    asteroidTimer.loop(
+      asteroidSpawnIntervalSecs * 1000,
+      this.board.spawnAsteroid,
+      this.board,
     );
     asteroidTimer.start();
 
-    // Periodically spawn a new enemy
-    const enemySpawnIntervalSecs = 35;
-    const enemyTimer = this.game.time.create();
-    enemyTimer.loop(enemySpawnIntervalSecs * 1000, () =>
-      this.board.spawnEnemy(),
-    );
-    enemyTimer.start();
+    // // Periodically spawn a new enemy
+    // const enemySpawnIntervalSecs = 35;
+    // const enemyTimer = this.game.time.create();
+    // enemyTimer.loop(
+    //   enemySpawnIntervalSecs * 1000,
+    //   this.board.spawnEnemy,
+    //   this.board,
+    // );
+    // enemyTimer.start();
+
+    // Score timer
+    const scoreTimer = this.game.time.create();
+    scoreTimer.loop(250, this.onScoreTimer, this);
+    scoreTimer.start();
 
     if (this.game.params.debug) {
       // Keyboard shortcuts (for debugging)
@@ -200,98 +167,126 @@ export default class Main extends Phaser.State {
         .addKey(Phaser.Keyboard.A)
         .onDown.add(() => this.board.spawnAsteroid(), this);
 
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.T)
-        .onDown.add(() => this.player.setThrustersLevel(2), this);
+      this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(() => {
+        const allPositions: ColorPosition[] = [
+          { color: 'blue', position: 0 },
+          { color: 'red', position: 1 },
+          { color: 'yellow', position: 2 },
+        ];
+        this.game.session.configurations = [
+          {
+            subsystem: 'weapons',
+            colorPositions: allPositions,
+          },
+          {
+            subsystem: 'shields',
+            colorPositions: allPositions,
+          },
+          {
+            subsystem: 'repairs',
+            colorPositions: allPositions,
+          },
+          {
+            subsystem: 'thrusters',
+            colorPositions: allPositions.slice(0, 2),
+          },
+        ];
+      }, this);
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.UP)
-        .onDown.add(() => this.player.startMovingUp(), this);
+        .onDown.add(
+          () => this.game.session.signals.move.dispatch(ThrusterDirection.Up),
+          this,
+        );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.UP)
-        .onUp.add(() => this.player.stopMoving(), this);
+        .onUp.add(
+          () =>
+            this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
+          this,
+        );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.DOWN)
-        .onUp.add(() => this.player.stopMoving(), this);
+        .onUp.add(
+          () =>
+            this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
+          this,
+        );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.DOWN)
-        .onDown.add(() => this.player.startMovingDown(), this);
+        .onDown.add(
+          () => this.game.session.signals.move.dispatch(ThrusterDirection.Down),
+          this,
+        );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.K)
-        .onDown.add(() => this.player.kill(), this);
+        .onDown.add(() => (this.game.session.health = 0), this);
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.D)
-        .onDown.add(() => this.player.damage(2.5), this);
+        .onDown.add(() => (this.game.session.health -= 5), this);
 
       this.game.input.keyboard
-      .addKey(Phaser.Keyboard.H)
-      .onDown.add(() => this.player.heal(5), this);
+        .addKey(Phaser.Keyboard.H)
+        .onDown.add(() => (this.game.session.health += 5), this);
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.SPACEBAR)
-        .onDown.add(() => this.player.fireWeapon(), this);
+        .onDown.add(() => this.game.session.signals.fire.dispatch(), this);
     }
 
     if (this.game.params.invulnerable) {
-      const health = 100 * 1000;
-      this.player.maxHealth = health;
-      this.player.health = health;
+      const health = 10_000;
+      this.game.session.maxHealth = health;
+      this.game.session.health = health;
     }
 
-    this.game.enemyBullets = new EnemyBulletPool(this.game);
+    this.healthLowFx = this.game.add.audio('health_low');
+    this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
-    this.startGame();
+    // Bind signals
+    this.game.session.signals.health.add(this.onHealthChanged, this);
+    this.game.session.signals.cheat.add(this.onCheat, this);
+    this.game.session.signals.wave.add(this.onWaveChanged, this);
+
+    this.game.world.bringToTop(this.doors);
+    this.doors.open(() => {
+      this.game.session.state = 'in_game';
+    });
   }
 
-  public onMoveUp() {
-    this.player.startMovingUp();
-  }
-
-  public onMoveDown() {
-    this.player.startMovingDown();
-  }
-
-  public onMoveStop() {
-    this.player.stopMoving();
-  }
-
-  public onWeaponsConfiguration(colorPositions: ColorPosition[]) {
-    this.player.setWeapons(colorPositions);
-  }
-
-  public onShieldsConfiguration(colorPositions: ColorPosition[]) {
-    const colors = sortBy(colorPositions, 'color').map(cp => cp.color);
-    this.player.setShields(colors);
-  }
-
-  public onThrustersConfiguration(colorPositions: ColorPosition[]) {
-    this.player.setThrustersLevel(colorPositions.length);
-  }
-
-  public onRepairsConfiguration(colorPositions: ColorPosition[]) {
-    this.player.setRepairLevel(colorPositions.length);
-  }
-
-  public onFire(state: ButtonState) {
-    if (state === 'released') {
-      this.player.fireWeapon();
+  private onCheat(cheat: Cheat) {
+    if (cheat.code === 'kill_player') {
+      this.game.session.health = 0;
+    } else if (cheat.code === 'spawn_enemy') {
+      this.board.spawnEnemy();
+    } else if (cheat.code === 'spawn_asteroid') {
+      this.board.spawnAsteroid();
     }
   }
 
-  public update() {
-    const isGameEnding = !this.player.alive;
+  private onHealthChanged() {
+    const health = this.game.session.health;
+    if (health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
+      this.healthVeryLowFx.stop();
+      this.healthLowFx.play();
+    } else if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
+      this.healthLowFx.stop();
+      this.healthVeryLowFx.play();
+    }
 
-    // Did the game just end now (i.e. it was previously not ended)?
-    if (isGameEnding && this.game.gameState === 'in_game') {
-      this.endGame();
+    // Player is dead!
+    if (health <= 0) {
+      this.onPlayerDead();
     }
   }
 
+<<<<<<< HEAD
   public render() {
     if (this.game.params.debug) {
       this.game.debug.bodyInfo(this.player, 32, 32);
@@ -301,24 +296,37 @@ export default class Main extends Phaser.State {
       this.player.blueBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
       this.player.yellowBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
       this.game.enemyBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
+=======
+  private onWaveChanged(wave: Wave) {
+    console.log('wave changed', wave);
+    if (wave.name === 'boss') {
+      console.log('BOSS!');
+    } else {
+      const numEnemies = wave.enemies!;
+      times(numEnemies, i => {
+        this.board.spawnEnemy(
+          this.board.height / numEnemies * (i + 1) -
+            this.board.height / numEnemies / 2,
+        );
+      });
+>>>>>>> 53c892fd1568d5581e8103df7bc97ab996095552
     }
   }
 
-  private startGame() {
-    this.game.score = 0;
-    this.game.world.bringToTop(this.doors);
-    this.doors.open(() => {
-      this.game.gameState = 'in_game';
-    });
+  private onScoreTimer() {
+    this.game.session.score += 1;
+    // this.scoreText.text = `SCORE: ${this.score}`;
   }
 
-  private endGame() {
-    this.game.gameState = 'game_over';
-    this.recentlyEnded = true;
+  private onPlayerDead() {
+    // If game already ending, this function is a no-op.
+    if (this.game.session.state === 'game_over') {
+      return;
+    }
+    this.game.session.state = 'game_over';
     this.game.world.bringToTop(this.doors);
     this.doors.close(() => {
       this.game.state.start('After');
     });
-    window.setTimeout(() => (this.recentlyEnded = false), 7500);
   }
 }

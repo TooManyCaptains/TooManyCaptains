@@ -1,10 +1,14 @@
 import { sortBy, sample } from 'lodash';
 import { ColorPosition, Color } from '../../common/types';
 
-const colors: Color[] = ['blue', 'red', 'yellow'];
+export const COLORS: Color[] = ['blue', 'red', 'yellow'];
 
 export function colorNameToLetter(color: Color): string {
   return color[0].toUpperCase();
+}
+
+export function colorPositionsToColors(colorPositions: ColorPosition[]) {
+  return sortBy(colorPositions, 'color').map(cp => cp.color);
 }
 
 export function colorPositionsToColorKey(
@@ -17,6 +21,10 @@ export function colorPositionsToColorKey(
   );
 }
 
+export function colorsToColorKey(colors: Color[]): string {
+  return colors.map(color => colorNameToLetter(color)).join('') || 'none';
+}
+
 export function randomColor(): Color {
-  return sample(colors)!;
+  return sample(COLORS)!;
 }

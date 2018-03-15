@@ -2,7 +2,7 @@ import { StartScreen } from '../interface/Screens';
 import Doors from '../interface/Doors';
 import { Game } from '../index';
 
-export default class Boot extends Phaser.State {
+export default class Before extends Phaser.State {
   public game: Game;
 
   public preload() {
@@ -60,8 +60,20 @@ export default class Boot extends Phaser.State {
     this.game.add.existing(new Doors(this.game));
     this.game.add.existing(new StartScreen(this.game));
 
-    // Update gamestate
-    this.game.gameState = 'wait_for_players';
-    this.game.add.audio('music_background').play(undefined, undefined, undefined, true);
+    this.game.session.reset();
+    this.game.add
+      .audio('music_background')
+      .play(undefined, undefined, undefined, true);
+
+    this.game.session.signals.fire.add(this.onFire, this);
+  }
+
+  private onFire() {
+    const canStart =
+      this.game.session.cards.length >= 3 &&
+      this.game.session.cards.includes(0);
+    if (canStart) {
+      this.state.start('Main');
+    }
   }
 }

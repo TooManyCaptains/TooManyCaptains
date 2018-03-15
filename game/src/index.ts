@@ -1,4 +1,4 @@
-import { has } from 'lodash';
+import { has, values } from 'lodash';
 import Stats from 'stats.js';
 import Main from './states/Main';
 import Boot from './states/Boot';
@@ -6,17 +6,9 @@ import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
 import GameServer from './GameServer';
-import {
-  Packet,
-  GameState,
-  Subsystem,
-  ColorPosition,
-  CaptainCardID,
-} from '../../common/types';
-import PlayerShip from './entities/PlayerShip';
-import { EnemyBulletPool } from './entities/EnemyWeapon';
 
 import './index.css';
+import Session from './Session';
 
 function getUrlParams(search: string): { [P in string]: string } {
   const hashes = search.slice(search.indexOf('?') + 1).split('&');
@@ -58,20 +50,8 @@ function getConfig() {
 
 export class Game extends Phaser.Game {
   public params: Config;
-  public server: GameServer;
-  public captains: CaptainCardID[] = [];
-  public score: number = 0;
-  public player: PlayerShip;
-  public wiringConfigurations: { [S in Subsystem]: ColorPosition[] } = {
-    weapons: [],
-    thrusters: [],
-    repairs: [],
-    shields: [],
-  };
-
-  public enemyBullets: EnemyBulletPool;
-
-  private _gameState: GameState = 'wait_for_players';
+  public session: Session;
+  private server: GameServer;
 
   constructor() {
     super(1920, 1080, Phaser.CANVAS, 'surface');
@@ -84,13 +64,17 @@ export class Game extends Phaser.Game {
     this.params = getConfig();
     console.log(this.params);
 
-    // Kick things off with the boot state.
-    this.state.start('Boot');
-    this.bindServerEvents();
-
     if (this.params.debug) {
       this.setupPerformanceStatistics();
     }
+
+    this.server = new GameServer(this.params.serverURL);
+    this.session = new Session(this.server);
+
+    // Kick things off with the boot state.
+    this.state.start('Boot');
+
+    this.state.onStateChange.add(this.onStateChange, this);
   }
 
   public setVolume(volume?: number) {
@@ -105,87 +89,6 @@ export class Game extends Phaser.Game {
     }
   }
 
-  get gameState(): GameState {
-    return this._gameState;
-  }
-
-  set gameState(gameState: GameState) {
-    this._gameState = gameState;
-    if (gameState === 'wait_for_players') {
-      this.captains = [];
-    }
-    this.server.notifyGameState(gameState);
-  }
-
-  private bindServerEvents() {
-    this.server = new GameServer(this.params.serverURL);
-    const gameMainState = this.state.states.Main as Main;
-
-    this.server.socket.on('packet', (packet: Packet) => {
-      if (this.params.debug) {
-        console.log(packet);
-      }
-
-      if (packet.kind === 'wiring' && this.state.current === 'Main') {
-        packet.configurations.map(({ subsystem, colorPositions }) => {
-          this.wiringConfigurations[subsystem] = colorPositions;
-          if (subsystem === 'weapons') {
-            gameMainState.onWeaponsConfiguration(colorPositions);
-          } else if (subsystem === 'shields') {
-            gameMainState.onShieldsConfiguration(colorPositions);
-          } else if (subsystem === 'thrusters') {
-            gameMainState.onThrustersConfiguration(colorPositions);
-          } else if (subsystem === 'repairs') {
-            gameMainState.onRepairsConfiguration(colorPositions);
-          }
-        });
-      } else if (packet.kind === 'move' && this.state.current === 'Main') {
-        if (packet.state === 'released') {
-          gameMainState.onMoveStop();
-        } else if (packet.direction === 'up') {
-          gameMainState.onMoveUp();
-        } else if (packet.direction === 'down') {
-          gameMainState.onMoveDown();
-        }
-      } else if (packet.kind === 'fire') {
-        if (this.state.current === 'Before' && packet.state === 'released') {
-          if (this.captains.length >= 2) {
-            this.state.start('Main');
-          }
-        } else if (
-          this.state.current === 'After' &&
-          packet.state === 'released'
-        ) {
-          this.state.start('Before');
-        } else if (this.state.current === 'Main') {
-          gameMainState.onFire(packet.state);
-        }
-      } else if (packet.kind === 'scan') {
-        const captain = this.captains.find(cardID => cardID === packet.cardID);
-        if (this.state.current === 'Before') {
-          if (!captain && packet.cardID !== 0) {
-            this.captains.push(packet.cardID);
-          } else {
-            // TODO: add engineer
-          }
-        }
-      } else if (packet.kind === 'cheat') {
-        const cheat = packet.cheat;
-        if (cheat.code === 'kill_player') {
-          this.player.kill();
-        } else if (cheat.code === 'spawn_enemy') {
-          gameMainState.board.spawnEnemy();
-        } else if (cheat.code === 'spawn_asteroid') {
-          gameMainState.board.spawnAsteroid();
-        } else if (cheat.code === 'force_state') {
-          this.gameState = cheat.state;
-        } else if (cheat.code === 'set_volume') {
-          this.setVolume(cheat.volume / 100);
-        }
-      }
-    });
-  }
-
   private setupPerformanceStatistics() {
     // Setup the new stats panel.
     const stats = new Stats();
@@ -198,6 +101,14 @@ export class Game extends Phaser.Game {
       updateLoop.apply(this, args);
       stats.end();
     };
+  }
+
+  private onStateChange() {
+    // When the phaser state (NOT gamestate) changes,
+    // we need to un-bind all of the existing signals!
+    values(this.session.signals).forEach(signal => {
+      signal.removeAll();
+    });
   }
 }
 

@@ -1,21 +1,19 @@
-// import HealthBar from './HealthBar';
 import { Color } from './../../../common/types';
 import { Game } from '../index';
-import Board from './Board';
 import { colorNameToLetter } from '../utils';
+import { EnemyBulletPool } from './EnemyWeapon';
 
 export class Enemy extends Phaser.Sprite {
+  public game: Game;
   public explosionFx: Phaser.Sound;
 
   public collisionDamage = 35;
   public movementSpeed = 7.5;
   public verticalDriftSpeed = 7.5;
-  public outOfBoundsKill = true;
   public checkWorldBounds = true;
 
-  public bulletDamage: 12.5;
-  public game: Game;
-  public color: Color;
+  public bulletStrength = 10;
+  public bulletVelocity = -200;
 
   public shipColor: Color;
   public weaponColor: Color;
@@ -23,12 +21,15 @@ export class Enemy extends Phaser.Sprite {
   private baseFiringRate = 10000;
   private fireTimer: Phaser.Timer;
 
+  private enemyBulletPool: EnemyBulletPool;
+
   constructor(
     game: Game,
     x: number,
     y: number,
     shipColor: Color,
     weaponColor: Color,
+    enemyBulletPool: EnemyBulletPool,
   ) {
     super(game, x, y, `enemy_${colorNameToLetter(shipColor)}${colorNameToLetter(weaponColor)}`);
     this.animations.add('move');
@@ -36,6 +37,7 @@ export class Enemy extends Phaser.Sprite {
 
     this.shipColor = shipColor;
     this.weaponColor = weaponColor;
+    this.enemyBulletPool = enemyBulletPool;
 
     // Size and anchoring
     this.anchor.setTo(0.5, 0.5);
@@ -43,8 +45,6 @@ export class Enemy extends Phaser.Sprite {
     // Health
     this.health = 20;
     this.maxHealth = this.health;
-    // tslint:disable-next-line:no-unused-expression
-    // new HealthBar(this);
 
     // Weapon
     this.fireTimer = this.game.time.create();
@@ -55,7 +55,7 @@ export class Enemy extends Phaser.Sprite {
 
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
-    // this.body.collideWorldBounds = true
+    this.body.collideWorldBounds = true;
     this.body.bounce.set(1);
     this.body.velocity.x =
       -this.movementSpeed + this.movementSpeed * Math.random();
@@ -74,17 +74,8 @@ export class Enemy extends Phaser.Sprite {
     super.destroy();
   }
 
-  public update() {
-    // Drift vertically
-    if (this.y - this.height < 0) {
-      this.body.velocity.y = this.verticalDriftSpeed;
-    } else if (this.bottom > (this.parent.parent as Board).maxY) {
-      this.body.velocity.y = -this.verticalDriftSpeed;
-    }
-  }
-
   public fire() {
-    this.game.enemyBullets.fire(this.game, this);
+    this.enemyBulletPool.fire(this);
   }
 
   private explode() {
