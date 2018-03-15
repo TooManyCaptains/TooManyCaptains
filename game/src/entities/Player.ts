@@ -131,6 +131,9 @@ export default class PlayerShip extends Phaser.Group {
     this.game.session.signals.fire.add(this.fireWeapon, this);
     this.game.session.signals.move.add(this.onMove, this);
     this.game.session.signals.health.add(this.onHealthChanged, this);
+
+    this.onSubsystemsChanged();
+    this.onHealthChanged();
   }
 
   get x() {

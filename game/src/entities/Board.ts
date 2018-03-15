@@ -66,8 +66,8 @@ export default class Board extends Phaser.Group {
     this.enemies.add(
       new Enemy(
         this.game,
-        this.width,
-        y || this.centerY,
+        y ? this.game.width : this.game.width + 50,
+        y || this.game.physics.arcade.bounds.height * Math.random() + 100,
         randomColor(),
         randomColor(),
         this.enemyBulletPool,
@@ -80,9 +80,10 @@ export default class Board extends Phaser.Group {
       this.game.session.shieldColors.length === 3 ||
       this.game.session.repairLevel === 3;
     // Punish players who are camping
-    const y = isPlayerCamping ? this.player.y : this.width * Math.random();
-    const asteroid = new Asteroid(this.game, this.width, y);
+    const y = isPlayerCamping ? this.player.y : this.game.physics.arcade.bounds.height * Math.random() + 100;
+    const asteroid = new Asteroid(this.game, this.game.width, y);
     this.asteroids.add(asteroid);
+    this.add(asteroid);
     asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
   }
 

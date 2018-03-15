@@ -7,6 +7,7 @@ import { ThrusterDirection } from '../Session';
 
 import Map from '../interface/Map';
 import { COLORS, colorNameToLetter } from '../utils';
+import { Cheat } from '../../../common/cheats';
 
 const LOW_HEALTH = 25;
 const VERY_LOW_HEALTH = 10;
@@ -245,10 +246,22 @@ export default class Main extends Phaser.State {
 
     this.game.session.signals.health.add(this.onHealthChanged, this);
 
+    this.game.session.signals.cheat.add(this.onCheat, this);
+
     this.game.world.bringToTop(this.doors);
     this.doors.open(() => {
       this.game.session.state = 'in_game';
     });
+  }
+
+  private onCheat(cheat: Cheat) {
+    if (cheat.code === 'kill_player') {
+      this.game.session.health = 0;
+    } else if (cheat.code === 'spawn_enemy') {
+      this.board.spawnEnemy();
+    } else if (cheat.code === 'spawn_asteroid') {
+      this.board.spawnAsteroid();
+    }
   }
 
   private onHealthChanged() {

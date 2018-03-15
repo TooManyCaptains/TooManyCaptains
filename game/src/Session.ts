@@ -9,6 +9,8 @@ import {
 import GameServer from './GameServer';
 import { sortBy } from 'lodash';
 
+export type Phase = 1 | 2 | 3 | 4;
+
 export enum RepairLevel {
   Off = 0,
   Low,
@@ -38,6 +40,7 @@ export default class Session {
     state: new Phaser.Signal(),
     fire: new Phaser.Signal(),
     move: new Phaser.Signal(),
+    cheat: new Phaser.Signal(),
   };
 
   // Weapons
@@ -62,7 +65,11 @@ export default class Session {
   public maxHealth = 100;
   private _health: number;
 
+  // Game state
   private _state: GameState;
+
+  // Phase
+  // private phase: Phase;
 
   constructor(private server: GameServer) {
     this.reset();
@@ -150,13 +157,11 @@ export default class Session {
         this.cards.push(packet.cardID);
       }
       this.signals.cards.dispatch(packet.cardID);
-    }
-    // else if (packet.kind === 'cheat') {
-    //   if (packet.cheat.code === 'force_state') {
-    //     this.session.state = packet.cheat.state;
+    } else if (packet.kind === 'cheat') {
+      this.signals.cheat.dispatch(packet.cheat);
     //   } else if (packet.cheat.code === 'set_volume') {
     //     this.setVolume(packet.cheat.volume / 100);
     //   }
-    // }
+    }
   }
 }
