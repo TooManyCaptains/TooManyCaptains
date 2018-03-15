@@ -6,16 +6,12 @@ import { ColorPosition } from '../../../common/types';
 import { ThrusterDirection, Wave } from '../Session';
 
 import Map from '../interface/Map';
-<<<<<<< HEAD
-import { PlayerWeapon } from '../entities/PlayerWeapon';
-=======
 import { COLORS, colorNameToLetter } from '../utils';
 import { Cheat } from '../../../common/cheats';
 import { times } from 'lodash';
 
 const LOW_HEALTH = 25;
 const VERY_LOW_HEALTH = 10;
->>>>>>> 53c892fd1568d5581e8103df7bc97ab996095552
 
 export default class Main extends Phaser.State {
   public game: Game;
@@ -286,17 +282,6 @@ export default class Main extends Phaser.State {
     }
   }
 
-<<<<<<< HEAD
-  public render() {
-    if (this.game.params.debug) {
-      this.game.debug.bodyInfo(this.player, 32, 32);
-      this.game.debug.body(this.player);
-      this.board.enemies.forEachAlive(this.game.debug.body, this.game.debug, true);
-      this.player.redBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
-      this.player.blueBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
-      this.player.yellowBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
-      this.game.enemyBullets.forEachAlive(this.game.debug.body, this.game.debug, true);
-=======
   private onWaveChanged(wave: Wave) {
     // if (this.soundtrackA) {
     //   this.soundtrackA.stop();
@@ -314,7 +299,6 @@ export default class Main extends Phaser.State {
             this.board.height / numEnemies / 2,
         );
       });
->>>>>>> 53c892fd1568d5581e8103df7bc97ab996095552
     }
   }
 
