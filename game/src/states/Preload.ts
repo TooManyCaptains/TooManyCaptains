@@ -49,6 +49,7 @@ export default class Preload extends Phaser.State {
 
     this.dotsCur = 0;
     this.dotsMax = 3;
+    this.updateDots();
     this.game.time
       .create()
       .loop(250, this.updateDots, this)
