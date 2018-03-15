@@ -20,6 +20,7 @@ export default class Main extends Phaser.State {
   private doors: Doors;
   private healthLowFx: Phaser.Sound;
   private healthVeryLowFx: Phaser.Sound;
+  private healthLowTimer: Phaser.Timer;
 
   public preload() {
     // Load all enemies
@@ -148,6 +149,8 @@ export default class Main extends Phaser.State {
     // );
     // enemyTimer.start();
 
+    this.healthLowTimer = this.game.time.create();
+
     // Score timer
     const scoreTimer = this.game.time.create();
     scoreTimer.loop(250, this.onScoreTimer, this);
@@ -267,13 +270,24 @@ export default class Main extends Phaser.State {
   }
 
   private onHealthChanged() {
+    const flashScreen = (delay: number, opacity: number) => {
+      this.healthLowTimer.stop();
+      this.healthLowTimer.loop(delay, () => {
+        this.game.camera.flash(0xff0000, delay, true, opacity);
+      });
+      this.game.camera.flash(0xff0000, delay, true, opacity);
+      this.healthLowTimer.start();
+    };
+
     const health = this.game.session.health;
     if (health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
       this.healthVeryLowFx.stop();
       this.healthLowFx.play();
+      flashScreen(1200, 0.5);
     } else if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
       this.healthLowFx.stop();
       this.healthVeryLowFx.play();
+      flashScreen(800, 0.5);
     }
 
     // Player is dead!

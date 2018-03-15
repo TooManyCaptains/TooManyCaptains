@@ -15,7 +15,6 @@ function getUrlParams(search: string): { [P in string]: string } {
   const params = {};
   hashes.forEach(hash => {
     const [key, val] = hash.split('=');
-    console.log(key, val);
     params[key] = decodeURIComponent(val);
   });
 
