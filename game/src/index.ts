@@ -53,6 +53,8 @@ export class Game extends Phaser.Game {
   public session: Session;
   private server: GameServer;
 
+  private soundtrack: Phaser.Sound;
+
   constructor() {
     super(1920, 1080, Phaser.CANVAS, 'surface');
     this.state.add('Boot', Boot, false);
@@ -75,19 +77,37 @@ export class Game extends Phaser.Game {
     this.state.start('Boot');
 
     this.state.onStateChange.add(this.onStateChange, this);
+    this.session.signals.state.add(this.updateSoundtrack, this);
+    this.session.signals.wave.add(this.updateSoundtrack, this);
   }
 
-  public setVolume(volume?: number) {
-    if (volume !== undefined) {
-      localStorage.setItem('volume', String(volume));
-      this.sound.volume = volume;
-    } else {
-      const previousVolume = localStorage.getItem('volume');
-      if (previousVolume !== null) {
-        this.setVolume(Number(previousVolume));
-      }
+  public updateSoundtrack() {
+    let key = this.soundtrack ? this.soundtrack.key : '';
+    let volume = 0.25;
+    if (this.session.state === 'wait_for_players') {
+      key = 'music_background';
+    } else if (this.session.state === 'in_game') {
+      key = this.session.wave.soundtrack;
+      volume = 0.2;
     }
+    const play = () => {
+      this.soundtrack = this.add.audio(key, volume, true).play();
+      console.log('playing');
+    };
+    play();
   }
+
+  // public setVolume(volume?: number) {
+  //   if (volume !== undefined) {
+  //     localStorage.setItem('volume', String(volume));
+  //     this.sound.volume = volume;
+  //   } else {
+  //     const previousVolume = localStorage.getItem('volume');
+  //     if (previousVolume !== null) {
+  //       this.setVolume(Number(previousVolume));
+  //     }
+  //   }
+  // }
 
   private setupPerformanceStatistics() {
     // Setup the new stats panel.
@@ -108,6 +128,8 @@ export class Game extends Phaser.Game {
     // we need to un-bind all of the existing signals!
     values(this.session.signals).forEach(signal => {
       signal.removeAll();
+      this.session.signals.state.add(this.updateSoundtrack, this);
+      this.session.signals.wave.add(this.updateSoundtrack, this);
     });
   }
 }

@@ -15,32 +15,32 @@ export interface Wave {
   startTime: number;
   name: number | 'boss';
   enemies?: number;
+  soundtrack: string;
 }
 
 const WAVES: Wave[] = [
   {
-    startTime: minutes(0.1),
-    name: 1,
-    enemies: 2,
-  },
-  {
     startTime: minutes(0.5),
     name: 2,
     enemies: 5,
+    soundtrack: 'music_stage_1',
   },
   {
     startTime: minutes(1.7),
     name: 3,
     enemies: 10,
+    soundtrack: 'music_stage_2',
   },
   {
     startTime: minutes(3.5),
     name: 4,
     enemies: 15,
+    soundtrack: 'music_stage_3',
   },
   {
     startTime: minutes(5.4),
     name: 'boss',
+    soundtrack: 'music_stage_4',
   },
 ];
 
