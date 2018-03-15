@@ -318,7 +318,7 @@ export default class HUD extends Phaser.Group {
   }
 
   private onHealthChanged() {
-    const health = this.game.session.health;
+    const health = Math.max(0, this.game.session.health);
     this.healthBar.value = health / this.game.session.maxHealth;
     const label =
       health > 25 ? Math.ceil(health).toFixed(0) : health.toFixed(1);
