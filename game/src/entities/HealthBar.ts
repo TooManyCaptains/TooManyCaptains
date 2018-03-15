@@ -79,6 +79,9 @@ export default class HealthBar extends Phaser.Group {
   }
 
   set value(value: number) {
+    // scale.x = 0 appears the same as scale.x = 1
+    this.barMask.visible = value > 0;
+
     this.barMask.scale.x = value;
   }
 }

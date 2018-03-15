@@ -283,11 +283,6 @@ export default class Main extends Phaser.State {
   }
 
   private onWaveChanged(wave: Wave) {
-    // if (this.soundtrackA) {
-    //   this.soundtrackA.stop();
-    // // }
-    // this.soundtrackA = new Phaser.Sound(this.game, wave.soundtrack, 0.5, true);
-    // this.soundtrackA.play();
     console.log('wave changed', wave);
     if (wave.name === 'boss') {
       console.log('BOSS!');

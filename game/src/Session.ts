@@ -23,7 +23,7 @@ const WAVES: Wave[] = [
   {
     startTime: seconds(10),
     name: 2,
-    enemies: 5,
+    enemies: 3,
     soundtrack: 'music_stage_1',
   },
   {
