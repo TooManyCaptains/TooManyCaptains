@@ -9,6 +9,8 @@ import {
 import GameServer from './GameServer';
 import { sortBy } from 'lodash';
 
+export const TOTAL_ROUND_TIME_MS = 480_000; // milliseconds
+
 export type Phase = 1 | 2 | 3 | 4;
 
 export enum RepairLevel {
@@ -41,6 +43,7 @@ export default class Session {
     fire: new Phaser.Signal(),
     move: new Phaser.Signal(),
     cheat: new Phaser.Signal(),
+    distance: new Phaser.Signal(),
   };
 
   // Weapons
@@ -68,8 +71,8 @@ export default class Session {
   // Game state
   private _state: GameState;
 
-  // Phase
-  // private phase: Phase;
+  // Phase and timer stuff (for minimap)
+  private _timeRoundStarted: number;
 
   constructor(private server: GameServer) {
     this.reset();
@@ -84,6 +87,8 @@ export default class Session {
     this.cards = [];
     this.weaponColorPositions = [];
     this.score = 0;
+    // this.distance = 0;
+    this._timeRoundStarted = 0;
     this.health = this.maxHealth;
   }
 
@@ -103,6 +108,14 @@ export default class Session {
     this.signals.subsystems.dispatch();
   }
 
+  get timeRoundStarted() {
+    return this._timeRoundStarted;
+  }
+
+  get phase() {
+    return this._timeRoundStarted;
+  }
+
   get score(): number {
     return this._score;
   }
@@ -111,6 +124,15 @@ export default class Session {
     this._score = score;
     this.signals.score.dispatch();
   }
+
+  // get distance(): number {
+  //   return this._distance;
+  // }
+
+  // set distance(distance) {
+  //   this._distance = distance;
+  //   this.signals.distance.dispatch();
+  // }
 
   get health(): number {
     return this._health;
@@ -159,9 +181,9 @@ export default class Session {
       this.signals.cards.dispatch(packet.cardID);
     } else if (packet.kind === 'cheat') {
       this.signals.cheat.dispatch(packet.cheat);
-    //   } else if (packet.cheat.code === 'set_volume') {
-    //     this.setVolume(packet.cheat.volume / 100);
-    //   }
+      //   } else if (packet.cheat.code === 'set_volume') {
+      //     this.setVolume(packet.cheat.volume / 100);
+      //   }
     }
   }
 }
