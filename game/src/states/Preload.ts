@@ -39,6 +39,7 @@ export default class Preload extends Phaser.State {
           this.game.state.start('Before');
         }
       });
+
     this.text = this.game.add.text(
       this.game.world.centerX,
       this.game.world.centerY,

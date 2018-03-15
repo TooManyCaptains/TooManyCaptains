@@ -6,6 +6,7 @@ import { ColorPosition } from '../../../common/types';
 import { ThrusterDirection } from '../Session';
 
 import Map from '../interface/Map';
+import { COLORS, colorNameToLetter } from '../utils';
 
 const LOW_HEALTH = 25;
 const VERY_LOW_HEALTH = 10;
@@ -19,71 +20,30 @@ export default class Main extends Phaser.State {
   private healthVeryLowFx: Phaser.Sound;
 
   public preload() {
+    // Load all enemies
+    const enemyWidth = 150;
+    const enemyHeight = 65;
+    const letters = COLORS.map(colorNameToLetter);
+    letters.forEach(char1 => {
+      letters.forEach(char2 => {
+        const key = `enemy_${char1}${char2}`;
+        this.load.spritesheet(
+          key,
+          `assets/sprites/${key}.png`,
+          enemyWidth,
+          enemyHeight,
+        );
+      });
+    });
+
     this.load.spritesheet(
       'explosion',
       'assets/sprites/explosion.png',
       160,
       160,
     );
-    const enemyWidth = 150;
-    const enemyHeight = 65;
-    this.load.spritesheet(
-      'enemy_RR',
-      'assets/sprites/enemy_RR.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_RY',
-      'assets/sprites/enemy_RY.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_RB',
-      'assets/sprites/enemy_RB.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_YR',
-      'assets/sprites/enemy_YR.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_YY',
-      'assets/sprites/enemy_YY.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_YB',
-      'assets/sprites/enemy_YB.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_BR',
-      'assets/sprites/enemy_BR.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_BY',
-      'assets/sprites/enemy_BY.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.load.spritesheet(
-      'enemy_BB',
-      'assets/sprites/enemy_BB.png',
-      enemyWidth,
-      enemyHeight,
-    );
-    this.doors = new Doors(this.game);
 
-    this.load.spritesheet('lock', 'assets/sprites/lock145x155.png', 145, 155);
+    this.doors = new Doors(this.game);
 
     this.load.spritesheet(
       'id_card_0',
@@ -91,8 +51,6 @@ export default class Main extends Phaser.State {
       240,
       600,
     );
-
-    // New Sprites (Feb.24)
 
     this.load.spritesheet(
       'player-ship',
@@ -181,7 +139,11 @@ export default class Main extends Phaser.State {
     // Periodically spawn a new enemy
     const enemySpawnIntervalSecs = 35;
     const enemyTimer = this.game.time.create();
-    enemyTimer.loop(enemySpawnIntervalSecs * 1000, this.board.spawnEnemy, this.board);
+    enemyTimer.loop(
+      enemySpawnIntervalSecs * 1000,
+      this.board.spawnEnemy,
+      this.board,
+    );
     enemyTimer.start();
 
     // Score timer
@@ -235,14 +197,16 @@ export default class Main extends Phaser.State {
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.UP)
         .onUp.add(
-          () => this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
+          () =>
+            this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
           this,
         );
 
       this.game.input.keyboard
         .addKey(Phaser.Keyboard.DOWN)
         .onUp.add(
-          () => this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
+          () =>
+            this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
           this,
         );
 
