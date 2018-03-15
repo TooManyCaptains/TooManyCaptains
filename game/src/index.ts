@@ -82,7 +82,7 @@ export class Game extends Phaser.Game {
   }
 
   public updateSoundtrack() {
-    let key = this.soundtrack ? this.soundtrack.key : '';
+    let key = '';
     let volume = 0.25;
     if (this.session.state === 'wait_for_players') {
       key = 'music_background';
@@ -90,11 +90,20 @@ export class Game extends Phaser.Game {
       key = this.session.wave.soundtrack;
       volume = 0.2;
     }
-    const play = () => {
+    // We're not supposed to be playing anything
+    if (key === '') {
+      if (this.soundtrack) {
+        this.soundtrack.stop();
+      }
+      return;
+    }
+    // No soundtrack yet
+    if (!this.soundtrack || this.soundtrack.key !== key) {
+      if (this.soundtrack) {
+        this.soundtrack.stop();
+      }
       this.soundtrack = this.add.audio(key, volume, true).play();
-      console.log('playing');
-    };
-    play();
+    }
   }
 
   // public setVolume(volume?: number) {

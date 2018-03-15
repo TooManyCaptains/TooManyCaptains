@@ -9,7 +9,8 @@ import {
 import GameServer from './GameServer';
 import { sortBy } from 'lodash';
 
-const minutes = (millis: number) => millis * 60_000;
+const minutes = (mins: number) => mins * 60_000;
+const seconds = (secs: number) => secs * 1_000;
 
 export interface Wave {
   startTime: number;
@@ -20,7 +21,7 @@ export interface Wave {
 
 const WAVES: Wave[] = [
   {
-    startTime: minutes(0.5),
+    startTime: seconds(10),
     name: 2,
     enemies: 5,
     soundtrack: 'music_stage_1',
