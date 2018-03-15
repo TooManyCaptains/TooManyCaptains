@@ -19,7 +19,6 @@ export default class PlayerShip extends Phaser.Group {
   private repairPercentagePerSecond: number;
   private nextFire = 0;
   private fireRate = 350;
-  // @ts-ignore
   private healthBar: HealthBar;
   private weaponLightTop: Phaser.Sprite;
   private weaponLightMiddle: Phaser.Sprite;

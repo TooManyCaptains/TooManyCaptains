@@ -10,8 +10,8 @@ import { COLORS, colorNameToLetter } from '../utils';
 import { Cheat } from '../../../common/cheats';
 import { times } from 'lodash';
 
-const LOW_HEALTH = 25;
-const VERY_LOW_HEALTH = 10;
+const LOW_HEALTH = 35;
+const VERY_LOW_HEALTH = 15;
 
 export default class Main extends Phaser.State {
   public game: Game;
@@ -283,7 +283,7 @@ export default class Main extends Phaser.State {
     if (health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
       this.healthVeryLowFx.stop();
       this.healthLowFx.play();
-      flashScreen(1200, 0.5);
+      flashScreen(1200, 0.35);
     } else if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
       this.healthLowFx.stop();
       this.healthVeryLowFx.play();
