@@ -283,11 +283,17 @@ export default class Main extends Phaser.State {
     if (health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
       this.healthVeryLowFx.stop();
       this.healthLowFx.play();
-      flashScreen(1200, 0.35);
+      this.healthLowFx.volume = 0.6;
+      flashScreen(1200, 0.25);
     } else if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
       this.healthLowFx.stop();
       this.healthVeryLowFx.play();
+      this.healthVeryLowFx.volume = 0.8;
       flashScreen(800, 0.5);
+    } else {
+      // this.healthLowFx.stop();
+      // this.healthVeryLowFx.stop();
+      // flashScreen(0, 0);
     }
 
     // Player is dead!
