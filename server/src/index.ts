@@ -1,10 +1,30 @@
-import * as express from 'express';
-import * as http from 'http';
-import * as socketIo from 'socket.io';
+import express from 'express';
+import http from 'http';
+import socketIo from 'socket.io';
+import low from 'lowdb';
+import FileSync from 'lowdb/adapters/FileSync';
 import { GameState, GameStatePacket } from '../../common/types';
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+
+const adapter = new FileSync('db.json');
+const db = low(adapter);
+
+// Set some defaults (required if your JSON file is empty)
+db.defaults({ highScore: 0, volume: {}, count: 0 }).write();
+
+// // Add a post
+// db
+//   .get('posts')
+//   .push({ id: 1, title: 'lowdb is awesome' })
+//   .write();
+
+// // Set a user using Lodash shorthand syntax
+// db.set('user.name', 'typicode').write();
+
+// // Increment count
+// db.update('count', n => n + 1).write();
 
 let gameState: GameState = 'wait_for_players';
 
