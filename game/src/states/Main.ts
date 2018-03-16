@@ -139,16 +139,6 @@ export default class Main extends Phaser.State {
     );
     asteroidTimer.start();
 
-    // // Periodically spawn a new enemy
-    // const enemySpawnIntervalSecs = 35;
-    // const enemyTimer = this.game.time.create();
-    // enemyTimer.loop(
-    //   enemySpawnIntervalSecs * 1000,
-    //   this.board.spawnEnemy,
-    //   this.board,
-    // );
-    // enemyTimer.start();
-
     this.healthLowTimer = this.game.time.create();
 
     // Score timer
@@ -319,7 +309,6 @@ export default class Main extends Phaser.State {
 
   private onScoreTimer() {
     this.game.session.score += 1;
-    // this.scoreText.text = `SCORE: ${this.score}`;
   }
 
   private onPlayerDead() {

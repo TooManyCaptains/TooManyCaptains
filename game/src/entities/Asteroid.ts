@@ -25,10 +25,4 @@ export default class Asteroid extends Phaser.Sprite {
     this.sendToBack();
     this.body.angularVelocity = -30;
   }
-
-  // public kill(): Phaser.Sprite {
-  //   this.game.score += 250;
-  //   super.kill();
-  //   return this;
-  // }
 }
