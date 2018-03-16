@@ -46,7 +46,6 @@ export interface WiringPacket extends BasePacket {
 
 export interface ScanPacket extends BasePacket {
   kind: 'scan';
-  subsystem: Subsystem;
   cardID: CardID;
 }
 

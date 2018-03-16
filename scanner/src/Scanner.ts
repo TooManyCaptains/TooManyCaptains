@@ -1,18 +1,11 @@
 import { Device, getDeviceList, on as onUsb, InEndpoint } from 'usb';
-import { Subsystem, ScanPacket, CardID } from '../../common/types';
+import { ScanPacket, CardID } from '../../common/types';
 
 const VENDOR_ID = 65535; // 2^16 - 1. Lol. Very lazy of them.
 
-const portToSubsystem: { [port: number]: Subsystem } = {
-  3: 'weapons',
-  4: 'thrusters',
-  1: 'repairs',
-  2: 'shields',
-};
-
 const sequenceToCardId: { [sequence: number]: CardID } = {
   1051651082: 1,
-  105164714 : 2,
+  105164714: 2,
   1049619310: 3,
   104962298: 4,
   104962842: 5,
@@ -22,17 +15,11 @@ function deviceIsCardScanner(device: Device): boolean {
   return device.deviceDescriptor.idVendor === VENDOR_ID;
 }
 
-function subsystemForDevice(device: Device): Subsystem {
-  const port = device.portNumbers[device.portNumbers.length - 1];
-  return portToSubsystem[port];
-}
-
 function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
   if (!deviceIsCardScanner(device)) {
     return;
   }
-  const subsystem = subsystemForDevice(device);
-  console.log(`[Scanner] ${subsystem} connected`);
+  console.log(`[Scanner] connected`);
   device.open();
   const iface = device.interfaces[0];
 
@@ -72,7 +59,6 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
       console.log(`card ID: ${cardID}`);
       sendPacket({
         kind: 'scan',
-        subsystem,
         cardID,
       });
       scanCodes = [];
@@ -80,7 +66,7 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
   });
 
   endpoint.on('error', error => {
-    console.log(`[Scanner] ${subsystem} disconnected`);
+    console.log(`[Scanner] disconnected`);
   });
 }
 
