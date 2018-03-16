@@ -17,6 +17,7 @@ interface CheatsProps {
 
 interface VolumeCheatProps {
   onChange: (volume: number) => void;
+  title: string;
 }
 
 interface VolumeCheatState {
@@ -35,7 +36,7 @@ class VolumeCheat extends React.Component<VolumeCheatProps, VolumeCheatState> {
     const { value } = this.state;
     return (
       <div className="VolumeCheat">
-        <div className="VolumeLabel">Volume</div>
+        <div className="VolumeLabel">🔊 {this.props.title}</div>
         <div className="VolumeSlider">
           <Slider
             min={0}
@@ -61,9 +62,17 @@ export default class Cheats extends React.Component<CheatsProps, {}> {
     return (
       <div className="Cheats">
         <VolumeCheat
-          onChange={volume => this.sendCheat({ code: 'set_volume', volume })}
+          title="Music"
+          onChange={volume =>
+            this.sendCheat({ code: 'set_volume', target: 'music', volume })
+          }
         />
-
+        <VolumeCheat
+          title="Sound Effects"
+          onChange={volume =>
+            this.sendCheat({ code: 'set_volume', target: 'effects', volume })
+          }
+        />
         <div
           className="Cheat"
           onClick={() => this.sendCheat({ code: 'spawn_enemy' })}

@@ -17,6 +17,7 @@ interface SpawnEnemyCheat extends BaseCheat {
 
 interface SetVolumeCheat extends BaseCheat {
   code: 'set_volume';
+  target: 'music' | 'effects';
   volume: number;
 }
 
@@ -26,7 +27,4 @@ interface SpawnAsteroidCheat extends BaseCheat {
 
 export type Cheat =
   // | ForceStateCheat
-  | KillPlayerCheat
-  | SpawnEnemyCheat
-  | SetVolumeCheat
-  | SpawnAsteroidCheat;
+  KillPlayerCheat | SpawnEnemyCheat | SetVolumeCheat | SpawnAsteroidCheat;
