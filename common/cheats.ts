@@ -2,11 +2,6 @@ interface BaseCheat {
   readonly code: string;
 }
 
-// interface ForceStateCheat extends BaseCheat {
-//   code: 'force_state';
-//   state: GameState;
-// }
-
 interface KillPlayerCheat extends BaseCheat {
   code: 'kill_player';
 }
@@ -17,7 +12,7 @@ interface SpawnEnemyCheat extends BaseCheat {
 
 interface SetVolumeCheat extends BaseCheat {
   code: 'set_volume';
-  target: 'music' | 'effects';
+  target: 'music' | 'master';
   volume: number;
 }
 
@@ -26,5 +21,7 @@ interface SpawnAsteroidCheat extends BaseCheat {
 }
 
 export type Cheat =
-  // | ForceStateCheat
-  KillPlayerCheat | SpawnEnemyCheat | SetVolumeCheat | SpawnAsteroidCheat;
+  | KillPlayerCheat
+  | SpawnEnemyCheat
+  | SetVolumeCheat
+  | SpawnAsteroidCheat;

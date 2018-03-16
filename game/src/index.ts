@@ -78,16 +78,15 @@ export class Game extends Phaser.Game {
     this.state.onStateChange.add(this.onStateChange, this);
     this.session.signals.state.add(this.updateSoundtrack, this);
     this.session.signals.wave.add(this.updateSoundtrack, this);
+    this.session.signals.volume.add(this.onVolumeChanged, this);
   }
 
   public updateSoundtrack() {
     let key = '';
-    let volume = 0.25;
     if (this.session.state === 'wait_for_players') {
       key = 'music_background';
     } else if (this.session.state === 'in_game') {
       key = this.session.wave.soundtrack;
-      volume = 0.2;
     }
     // We're not supposed to be playing anything
     if (key === '') {
@@ -101,21 +100,18 @@ export class Game extends Phaser.Game {
       if (this.soundtrack) {
         this.soundtrack.stop();
       }
-      this.soundtrack = this.add.audio(key, volume, true).play();
+      this.soundtrack = this.add
+        .audio(key, this.session.volume.music, true)
+        .play();
     }
   }
 
-  // public setVolume(volume?: number) {
-  //   if (volume !== undefined) {
-  //     localStorage.setItem('volume', String(volume));
-  //     this.sound.volume = volume;
-  //   } else {
-  //     const previousVolume = localStorage.getItem('volume');
-  //     if (previousVolume !== null) {
-  //       this.setVolume(Number(previousVolume));
-  //     }
-  //   }
-  // }
+  private onVolumeChanged() {
+    console.log('onVolumeChanged');
+    console.log(this.session.volume);
+    this.sound.volume = this.session.volume.master;
+    this.soundtrack.volume = this.session.volume.music;
+  }
 
   private setupPerformanceStatistics() {
     // Setup the new stats panel.
@@ -138,6 +134,7 @@ export class Game extends Phaser.Game {
       signal.removeAll();
       this.session.signals.state.add(this.updateSoundtrack, this);
       this.session.signals.wave.add(this.updateSoundtrack, this);
+      this.session.signals.volume.add(this.onVolumeChanged, this);
     });
   }
 }

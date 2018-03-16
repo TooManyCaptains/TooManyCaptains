@@ -8,9 +8,7 @@ import {
 } from '../../common/types';
 import GameServer from './GameServer';
 import { sortBy } from 'lodash';
-
-const minutes = (mins: number) => mins * 60_000;
-const seconds = (secs: number) => secs * 1_000;
+import { seconds, minutes } from './utils';
 
 export interface Wave {
   startTime: number;
@@ -76,6 +74,7 @@ export default class Session {
     move: new Phaser.Signal(),
     cheat: new Phaser.Signal(),
     wave: new Phaser.Signal(),
+    volume: new Phaser.Signal(),
   };
 
   // Weapons
@@ -106,7 +105,10 @@ export default class Session {
   // Waves and timers
   private _wave: Wave;
   private _waveTimers: number[] = [];
-  // private _timeRoundStarted: number;
+
+  // Volume
+  private _masterVolume = 1;
+  private _musicVolume = 1;
 
   constructor(private server: GameServer) {
     this.reset();
@@ -140,6 +142,13 @@ export default class Session {
       }
     });
     this.signals.subsystems.dispatch();
+  }
+
+  get volume() {
+    return {
+      music: this._musicVolume,
+      master: this._masterVolume,
+    };
   }
 
   get score(): number {
@@ -221,9 +230,14 @@ export default class Session {
       this.signals.cards.dispatch(packet.cardID);
     } else if (packet.kind === 'cheat') {
       this.signals.cheat.dispatch(packet.cheat);
-      //   } else if (packet.cheat.code === 'set_volume') {
-      //     this.setVolume(packet.cheat.volume / 100);
-      //   }
+      if (packet.cheat.code === 'set_volume') {
+        if (packet.cheat.target === 'master') {
+          this._masterVolume = packet.cheat.volume;
+        } else {
+          this._musicVolume = packet.cheat.volume;
+        }
+        this.signals.volume.dispatch(this.volume);
+      }
     }
   }
 }

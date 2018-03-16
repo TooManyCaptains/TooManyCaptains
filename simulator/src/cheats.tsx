@@ -28,7 +28,7 @@ class VolumeCheat extends React.Component<VolumeCheatProps, VolumeCheatState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      value: 10,
+      value: 1,
     };
   }
 
@@ -40,7 +40,8 @@ class VolumeCheat extends React.Component<VolumeCheatProps, VolumeCheatState> {
         <div className="VolumeSlider">
           <Slider
             min={0}
-            max={100}
+            max={1}
+            step={0.01}
             value={value}
             tooltip={false}
             onChange={(newValue: number) => {
@@ -50,7 +51,7 @@ class VolumeCheat extends React.Component<VolumeCheatProps, VolumeCheatState> {
               });
             }}
           />
-          <div className="VolumeValue">{`${value}%`}</div>
+          <div className="VolumeValue">{`${(value * 100).toFixed(0)}%`}</div>
         </div>
       </div>
     );
@@ -68,9 +69,9 @@ export default class Cheats extends React.Component<CheatsProps, {}> {
           }
         />
         <VolumeCheat
-          title="Sound Effects"
+          title="Master"
           onChange={volume =>
-            this.sendCheat({ code: 'set_volume', target: 'effects', volume })
+            this.sendCheat({ code: 'set_volume', target: 'master', volume })
           }
         />
         <div

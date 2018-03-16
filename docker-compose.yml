@@ -5,6 +5,8 @@ services:
     image: toomanycaptains/server
     network_mode: host
     restart: unless-stopped
+    volumes:
+      - database:/var/lib/toomanycaptains
     ports:
       - "9000:9000"
   scanner:
@@ -43,3 +45,5 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+volumes:
+  database:
