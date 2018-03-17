@@ -5,7 +5,6 @@ import Boot from './states/Boot';
 import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
-import GameServer from './GameServer';
 
 import './index.css';
 import Session from './Session';
@@ -50,7 +49,6 @@ function getConfig() {
 export class Game extends Phaser.Game {
   public params: Config;
   public session: Session;
-  private server: GameServer;
 
   private soundtrack: Phaser.Sound;
 
@@ -69,16 +67,12 @@ export class Game extends Phaser.Game {
       this.setupPerformanceStatistics();
     }
 
-    this.server = new GameServer(this.params.serverURL);
-    this.session = new Session(this.server);
+    this.session = new Session(this.params.serverURL);
 
     // Kick things off with the boot state.
     this.state.start('Boot');
 
     this.state.onStateChange.add(this.onStateChange, this);
-    this.session.signals.state.add(this.updateSoundtrack, this);
-    this.session.signals.wave.add(this.updateSoundtrack, this);
-    this.session.signals.volume.add(this.onVolumeChanged, this);
   }
 
   public updateSoundtrack() {
@@ -132,9 +126,14 @@ export class Game extends Phaser.Game {
     // we need to un-bind all of the existing signals!
     values(this.session.signals).forEach(signal => {
       signal.removeAll();
-      this.session.signals.state.add(this.updateSoundtrack, this);
-      this.session.signals.wave.add(this.updateSoundtrack, this);
-      this.session.signals.volume.add(this.onVolumeChanged, this);
+      // XXX: Hack for two reasons. One, we need to re-attach the signal handlers
+      // after removing them all. Two, we only want to bind after
+      // the sound system is atually set up!
+      if (['Before', 'Main', 'After'].includes(this.state.current)) {
+        this.session.signals.state.add(this.updateSoundtrack, this);
+        this.session.signals.wave.add(this.updateSoundtrack, this);
+        this.session.signals.volume.add(this.onVolumeChanged, this);
+      }
     });
   }
 }

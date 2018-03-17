@@ -1,3 +1,4 @@
+import io from 'socket.io-client';
 import {
   Color,
   ColorPosition,
@@ -6,7 +7,6 @@ import {
   Packet,
   CardID,
 } from '../../common/types';
-import GameServer from './GameServer';
 import { sortBy } from 'lodash';
 import { seconds, minutes } from './utils';
 
@@ -110,9 +110,13 @@ export default class Session {
   private _masterVolume = 1;
   private _musicVolume = 1;
 
-  constructor(private server: GameServer) {
+  // Game server
+  private socket: SocketIOClient.Socket;
+
+  constructor(URL: string) {
+    this.socket = io(URL);
+    this.socket.on('packet', this.onPacket.bind(this));
     this.reset();
-    this.server.socket.on('packet', this.onPacket.bind(this));
   }
 
   public reset() {
@@ -191,7 +195,7 @@ export default class Session {
     if (state === 'in_game') {
       this.setWaveTimers();
     }
-    this.server.notifyGameState(state);
+    this.notifyGameState(state);
     this._state = state;
   }
 
@@ -203,6 +207,7 @@ export default class Session {
   }
 
   private onPacket(packet: Packet) {
+    console.log(packet);
     if (packet.kind === 'wiring') {
       this.configurations = packet.configurations;
     } else if (packet.kind === 'move') {
@@ -239,5 +244,13 @@ export default class Session {
         this.signals.volume.dispatch(this.volume);
       }
     }
+  }
+
+  private notifyGameState(state: GameState) {
+    const packet: Packet = {
+      kind: 'gamestate',
+      state,
+    };
+    this.socket.emit('packet', packet);
   }
 }

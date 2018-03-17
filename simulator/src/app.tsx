@@ -10,7 +10,7 @@ import './app.css';
 
 const BASE_URL = (() =>
   window.location.search.includes('local')
-    ? 'http://starship:9000'
+    ? 'http://localhost:9000'
     : 'http://server.toomanycaptains.com')();
 
 type Tab = 'controller' | 'scanner' | 'cheats';
