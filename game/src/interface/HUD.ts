@@ -211,18 +211,21 @@ class CaptainEntry extends Phaser.Group {
   constructor(game: Game, cardID: CaptainCardID, index: number) {
     super(game, undefined, 'CaptainEntry');
 
-    const nameTextSize = 30;
-    this.game.add.text(
-      0,
-      0,
-      `Captain ${manifest.find(m => m.cardID === cardID)!.name}`,
-      {
-        ...baseStyle,
-        fontSize: nameTextSize,
-        boundsAlignH: 'left',
-      },
-      this,
-    );
+    const fullName = manifest
+      .find(m => m.cardID === cardID)!
+      .name.split(' ')
+      .join('\n');
+    const spriteKey = `captain-icon-${fullName.split('\n')[0].toLowerCase()}`;
+    const image = this.game.add.sprite(0, 0, spriteKey);
+    const label = this.game.add.text(image.width + 15, 2.5, fullName, {
+      ...baseStyle,
+      fontWeight: 600,
+      fontSize: 28,
+      boundsAlignH: 'left',
+    });
+    label.lineSpacing = -5;
+    this.add(label);
+    this.add(image);
   }
 }
 
@@ -241,7 +244,13 @@ class CaptainsLog extends Phaser.Group {
 
     const titleTextMargin = 10;
 
-    this.title = game.add.text(0, 0, '', { ...baseStyle, fontSize: 40 }, this);
+    this.title = game.add.text(
+      0,
+      0,
+      '',
+      { ...baseStyle, fontSize: 40, fontWeight: 700 },
+      this,
+    );
     this.title.setTextBounds(0, titleTextMargin, width, 50);
 
     const line = game.add.graphics();
@@ -260,16 +269,17 @@ class CaptainsLog extends Phaser.Group {
 
   private addCaptains() {
     const captains = this.game.session.cards;
-    this.title.setText(`${captains.length} CAPTAINS ONBOARD`);
-    captains.forEach((captain, i) => {
-      if (captain !== 0) {
-        const entry = new CaptainEntry(this.game, captain, i);
-        entry.x = 22;
-        entry.y = 80 + 43 * i;
+    this.title.setText(`${captains.length - 1} CAPTAINS ONBOARD`);
+    captains
+      .filter(cardID => cardID !== 0) // ignore engineer
+      .forEach((cardID, i) => {
+        const entry = new CaptainEntry(this.game, cardID as CaptainCardID, i);
+        const rightSide = i % 2 === 1;
+        entry.x = rightSide ? 300 : 50;
+        entry.y = 80 + 90 * Math.floor(i / 2);
         this.add(entry);
         this.entries.push(entry);
-      }
-    });
+      });
   }
 }
 

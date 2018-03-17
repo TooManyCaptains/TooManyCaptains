@@ -55,6 +55,13 @@ const AssetManifest = {
     'ring-repairs.png',
     'ring-none.png',
 
+    'captain-icon-amber.png',
+    'captain-icon-brick.png',
+    'captain-icon-hickory.png',
+    'captain-icon-iris.png',
+    'captain-icon-jade.png',
+    'captain-icon-razzmic.png',
+
     'map.png',
     'map-icon-player.png',
   ],

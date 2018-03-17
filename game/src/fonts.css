@@ -1,35 +1,71 @@
+/* Generated from https://google-webfonts-helper.herokuapp.com/fonts/exo-2?subsets=latin */
+/* exo-2-300 - latin */
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Exo 2 Light'), local('Exo2-Light'),
+    url('/fonts/exo-2-v4-latin-300.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/exo-2-v4-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* exo-2-regular - latin */
 @font-face {
   font-family: 'Exo 2';
   font-style: normal;
   font-weight: 400;
-  src: local('☺'), url('/fonts/Exo+2_400_normal.woff') format('woff');
+  src: local('Exo 2'), local('Exo2-Regular'),
+    url('/fonts/exo-2-v4-latin-regular.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/exo-2-v4-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
-@font-face {
-  font-family: 'Exo 2';
-  font-style: normal;
-  font-weight: 500;
-  src: local('☺'), url('/fonts/Exo+2_500_normal.woff') format('woff');
-}
+/* exo-2-600 - latin */
 @font-face {
   font-family: 'Exo 2';
   font-style: normal;
   font-weight: 600;
-  src: local('☺'), url('/fonts/Exo+2_600_normal.woff') format('woff');
+  src: local('Exo 2 Semi Bold'), local('Exo2-SemiBold'),
+    url('/fonts/exo-2-v4-latin-600.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/exo-2-v4-latin-600.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
+/* exo-2-500 - latin */
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Exo 2 Medium'), local('Exo2-Medium'),
+    url('/fonts/exo-2-v4-latin-500.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/exo-2-v4-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* exo-2-800 - latin */
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 800;
+  src: local('Exo 2 Extra Bold'), local('Exo2-ExtraBold'),
+    url('/fonts/exo-2-v4-latin-800.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/exo-2-v4-latin-800.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* exo-2-700 - latin */
 @font-face {
   font-family: 'Exo 2';
   font-style: normal;
   font-weight: 700;
-  src: local('☺'), url('/fonts/Exo+2_700_normal.woff') format('woff');
+  src: local('Exo 2 Bold'), local('Exo2-Bold'),
+    url('/fonts/exo-2-v4-latin-700.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/exo-2-v4-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
-@font-face {
-  font-family: 'Exo 2';
-  font-style: normal;
-  src: local('☺'), url('/fonts/Exo+2_800_normal.woff') format('woff');
-}
+/* exo-2-900 - latin */
 @font-face {
   font-family: 'Exo 2';
   font-style: normal;
   font-weight: 900;
-  src: local('☺'), url('/fonts/Exo+2_900_normal.woff') format('woff');
+  src: local('Exo 2 Black'), local('Exo2-Black'),
+    url('/fonts/exo-2-v4-latin-900.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/exo-2-v4-latin-900.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }

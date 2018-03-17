@@ -1,3 +1,5 @@
+import './index.css';
+
 import { has, values } from 'lodash';
 import Stats from 'stats.js';
 import Main from './states/Main';
@@ -6,7 +8,6 @@ import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
 
-import './index.css';
 import Session from './Session';
 
 function getUrlParams(search: string): { [P in string]: string } {

@@ -47,6 +47,16 @@ export default class Preload extends Phaser.State {
       { ...baseStyle, fontSize: 110, fontWeight: 900 },
     );
 
+    // XXX: Hack to force local webfonts to load
+    [300, 500, 600, 700, 800, 900].forEach(fontWeight => {
+      this.game.add.text(0, 0, '.', {
+        ...baseStyle,
+        fill: 'black',
+        fontSize: 1,
+        fontWeight,
+      });
+    });
+
     this.dotsCur = 0;
     this.dotsMax = 3;
     this.updateDots();

@@ -1,37 +1,37 @@
 import { CardID } from './types';
 
 interface ManifestEntry {
-  cardID: CardID
+  cardID: CardID;
   name: string;
 }
 
 const manifest: ManifestEntry[] = [
   {
-    name: 'Engineer',
+    name: 'Spectra Prism',
     cardID: 0,
   },
   {
-    name: '1',
+    name: 'Brick Punch',
     cardID: 1,
   },
   {
-    name: '2',
+    name: 'Jade Moss',
     cardID: 2,
   },
   {
-    name: '3',
+    name: 'Hickory Russet',
     cardID: 3,
   },
   {
-    name: '4',
+    name: 'Amber Clay',
     cardID: 4,
   },
   {
-    name: '5',
+    name: 'Iris Dodger',
     cardID: 5,
   },
   {
-    name: '6',
+    name: 'Razzmic Phlox',
     cardID: 6,
   },
 ];

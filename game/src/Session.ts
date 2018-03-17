@@ -140,7 +140,7 @@ export default class Session {
     this.repairLevel = RepairLevel.Off;
     this.thrusterLevel = ThrusterLevel.Off;
     this.shieldColors = [];
-    this.cards = [];
+    this.cards = [0, 1, 2, 3];
     this.weaponColorPositions = [];
     this.score = 0;
     this.wave = WAVES[0];
