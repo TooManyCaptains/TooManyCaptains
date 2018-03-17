@@ -307,17 +307,18 @@ export default class HUD extends Phaser.Group {
     });
     const lastPanel = this.panels[this.panels.length - 1];
 
-    const captainsLog = new CaptainsLog(this.game, this, 565, 360);
+    const captainsLog = new CaptainsLog(this.game, this, 565, 375);
     captainsLog.x = lastPanel.right + innerPadding;
     captainsLog.y = innerPadding;
 
     this.healthBar = new HealthBar(
       this.game,
       1260,
-      50,
+      45,
       0x30ee02,
       'HEALTH 100%',
       200,
+      true,
     );
     this.healthBar.y = 340;
     this.healthBar.x = innerPadding * 2;
