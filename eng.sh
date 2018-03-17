@@ -97,6 +97,9 @@ else
   eval $(docker-machine env --shell=sh starship)
 
   echo "\n🚀 Launching ${bold}$image${normal}\n"
+  if [ "$name" = "game" ]; then
+    name="game kiosk"
+  fi
   docker-compose up -d $name
 fi
 

@@ -35,7 +35,7 @@ services:
       - "/tmp/.X11-unix:/tmp/.X11-unix" # Need for X forwarding
       - "/dev/shm:/dev/shm" # Need for X forwarding
       - "/dev/snd:/dev/snd" # Needed for sound
-    command: "--kiosk --incognito --alsa-output-device=hw:0,3 --no-first-run 'http://starship?local'"
+    command: "--start-fullscreen --incognito --alsa-output-device=hw:0,3 --no-first-run 'http://starship?serverURL=http://starship:9000'"
   game:
     depends_on:
       - "server"
