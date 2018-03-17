@@ -243,6 +243,10 @@ export default class Main extends Phaser.State {
       .onDown.add(() => (this.game.session.health += 5), this);
 
     this.game.input.keyboard
+      .addKey(Phaser.Keyboard.S)
+      .onDown.add(() => (this.game.session.score *= 2), this);
+
+    this.game.input.keyboard
       .addKey(Phaser.Keyboard.SPACEBAR)
       .onDown.add(() => this.game.session.signals.fire.dispatch(), this);
   }

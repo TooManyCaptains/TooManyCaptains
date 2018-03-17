@@ -19,8 +19,6 @@ class ScoreBubble extends Phaser.Group {
     this.text.align = 'left';
 
     this.background = game.add.graphics();
-    this.background.beginFill(ColorPalette.White, 1);
-    this.background.drawRoundedRect(0, 0, 200, 44, 15);
 
     this.add(this.background);
     this.add(this.text);
@@ -31,6 +29,15 @@ class ScoreBubble extends Phaser.Group {
   }
 
   private onScoreChanged() {
+    this.background.beginFill(ColorPalette.White, 1);
+    this.background.clear();
+    this.background.drawRoundedRect(
+      0,
+      0,
+      160 + 15 * String(this.game.session.score).length,
+      44,
+      25,
+    );
     this.score = this.game.session.score;
   }
 
