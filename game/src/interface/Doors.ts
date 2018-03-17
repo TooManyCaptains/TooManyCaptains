@@ -27,13 +27,13 @@ export default class Doors extends Phaser.Group {
     this.closeFx = this.game.add.audio('doors_closing');
 
     // Animation
-    this.durationMillis = 2350;
+    this.durationMillis = this.game.params.skip ? 1 : 2350;
   }
 
   public open(callback: () => void) {
-    // if (!this.game.params.skip) {
-    this.openFx.play();
-    // }
+    if (!this.game.params.skip) {
+      this.openFx.play();
+    }
     this.game.add
       .tween(this.doorLeft.position)
       .to({ x: this.leftOpenX }, this.durationMillis, this.easing, true);

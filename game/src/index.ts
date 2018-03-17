@@ -22,17 +22,18 @@ function getUrlParams(search: string): { [P in string]: string } {
 
 interface Config {
   serverURL: string;
+  skip: boolean;
 }
 
 function getConfig() {
   const urlParams = getUrlParams(window.location.search);
 
   const config: Config = {
-    serverURL: 'http://server.toomanycaptains.com',
+    serverURL: has(urlParams, 'serverURL')
+      ? urlParams.serverURL
+      : 'http://server.toomanycaptains.com',
+    skip: has(urlParams, 'skip'),
   };
-  if (has(urlParams, 'serverURL')) {
-    config.serverURL = urlParams.serverURL;
-  }
   return config;
 }
 

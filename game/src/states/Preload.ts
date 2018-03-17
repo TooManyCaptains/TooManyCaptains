@@ -33,11 +33,11 @@ export default class Preload extends Phaser.State {
       .add(WebpackLoader, AssetManifest, postfix)
       .load()
       .then(() => {
-        // if (this.game.params.skip) {
-        // this.game.state.start('Main');
-        // } else {
-        this.game.state.start('Before');
-        // }
+        if (this.game.params.skip) {
+          this.game.state.start('Main');
+        } else {
+          this.game.state.start('Before');
+        }
       });
 
     this.text = this.game.add.text(

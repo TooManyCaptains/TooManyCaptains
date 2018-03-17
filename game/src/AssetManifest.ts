@@ -57,7 +57,6 @@ const AssetManifest = {
 
     'map.png',
     'map-icon-player.png',
-    'boss_icon.png',
   ],
   sprites: [],
   audio: [
