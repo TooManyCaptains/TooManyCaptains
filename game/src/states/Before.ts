@@ -68,8 +68,8 @@ export default class Before extends Phaser.State {
 
   private onFire() {
     const canStart =
-      this.game.session.cards.length >= 3 &&
-      this.game.session.cards.includes(0);
+      this.game.session.captainsInRound.size >= 2 &&
+      this.game.session.cards.has(0);
     if (canStart) {
       this.state.start('Main');
     }

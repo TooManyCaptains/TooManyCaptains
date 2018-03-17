@@ -7,13 +7,13 @@ class WeaponsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.subsystem = 'weapons';
-        this.pins = [40, 36, 38];
+        this.pins = [40, 36, 38]; // Physically wired in this order. Oops.
         this.lightIndicies = lodash_1.range(6);
         this.buttonLightPin = 32;
     }
     update(gameState) {
         // Update button light
-        const isButtonLit = true;
+        const isButtonLit = gameState === 'in_game' ? this.connections.length > 0 : true;
         rpio.write(this.buttonLightPin, isButtonLit ? rpio.HIGH : rpio.LOW);
         // Set LED lights for later batch-update
         this.lights = [];
@@ -81,7 +81,7 @@ class ShieldsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
         this.subsystem = 'shields';
-        this.pins = [7, 13, 11];
+        this.pins = [15, 13, 11];
         this.lightIndicies = lodash_1.range(25, 33);
     }
     update() {

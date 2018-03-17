@@ -269,18 +269,16 @@ class CaptainsLog extends Phaser.Group {
   }
 
   private addCaptains() {
-    const captains = this.game.session.cards;
-    this.title.setText(`${captains.length - 1} CAPTAINS ONBOARD`);
-    captains
-      .filter(cardID => cardID !== 0) // ignore engineer
-      .forEach((cardID, i) => {
-        const entry = new CaptainEntry(this.game, cardID as CaptainCardID, i);
-        const rightSide = i % 2 === 1;
-        entry.x = rightSide ? 300 : 50;
-        entry.y = 80 + 90 * Math.floor(i / 2);
-        this.add(entry);
-        this.entries.push(entry);
-      });
+    const captains = this.game.session.captainsInRound;
+    this.title.setText(`${captains.size} CAPTAINS ONBOARD`);
+    Array.from(captains).forEach((cardID, i) => {
+      const entry = new CaptainEntry(this.game, cardID as CaptainCardID, i);
+      const rightSide = i % 2 === 1;
+      entry.x = rightSide ? 300 : 50;
+      entry.y = 80 + 90 * Math.floor(i / 2);
+      this.add(entry);
+      this.entries.push(entry);
+    });
   }
 }
 

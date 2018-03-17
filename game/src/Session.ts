@@ -99,7 +99,7 @@ export default class Session {
   public thrusterLevel: ThrusterLevel;
 
   // Cards
-  public cards: CardID[];
+  public cards: Set<CardID>;
 
   // Score
   public _score: number;
@@ -143,7 +143,7 @@ export default class Session {
     this.repairLevel = RepairLevel.Off;
     this.thrusterLevel = ThrusterLevel.Off;
     this.shieldColors = [];
-    this.cards = [0, 1, 2, 3];
+    this.cards = new Set();
     this.weaponColorPositions = [];
     this.score = 0;
     this.wave = WAVES[0];
@@ -165,6 +165,14 @@ export default class Session {
       }
     });
     this.signals.subsystems.dispatch();
+  }
+
+  get captainsInRound() {
+    const justCaptains = new Set(this.cards);
+    if (justCaptains.has(0)) {
+      justCaptains.delete(0);
+    }
+    return justCaptains;
   }
 
   get debugFlags() {
@@ -251,11 +259,10 @@ export default class Session {
       }
       this.signals.fire.dispatch(packet.state);
     } else if (packet.kind === 'scan') {
-      const existingCard = this.cards.find(cardID => cardID === packet.cardID);
-      if (!existingCard) {
-        this.cards.push(packet.cardID);
+      if (!this.cards.has(packet.cardID)) {
+        this.cards.add(packet.cardID);
+        this.signals.cards.dispatch(packet.cardID);
       }
-      this.signals.cards.dispatch(packet.cardID);
     } else if (packet.kind === 'cheat') {
       this.signals.cheat.dispatch(packet.cheat);
       if (packet.cheat.code === 'set_volume') {

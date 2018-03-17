@@ -141,7 +141,7 @@ export class StartScreen extends Phaser.Group {
     this.cards[cardID].animations.play('flip');
 
     // If more than 2 captains, show instructions to start game
-    if (this.game.session.cards.length >= 2) {
+    if (this.game.session.cards.size >= 2) {
       this.scanCardLabel.destroy();
       // We need to create the button here so that the blink
       // time begins when it first added to the group.
