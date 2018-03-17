@@ -18,6 +18,9 @@ export interface Wave {
   soundtrack: string;
 }
 
+export const LOW_HEALTH = 35;
+export const VERY_LOW_HEALTH = 15;
+
 const WAVES: Wave[] = [
   {
     startTime: seconds(10),

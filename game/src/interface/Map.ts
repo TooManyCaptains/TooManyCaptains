@@ -1,5 +1,5 @@
 import { Game } from '../index';
-import { baseStyle } from './Styles';
+import { baseStyle, ColorPalette } from './Styles';
 
 const MIN_X = 50;
 const MAX_X = 1870;
@@ -19,7 +19,7 @@ class ScoreBubble extends Phaser.Group {
     this.text.align = 'left';
 
     this.background = game.add.graphics();
-    this.background.beginFill(0xffffff, 1);
+    this.background.beginFill(ColorPalette.White, 1);
     this.background.drawRoundedRect(0, 0, 200, 44, 15);
 
     this.add(this.background);

@@ -3,15 +3,17 @@ import HUD from '../interface/HUD';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { ColorPosition } from '../../../common/types';
-import { ThrusterDirection, Wave } from '../Session';
+import {
+  ThrusterDirection,
+  Wave,
+  VERY_LOW_HEALTH,
+  LOW_HEALTH,
+} from '../Session';
 
 import Map from '../interface/Map';
 import { COLORS, colorNameToLetter } from '../utils';
 import { Cheat } from '../../../common/cheats';
 import { times } from 'lodash';
-
-const LOW_HEALTH = 35;
-const VERY_LOW_HEALTH = 15;
 
 export default class Main extends Phaser.State {
   public game: Game;

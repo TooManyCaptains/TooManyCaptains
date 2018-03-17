@@ -1,10 +1,11 @@
 import Panel from './Panel';
 import { Game } from '../index';
 import { Subsystem, CaptainCardID, Color } from '../../../common/types';
-import { baseStyle } from './Styles';
+import { baseStyle, ColorPalette } from './Styles';
 import manifest from '../../../common/manifest';
 import { colorsToColorKey, colorPositionsToColors } from '../utils';
 import HealthBar from '../entities/HealthBar';
+import { LOW_HEALTH, VERY_LOW_HEALTH } from '../Session';
 
 class ColorChart extends Phaser.Sprite {
   public game: Game;
@@ -237,7 +238,7 @@ class CaptainsLog extends Phaser.Group {
   constructor(game: Game, parent: Phaser.Group, width: number, height: number) {
     super(game, parent, 'CaptainsLog');
     const box = game.add.graphics();
-    box.lineStyle(2, 0xffffff, 1);
+    box.lineStyle(2, ColorPalette.White, 1);
     box.beginFill(0, 1);
     box.drawRoundedRect(0, 0, width, height, 20);
     this.add(box);
@@ -254,7 +255,7 @@ class CaptainsLog extends Phaser.Group {
     this.title.setTextBounds(0, titleTextMargin, width, 50);
 
     const line = game.add.graphics();
-    line.lineStyle(2, 0xffffff, 1);
+    line.lineStyle(2, ColorPalette.White, 1);
     line.drawRect(
       titleTextMargin * 2,
       this.title.bottom + titleTextMargin,
@@ -315,7 +316,7 @@ export default class HUD extends Phaser.Group {
       this.game,
       1260,
       45,
-      0x30ee02,
+      ColorPalette.Green,
       'HEALTH 100%',
       200,
       true,
@@ -334,5 +335,12 @@ export default class HUD extends Phaser.Group {
     const label =
       health > 25 ? Math.ceil(health).toFixed(0) : health.toFixed(1);
     this.healthBar.label = `HEALTH ${label}%`;
+    if (health <= VERY_LOW_HEALTH) {
+      this.healthBar.color = ColorPalette.Red;
+    } else if (health <= LOW_HEALTH) {
+      this.healthBar.color = ColorPalette.Orange;
+    } else {
+      this.healthBar.color = ColorPalette.Green;
+    }
   }
 }

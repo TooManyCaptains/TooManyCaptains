@@ -1,5 +1,5 @@
 import { Game } from '../index';
-import { baseStyle } from './Styles';
+import { baseStyle, ColorPalette } from './Styles';
 import { range } from 'lodash';
 import { CardID } from '../../../common/types';
 
@@ -44,7 +44,7 @@ class BlinkingLabel extends Phaser.Group {
   ) {
     super(game);
 
-    const color = 0x32fc39;
+    const color = ColorPalette.Green;
     const text = this.game.add.text(x, y, textString, {
       ...baseStyle,
       fill: `#${color.toString(16)}`,

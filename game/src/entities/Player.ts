@@ -5,6 +5,7 @@ import { Game } from '../index';
 import HealthBar from './HealthBar';
 import { ThrusterLevel, ThrusterDirection } from '../Session';
 import { colorsToColorKey, COLORS } from '../utils';
+import { ColorPalette } from '../interface/Styles';
 
 export default class PlayerShip extends Phaser.Group {
   public game: Game;
@@ -158,8 +159,8 @@ export default class PlayerShip extends Phaser.Group {
   }
 
   public shieldTint() {
-    this.shield.tint = 0x000000;
-    setTimeout(() => (this.shield.tint = 0xffffff), 50);
+    this.shield.tint = ColorPalette.Black;
+    setTimeout(() => (this.shield.tint = ColorPalette.White), 50);
   }
 
   private onMove(direction: ThrusterDirection) {
@@ -196,7 +197,8 @@ export default class PlayerShip extends Phaser.Group {
   }
 
   private onHealthChanged() {
-    this.healthBar.value = this.game.session.health / this.game.session.maxHealth;
+    this.healthBar.value =
+      this.game.session.health / this.game.session.maxHealth;
   }
 
   private onSubsystemsChanged() {

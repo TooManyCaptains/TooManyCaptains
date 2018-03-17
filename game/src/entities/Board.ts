@@ -5,6 +5,7 @@ import { Game } from '../index';
 import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
 import { randomColor } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
+import { ColorPalette } from '../interface/Styles';
 
 export default class Board extends Phaser.Group {
   public game: Game;
@@ -39,7 +40,7 @@ export default class Board extends Phaser.Group {
 
     // Mask (overflow)
     const mask = this.game.add.graphics(0, 0, this);
-    mask.beginFill(0xff0000);
+    mask.beginFill(ColorPalette.Black);
     mask.drawRect(0, 0, width, height);
     this.mask = mask;
 
@@ -49,10 +50,10 @@ export default class Board extends Phaser.Group {
     // Add starting enemies
     // const numStartingEnemies = 3;
     // _.times(numStartingEnemies, i => {
-      //   this.spawnEnemy(
-        //     height / numStartingEnemies * (i + 1) - height / numStartingEnemies / 2,
-        //   );
-        // });
+    //   this.spawnEnemy(
+    //     height / numStartingEnemies * (i + 1) - height / numStartingEnemies / 2,
+    //   );
+    // });
     this.enemies = new Phaser.Group(this.game, undefined, 'enemies');
     this.add(this.enemies);
 
@@ -78,7 +79,9 @@ export default class Board extends Phaser.Group {
       this.game.session.shieldColors.length === 3 ||
       this.game.session.repairLevel === 3;
     // Punish players who are camping
-    const y = isPlayerCamping ? this.player.y : this.game.physics.arcade.bounds.height * Math.random() + 100;
+    const y = isPlayerCamping
+      ? this.player.y
+      : this.game.physics.arcade.bounds.height * Math.random() + 100;
     const asteroid = new Asteroid(this.game, this.game.width, y);
     this.asteroids.add(asteroid);
     asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);

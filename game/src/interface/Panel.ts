@@ -1,5 +1,5 @@
 import { Game } from '../index';
-import { baseStyle } from './Styles';
+import { baseStyle, ColorPalette } from './Styles';
 
 export default class Panel extends Phaser.Group {
   constructor(
@@ -11,7 +11,7 @@ export default class Panel extends Phaser.Group {
   ) {
     super(game, parent, `panel-${nameText}`);
     const frame = game.add.graphics(0, 0, this);
-    frame.lineStyle(2, 0xffffff);
+    frame.lineStyle(2, ColorPalette.White);
     frame.beginFill(0, 1);
     frame.drawCircle(width / 2, height / 2, width);
 
