@@ -10,7 +10,7 @@ import './app.css';
 
 const BASE_URL = (() =>
   window.location.search.includes('local')
-    ? 'http://starship:9000'
+    ? 'http://localhost:9000'
     : 'http://server.toomanycaptains.com')();
 
 type Tab = 'controller' | 'scanner' | 'cheats';
@@ -61,7 +61,10 @@ class App extends React.Component<{}, AppState> {
     return (
       <Router>
         <div className="App">
-          <div className="App-GameState">{this.state.gameState}</div>
+          <div className="App-Info">
+            <div className="App-Info-GameState">{this.state.gameState}</div>
+            <div className="App-Info-URI">{this.state.socket.io.uri}</div>
+          </div>
           <div className="ModeTabs">
             <NavLink to="/" exact className="ModeTab" activeClassName="active">
               🕹 Controller
@@ -70,7 +73,7 @@ class App extends React.Component<{}, AppState> {
               🖐🏻 Scanner
             </NavLink>
             <NavLink to="/cheats" className="ModeTab" activeClassName="active">
-              😵 Cheats
+              ⚙️ Tweaks
             </NavLink>
           </div>
 

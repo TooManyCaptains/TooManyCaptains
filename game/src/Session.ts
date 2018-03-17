@@ -1,3 +1,4 @@
+import io from 'socket.io-client';
 import {
   Color,
   ColorPosition,
@@ -5,12 +6,10 @@ import {
   WiringConfiguration,
   Packet,
   CardID,
+  DebugFlags,
 } from '../../common/types';
-import GameServer from './GameServer';
 import { sortBy } from 'lodash';
-
-const minutes = (mins: number) => mins * 60_000;
-const seconds = (secs: number) => secs * 1_000;
+import { seconds, minutes } from './utils';
 
 export interface Wave {
   startTime: number;
@@ -65,6 +64,9 @@ export enum ThrusterDirection {
 }
 
 export default class Session {
+  // Game server
+  public isConnected = false;
+
   // Signals
   public signals = {
     score: new Phaser.Signal(),
@@ -76,6 +78,9 @@ export default class Session {
     move: new Phaser.Signal(),
     cheat: new Phaser.Signal(),
     wave: new Phaser.Signal(),
+    volume: new Phaser.Signal(),
+    serverConnection: new Phaser.Signal(),
+    debugFlagsChanged: new Phaser.Signal(),
   };
 
   // Weapons
@@ -106,11 +111,28 @@ export default class Session {
   // Waves and timers
   private _wave: Wave;
   private _waveTimers: number[] = [];
-  // private _timeRoundStarted: number;
 
-  constructor(private server: GameServer) {
+  // Volume
+  private _masterVolume = 1;
+  private _musicVolume = 1;
+
+  private _debugFlags: DebugFlags;
+
+  // Game server
+  private socket: SocketIOClient.Socket;
+
+  constructor(URL: string) {
+    this.socket = io(URL);
+    this.socket.on('packet', this.onPacket.bind(this));
+    this.socket.on('connect', () => {
+      this.isConnected = true;
+      this.signals.serverConnection.dispatch(this.isConnected);
+    });
+    this.socket.on('disconnect', () => {
+      this.isConnected = false;
+      this.signals.serverConnection.dispatch(this.isConnected);
+    });
     this.reset();
-    this.server.socket.on('packet', this.onPacket.bind(this));
   }
 
   public reset() {
@@ -140,6 +162,17 @@ export default class Session {
       }
     });
     this.signals.subsystems.dispatch();
+  }
+
+  get debugFlags() {
+    return this._debugFlags;
+  }
+
+  get volume() {
+    return {
+      music: this._musicVolume,
+      master: this._masterVolume,
+    };
   }
 
   get score(): number {
@@ -182,7 +215,7 @@ export default class Session {
     if (state === 'in_game') {
       this.setWaveTimers();
     }
-    this.server.notifyGameState(state);
+    this.notifyGameState(state);
     this._state = state;
   }
 
@@ -194,6 +227,7 @@ export default class Session {
   }
 
   private onPacket(packet: Packet) {
+    console.log(packet);
     if (packet.kind === 'wiring') {
       this.configurations = packet.configurations;
     } else if (packet.kind === 'move') {
@@ -221,9 +255,32 @@ export default class Session {
       this.signals.cards.dispatch(packet.cardID);
     } else if (packet.kind === 'cheat') {
       this.signals.cheat.dispatch(packet.cheat);
-      //   } else if (packet.cheat.code === 'set_volume') {
-      //     this.setVolume(packet.cheat.volume / 100);
-      //   }
+      if (packet.cheat.code === 'set_volume') {
+        if (packet.cheat.target === 'master') {
+          this._masterVolume = packet.cheat.volume;
+        } else {
+          this._musicVolume = packet.cheat.volume;
+        }
+        this.signals.volume.dispatch(this.volume);
+      } else if (packet.cheat.code === 'set_debug_flags') {
+        this._debugFlags = packet.cheat.flags;
+        if (this.debugFlags.invuln) {
+          this.maxHealth = 10_000;
+          this.health = 10_000;
+        } else {
+          this.maxHealth = 100;
+          this.health = 100;
+        }
+        this.signals.debugFlagsChanged.dispatch(this.debugFlags);
+      }
     }
+  }
+
+  private notifyGameState(state: GameState) {
+    const packet: Packet = {
+      kind: 'gamestate',
+      state,
+    };
+    this.socket.emit('packet', packet);
   }
 }
