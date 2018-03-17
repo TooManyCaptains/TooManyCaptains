@@ -11,10 +11,9 @@ class ScoreBubble extends Phaser.Group {
 
   constructor(game: Game) {
     super(game);
-    this.text = this.game.add.text(15, 0, '', {
+    this.text = this.game.add.text(20, 4, '', {
       ...baseStyle,
       fontSize: 32,
-      fill: 'black',
     });
     this.text.align = 'left';
 
@@ -29,13 +28,21 @@ class ScoreBubble extends Phaser.Group {
   }
 
   private onScoreChanged() {
-    this.background.beginFill(ColorPalette.White, 1);
     this.background.clear();
+    this.background.beginFill(ColorPalette.Black, 0.7);
     this.background.drawRoundedRect(
       0,
       0,
-      160 + 15 * String(this.game.session.score).length,
-      44,
+      165 + 15 * String(this.game.session.score).length,
+      50,
+      25,
+    );
+    this.background.lineStyle(2, ColorPalette.White, 1);
+    this.background.drawRoundedRect(
+      0,
+      0,
+      165 + 15 * String(this.game.session.score).length,
+      50,
       25,
     );
     this.score = this.game.session.score;
@@ -48,10 +55,10 @@ class ScoreBubble extends Phaser.Group {
 
 export default class Map extends Phaser.Group {
   public game: Game;
-  public miniMap: Phaser.Sprite;
-  public scoreBubble: ScoreBubble;
-  public iconPlayer: Phaser.Sprite;
-  public iconBoss: Phaser.Sprite;
+  private miniMap: Phaser.Sprite;
+  private scoreBubble: ScoreBubble;
+  private iconPlayer: Phaser.Sprite;
+  // private iconBoss: Phaser.Sprite;
 
   constructor(game: Game) {
     super(game);
@@ -78,6 +85,10 @@ export default class Map extends Phaser.Group {
         true,
       );
 
+    // Unfortunately, this tween will not be perfectly smooth, since we are
+    // tweening text and it will align to pixels, rather than draw on subpixels
+    // it seems. Even rolling our own linear interpolation by overriding
+    // update() doesn't fix it :/
     this.game.add
       .tween(this.scoreBubble)
       .to(

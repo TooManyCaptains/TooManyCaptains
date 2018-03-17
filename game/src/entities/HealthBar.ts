@@ -1,5 +1,5 @@
 import { Game } from '..';
-import { baseStyle } from '../interface/Styles';
+import { baseStyle, ColorPalette } from '../interface/Styles';
 
 export default class HealthBar extends Phaser.Group {
   public game: Game;
@@ -36,7 +36,7 @@ export default class HealthBar extends Phaser.Group {
     this.outline = game.add.graphics();
 
     if (hasOutline) {
-      this.outline.lineStyle(2, Phaser.Color.WHITE, 1);
+      this.outline.lineStyle(2, ColorPalette.White, 1);
       this.outline.drawRoundedRect(
         -this.outlinePadding / 2,
         -this.outlinePadding / 2,
