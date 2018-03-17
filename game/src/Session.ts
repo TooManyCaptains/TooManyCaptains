@@ -63,6 +63,9 @@ export enum ThrusterDirection {
 }
 
 export default class Session {
+  // Game server
+  public isConnected = false;
+
   // Signals
   public signals = {
     score: new Phaser.Signal(),
@@ -75,6 +78,7 @@ export default class Session {
     cheat: new Phaser.Signal(),
     wave: new Phaser.Signal(),
     volume: new Phaser.Signal(),
+    serverConnection: new Phaser.Signal(),
   };
 
   // Weapons
@@ -116,6 +120,14 @@ export default class Session {
   constructor(URL: string) {
     this.socket = io(URL);
     this.socket.on('packet', this.onPacket.bind(this));
+    this.socket.on('connect', () => {
+      this.isConnected = true;
+      this.signals.serverConnection.dispatch(this.isConnected);
+    });
+    this.socket.on('disconnect', () => {
+      this.isConnected = false;
+      this.signals.serverConnection.dispatch(this.isConnected);
+    });
     this.reset();
   }
 

@@ -6,6 +6,10 @@ interface KillPlayerCheat extends BaseCheat {
   code: 'kill_player';
 }
 
+interface SetFlagsCheat extends BaseCheat {
+  code: 'set_flags';
+}
+
 interface SpawnEnemyCheat extends BaseCheat {
   code: 'spawn_enemy';
 }
@@ -24,4 +28,5 @@ export type Cheat =
   | KillPlayerCheat
   | SpawnEnemyCheat
   | SetVolumeCheat
+  | SetFlagsCheat
   | SpawnAsteroidCheat;
