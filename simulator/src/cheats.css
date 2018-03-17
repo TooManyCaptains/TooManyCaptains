@@ -4,7 +4,6 @@
   padding: 15px 20px 15px 20px;
   /* width: 250px; */
   /* height: 50px; */
-  font-size: 24px;
   margin: 15px;
   display: flex;
   align-items: center;
@@ -39,6 +38,7 @@
   justify-content: center;
   flex-direction: row;
   /* width: 250px; */
+  font-size: 18px;
 }
 
 .VolumeSlider .rangeslider {
@@ -50,7 +50,7 @@
 }
 
 .VolumeSlider .VolumeTarget {
-  width: 120px;
+  width: 100px;
 }
 
 .VolumeControls {
@@ -58,4 +58,28 @@
   border: 2px solid white;
   padding: 15px 20px 15px 20px;
   margin: 15px;
+}
+
+.DebugFlags {
+  flex-direction: column-reverse;
+  border-radius: 10px;
+  border: 2px solid white;
+  padding: 15px 20px 15px 20px;
+  padding-bottom: 0;
+}
+
+.DebugFlags fieldset {
+  border: 0;
+}
+
+.DebugFlags fieldset > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.DebugFlags label {
+  margin-left: 10px;
 }

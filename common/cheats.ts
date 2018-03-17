@@ -1,3 +1,5 @@
+import { DebugFlags } from './types';
+
 interface BaseCheat {
   readonly code: string;
 }
@@ -6,8 +8,9 @@ interface KillPlayerCheat extends BaseCheat {
   code: 'kill_player';
 }
 
-interface SetFlagsCheat extends BaseCheat {
-  code: 'set_flags';
+interface SetDebugFlagsCheat extends BaseCheat {
+  code: 'set_debug_flags';
+  flags: DebugFlags;
 }
 
 interface SpawnEnemyCheat extends BaseCheat {
@@ -28,5 +31,5 @@ export type Cheat =
   | KillPlayerCheat
   | SpawnEnemyCheat
   | SetVolumeCheat
-  | SetFlagsCheat
+  | SetDebugFlagsCheat
   | SpawnAsteroidCheat;

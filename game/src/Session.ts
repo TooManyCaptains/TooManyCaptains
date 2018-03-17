@@ -6,6 +6,7 @@ import {
   WiringConfiguration,
   Packet,
   CardID,
+  DebugFlags,
 } from '../../common/types';
 import { sortBy } from 'lodash';
 import { seconds, minutes } from './utils';
@@ -79,6 +80,7 @@ export default class Session {
     wave: new Phaser.Signal(),
     volume: new Phaser.Signal(),
     serverConnection: new Phaser.Signal(),
+    debugFlagsChanged: new Phaser.Signal(),
   };
 
   // Weapons
@@ -113,6 +115,8 @@ export default class Session {
   // Volume
   private _masterVolume = 1;
   private _musicVolume = 1;
+
+  private _debugFlags: DebugFlags;
 
   // Game server
   private socket: SocketIOClient.Socket;
@@ -158,6 +162,10 @@ export default class Session {
       }
     });
     this.signals.subsystems.dispatch();
+  }
+
+  get debugFlags() {
+    return this._debugFlags;
   }
 
   get volume() {
@@ -254,6 +262,16 @@ export default class Session {
           this._musicVolume = packet.cheat.volume;
         }
         this.signals.volume.dispatch(this.volume);
+      } else if (packet.cheat.code === 'set_debug_flags') {
+        this._debugFlags = packet.cheat.flags;
+        if (this.debugFlags.invuln) {
+          this.maxHealth = 10_000;
+          this.health = 10_000;
+        } else {
+          this.maxHealth = 100;
+          this.health = 100;
+        }
+        this.signals.debugFlagsChanged.dispatch(this.debugFlags);
       }
     }
   }

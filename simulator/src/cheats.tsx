@@ -6,7 +6,7 @@ import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
 // To include the default styles
-import { CheatPacket, Packet } from '../../common/types';
+import { CheatPacket, Packet, DebugFlags } from '../../common/types';
 import { Cheat } from '../../common/cheats';
 
 import './cheats.css';
@@ -78,7 +78,20 @@ class VolumeSlider extends React.Component<
   }
 }
 
-export default class Cheats extends React.Component<CheatsProps, {}> {
+interface CheatsState {
+  debugFlags: DebugFlags;
+}
+
+export default class Cheats extends React.Component<CheatsProps, CheatsState> {
+  constructor(props: CheatsProps) {
+    super(props);
+    this.state = {
+      debugFlags: {
+        invuln: false,
+        perf: false,
+      },
+    };
+  }
   public render() {
     const volumeTargets: VolumeTarget[] = ['master', 'music'];
     return (
@@ -96,6 +109,29 @@ export default class Cheats extends React.Component<CheatsProps, {}> {
               )}
             />
           ))}
+        </div>
+        <div className="DebugFlags">
+          <fieldset>
+            <legend>🏁 Set Flags</legend>
+            {['perf', 'invuln'].map(flag => {
+              return (
+                <div>
+                  <input
+                    key={flag}
+                    type="checkbox"
+                    id={flag}
+                    checked={this.state.debugFlags[flag]}
+                    name="debugflags"
+                    value={flag}
+                    onChange={v =>
+                      this.onDebugFlagToggled(flag, v.target.checked)
+                    }
+                  />
+                  <label htmlFor={flag}>{flag}</label>
+                </div>
+              );
+            })}
+          </fieldset>
         </div>
         <div
           className="Cheat"
@@ -119,7 +155,18 @@ export default class Cheats extends React.Component<CheatsProps, {}> {
     );
   }
 
+  private onDebugFlagToggled(flagName: string, isEnabled: boolean) {
+    const debugFlags = this.state.debugFlags;
+    debugFlags[flagName] = isEnabled;
+    this.setState({ debugFlags });
+    this.sendCheat({
+      code: 'set_debug_flags',
+      flags: debugFlags,
+    });
+  }
+
   private sendCheat(cheat: Cheat) {
+    console.log('sending cheat');
     const packet: CheatPacket = {
       kind: 'cheat',
       cheat,

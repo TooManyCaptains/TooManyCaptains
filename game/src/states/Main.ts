@@ -156,94 +156,8 @@ export default class Main extends Phaser.State {
     scoreTimer.loop(250, this.onScoreTimer, this);
     scoreTimer.start();
 
-    if (this.game.params.debug) {
-      // Keyboard shortcuts (for debugging)
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.E)
-        .onDown.add(() => this.board.spawnEnemy(), this);
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.A)
-        .onDown.add(() => this.board.spawnAsteroid(), this);
-
-      this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(() => {
-        const allPositions: ColorPosition[] = [
-          { color: 'blue', position: 0 },
-          { color: 'red', position: 1 },
-          { color: 'yellow', position: 2 },
-        ];
-        this.game.session.configurations = [
-          {
-            subsystem: 'weapons',
-            colorPositions: allPositions,
-          },
-          {
-            subsystem: 'shields',
-            colorPositions: allPositions,
-          },
-          {
-            subsystem: 'repairs',
-            colorPositions: allPositions,
-          },
-          {
-            subsystem: 'thrusters',
-            colorPositions: allPositions.slice(0, 2),
-          },
-        ];
-      }, this);
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.UP)
-        .onDown.add(
-          () => this.game.session.signals.move.dispatch(ThrusterDirection.Up),
-          this,
-        );
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.UP)
-        .onUp.add(
-          () =>
-            this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
-          this,
-        );
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.DOWN)
-        .onUp.add(
-          () =>
-            this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
-          this,
-        );
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.DOWN)
-        .onDown.add(
-          () => this.game.session.signals.move.dispatch(ThrusterDirection.Down),
-          this,
-        );
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.K)
-        .onDown.add(() => (this.game.session.health = 0), this);
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.D)
-        .onDown.add(() => (this.game.session.health -= 5), this);
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.H)
-        .onDown.add(() => (this.game.session.health += 5), this);
-
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard.SPACEBAR)
-        .onDown.add(() => this.game.session.signals.fire.dispatch(), this);
-    }
-
-    if (this.game.params.invulnerable) {
-      const health = 10_000;
-      this.game.session.maxHealth = health;
-      this.game.session.health = health;
-    }
+    // Keyboard shortcuts (for debugging)
+    this.addKeyboardShortcuts();
 
     this.healthLowFx = this.game.add.audio('health_low');
     this.healthVeryLowFx = this.game.add.audio('health_very_low');
@@ -257,6 +171,88 @@ export default class Main extends Phaser.State {
     this.doors.open(() => {
       this.game.session.state = 'in_game';
     });
+  }
+
+  private addKeyboardShortcuts() {
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.E)
+      .onDown.add(() => this.board.spawnEnemy(), this);
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.A)
+      .onDown.add(() => this.board.spawnAsteroid(), this);
+
+    this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(() => {
+      const allPositions: ColorPosition[] = [
+        { color: 'blue', position: 0 },
+        { color: 'red', position: 1 },
+        { color: 'yellow', position: 2 },
+      ];
+      this.game.session.configurations = [
+        {
+          subsystem: 'weapons',
+          colorPositions: allPositions,
+        },
+        {
+          subsystem: 'shields',
+          colorPositions: allPositions,
+        },
+        {
+          subsystem: 'repairs',
+          colorPositions: allPositions,
+        },
+        {
+          subsystem: 'thrusters',
+          colorPositions: allPositions.slice(0, 2),
+        },
+      ];
+    }, this);
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.UP)
+      .onDown.add(
+        () => this.game.session.signals.move.dispatch(ThrusterDirection.Up),
+        this,
+      );
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.UP)
+      .onUp.add(
+        () =>
+          this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
+        this,
+      );
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.DOWN)
+      .onUp.add(
+        () =>
+          this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
+        this,
+      );
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.DOWN)
+      .onDown.add(
+        () => this.game.session.signals.move.dispatch(ThrusterDirection.Down),
+        this,
+      );
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.K)
+      .onDown.add(() => (this.game.session.health = 0), this);
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.D)
+      .onDown.add(() => (this.game.session.health -= 5), this);
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.H)
+      .onDown.add(() => (this.game.session.health += 5), this);
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.SPACEBAR)
+      .onDown.add(() => this.game.session.signals.fire.dispatch(), this);
   }
 
   private onCheat(cheat: Cheat) {

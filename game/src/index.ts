@@ -21,10 +21,6 @@ function getUrlParams(search: string): { [P in string]: string } {
 }
 
 interface Config {
-  debug: boolean;
-  skip: boolean;
-  invulnerable: boolean;
-  local: boolean;
   serverURL: string;
 }
 
@@ -32,15 +28,9 @@ function getConfig() {
   const urlParams = getUrlParams(window.location.search);
 
   const config: Config = {
-    debug: has(urlParams, 'debug'),
-    skip: has(urlParams, 'skip'),
-    invulnerable: has(urlParams, 'invuln'),
-    local: has(urlParams, 'local'),
     serverURL: 'http://server.toomanycaptains.com',
   };
-  if (config.local) {
-    config.serverURL = 'http://starship:9000';
-  } else if (has(urlParams, 'serverURL')) {
+  if (has(urlParams, 'serverURL')) {
     config.serverURL = urlParams.serverURL;
   }
   return config;
@@ -62,10 +52,6 @@ export class Game extends Phaser.Game {
 
     this.params = getConfig();
     console.log(this.params);
-
-    if (this.params.debug) {
-      this.setupPerformanceStatistics();
-    }
 
     this.session = new Session(this.params.serverURL);
 
@@ -100,6 +86,14 @@ export class Game extends Phaser.Game {
     }
   }
 
+  private onDebugFlagsChanged() {
+    if (this.session.debugFlags.perf) {
+      this.enablePerformanceStatistics();
+    } else {
+      this.disablePerformanceStatistics();
+    }
+  }
+
   private onVolumeChanged() {
     console.log('onVolumeChanged');
     console.log(this.session.volume);
@@ -107,9 +101,15 @@ export class Game extends Phaser.Game {
     this.soundtrack.volume = this.session.volume.music;
   }
 
-  private setupPerformanceStatistics() {
+  private enablePerformanceStatistics() {
+    const statsEl = document.getElementById('stats');
+    if (statsEl) {
+      statsEl.style.display = 'unset';
+      return;
+    }
     // Setup the new stats panel.
     const stats = new Stats();
+    stats.dom.id = 'stats';
     document.body.appendChild(stats.dom);
 
     // Monkey-patch the update loop so we can track the timing.
@@ -119,6 +119,13 @@ export class Game extends Phaser.Game {
       updateLoop.apply(this, args);
       stats.end();
     };
+  }
+
+  private disablePerformanceStatistics() {
+    const statsEl = document.getElementById('stats');
+    if (statsEl) {
+      statsEl.style.display = 'none';
+    }
   }
 
   private onStateChange() {
@@ -133,6 +140,10 @@ export class Game extends Phaser.Game {
         this.session.signals.state.add(this.updateSoundtrack, this);
         this.session.signals.wave.add(this.updateSoundtrack, this);
         this.session.signals.volume.add(this.onVolumeChanged, this);
+        this.session.signals.debugFlagsChanged.add(
+          this.onDebugFlagsChanged,
+          this,
+        );
       }
     });
   }
