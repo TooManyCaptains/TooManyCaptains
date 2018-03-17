@@ -5,7 +5,6 @@ import Boot from './states/Boot';
 import Before from './states/Before';
 import Preload from './states/Preload';
 import After from './states/After';
-import GameServer from './GameServer';
 
 import './index.css';
 import Session from './Session';
@@ -22,10 +21,6 @@ function getUrlParams(search: string): { [P in string]: string } {
 }
 
 interface Config {
-  debug: boolean;
-  skip: boolean;
-  invulnerable: boolean;
-  local: boolean;
   serverURL: string;
 }
 
@@ -33,15 +28,9 @@ function getConfig() {
   const urlParams = getUrlParams(window.location.search);
 
   const config: Config = {
-    debug: has(urlParams, 'debug'),
-    skip: has(urlParams, 'skip'),
-    invulnerable: has(urlParams, 'invuln'),
-    local: has(urlParams, 'local'),
     serverURL: 'http://server.toomanycaptains.com',
   };
-  if (config.local) {
-    config.serverURL = 'http://starship:9000';
-  } else if (has(urlParams, 'serverURL')) {
+  if (has(urlParams, 'serverURL')) {
     config.serverURL = urlParams.serverURL;
   }
   return config;
@@ -50,7 +39,6 @@ function getConfig() {
 export class Game extends Phaser.Game {
   public params: Config;
   public session: Session;
-  private server: GameServer;
 
   private soundtrack: Phaser.Sound;
 
@@ -65,29 +53,20 @@ export class Game extends Phaser.Game {
     this.params = getConfig();
     console.log(this.params);
 
-    if (this.params.debug) {
-      this.setupPerformanceStatistics();
-    }
-
-    this.server = new GameServer(this.params.serverURL);
-    this.session = new Session(this.server);
+    this.session = new Session(this.params.serverURL);
 
     // Kick things off with the boot state.
     this.state.start('Boot');
 
     this.state.onStateChange.add(this.onStateChange, this);
-    this.session.signals.state.add(this.updateSoundtrack, this);
-    this.session.signals.wave.add(this.updateSoundtrack, this);
   }
 
   public updateSoundtrack() {
     let key = '';
-    let volume = 0.25;
     if (this.session.state === 'wait_for_players') {
       key = 'music_background';
     } else if (this.session.state === 'in_game') {
       key = this.session.wave.soundtrack;
-      volume = 0.2;
     }
     // We're not supposed to be playing anything
     if (key === '') {
@@ -101,25 +80,36 @@ export class Game extends Phaser.Game {
       if (this.soundtrack) {
         this.soundtrack.stop();
       }
-      this.soundtrack = this.add.audio(key, volume, true).play();
+      this.soundtrack = this.add
+        .audio(key, this.session.volume.music, true)
+        .play();
     }
   }
 
-  // public setVolume(volume?: number) {
-  //   if (volume !== undefined) {
-  //     localStorage.setItem('volume', String(volume));
-  //     this.sound.volume = volume;
-  //   } else {
-  //     const previousVolume = localStorage.getItem('volume');
-  //     if (previousVolume !== null) {
-  //       this.setVolume(Number(previousVolume));
-  //     }
-  //   }
-  // }
+  private onDebugFlagsChanged() {
+    if (this.session.debugFlags.perf) {
+      this.enablePerformanceStatistics();
+    } else {
+      this.disablePerformanceStatistics();
+    }
+  }
 
-  private setupPerformanceStatistics() {
+  private onVolumeChanged() {
+    console.log('onVolumeChanged');
+    console.log(this.session.volume);
+    this.sound.volume = this.session.volume.master;
+    this.soundtrack.volume = this.session.volume.music;
+  }
+
+  private enablePerformanceStatistics() {
+    const statsEl = document.getElementById('stats');
+    if (statsEl) {
+      statsEl.style.display = 'unset';
+      return;
+    }
     // Setup the new stats panel.
     const stats = new Stats();
+    stats.dom.id = 'stats';
     document.body.appendChild(stats.dom);
 
     // Monkey-patch the update loop so we can track the timing.
@@ -131,13 +121,30 @@ export class Game extends Phaser.Game {
     };
   }
 
+  private disablePerformanceStatistics() {
+    const statsEl = document.getElementById('stats');
+    if (statsEl) {
+      statsEl.style.display = 'none';
+    }
+  }
+
   private onStateChange() {
     // When the phaser state (NOT gamestate) changes,
     // we need to un-bind all of the existing signals!
     values(this.session.signals).forEach(signal => {
       signal.removeAll();
-      this.session.signals.state.add(this.updateSoundtrack, this);
-      this.session.signals.wave.add(this.updateSoundtrack, this);
+      // XXX: Hack for two reasons. One, we need to re-attach the signal handlers
+      // after removing them all. Two, we only want to bind after
+      // the sound system is atually set up!
+      if (['Before', 'Main', 'After'].includes(this.state.current)) {
+        this.session.signals.state.add(this.updateSoundtrack, this);
+        this.session.signals.wave.add(this.updateSoundtrack, this);
+        this.session.signals.volume.add(this.onVolumeChanged, this);
+        this.session.signals.debugFlagsChanged.add(
+          this.onDebugFlagsChanged,
+          this,
+        );
+      }
     });
   }
 }

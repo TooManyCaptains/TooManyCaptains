@@ -28,3 +28,10 @@ export function colorsToColorKey(colors: Color[]): string {
 export function randomColor(): Color {
   return sample(COLORS)!;
 }
+
+export function minutes(mins: number) {
+  return mins * 60_000;
+}
+export function seconds(secs: number) {
+  return secs * 1_000;
+}

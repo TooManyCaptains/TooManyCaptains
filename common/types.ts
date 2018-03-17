@@ -54,6 +54,11 @@ export interface CheatPacket extends BasePacket {
   cheat: Cheat;
 }
 
+export interface DebugFlags {
+  perf: boolean;
+  invuln: boolean;
+}
+
 export type Packet =
   | MovePacket
   | FirePacket
