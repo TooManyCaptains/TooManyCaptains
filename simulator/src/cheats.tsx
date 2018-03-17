@@ -112,7 +112,7 @@ export default class Cheats extends React.Component<CheatsProps, CheatsState> {
         </div>
         <div className="DebugFlags">
           <fieldset>
-            <legend>🏁 Set Flags</legend>
+            <legend>🏁 Debug Flags</legend>
             {['perf', 'invuln'].map(flag => {
               return (
                 <div>
