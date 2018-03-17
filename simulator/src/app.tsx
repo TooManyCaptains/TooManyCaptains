@@ -7,11 +7,18 @@ import Scanner from './scanner';
 import Cheats from './cheats';
 import Controller from './controller';
 import './app.css';
+import { has } from 'lodash';
 
-const BASE_URL = (() =>
-  window.location.search.includes('local')
-    ? 'http://localhost:9000'
-    : 'http://server.toomanycaptains.com')();
+function getUrlParams(search: string): { [P in string]: string } {
+  const hashes = search.slice(search.indexOf('?') + 1).split('&');
+  const params = {};
+  hashes.forEach(hash => {
+    const [key, val] = hash.split('=');
+    params[key] = decodeURIComponent(val);
+  });
+
+  return params;
+}
 
 type Tab = 'controller' | 'scanner' | 'cheats';
 
@@ -25,10 +32,15 @@ interface AppState {
 class App extends React.Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
+    const urlParams = getUrlParams(window.location.search);
+    let serverURL = 'http://server.toomanycaptains.com';
+    if (has(urlParams, 'serverURL')) {
+      serverURL = urlParams.serverURL;
+    }
     this.state = {
       activeTab: 'controller',
       isLoading: true,
-      socket: io(BASE_URL),
+      socket: io(serverURL),
       gameState: 'wait_for_players',
     };
   }
@@ -54,6 +66,10 @@ class App extends React.Component<{}, AppState> {
           <div className="Loading">
             <Spinner name="wandering-cubes" color="white" />
           </div>
+          <div className="App-Info">
+            <div className="App-Info-GameState">{this.state.gameState}</div>
+            <div className="App-Info-URI">{this.state.socket.io.uri}</div>
+          </div>
         </div>
       );
     }
@@ -66,13 +82,26 @@ class App extends React.Component<{}, AppState> {
             <div className="App-Info-URI">{this.state.socket.io.uri}</div>
           </div>
           <div className="ModeTabs">
-            <NavLink to="/" exact className="ModeTab" activeClassName="active">
+            <NavLink
+              to={{ pathname: '/', search: window.location.search }}
+              exact
+              className="ModeTab"
+              activeClassName="active"
+            >
               🕹 Controller
             </NavLink>
-            <NavLink to="/scanner" className="ModeTab" activeClassName="active">
+            <NavLink
+              to={{ pathname: '/scanner', search: window.location.search }}
+              className="ModeTab"
+              activeClassName="active"
+            >
               🖐🏻 Scanner
             </NavLink>
-            <NavLink to="/cheats" className="ModeTab" activeClassName="active">
+            <NavLink
+              to={{ pathname: '/cheats', search: window.location.search }}
+              className="ModeTab"
+              activeClassName="active"
+            >
               ⚙️ Tweaks
             </NavLink>
           </div>
