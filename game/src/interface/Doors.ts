@@ -14,12 +14,12 @@ export default class Doors extends Phaser.Group {
   constructor(game: Game) {
     super(game);
 
-    const lipSize = 100;
+    const lipSize = 110;
     this.leftOpenX = -this.game.width / 2 - lipSize;
     this.rightOpenX = this.game.width;
 
     // Sprites
-    this.doorLeft = this.create(0, -1, 'door-left');
+    this.doorLeft = this.create(0, 0, 'door-left');
     this.doorRight = this.create(this.game.width / 2, 0, 'door-right');
 
     // Sounds
