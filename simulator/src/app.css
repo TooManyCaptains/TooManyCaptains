@@ -20,20 +20,29 @@ body,
   flex-direction: column;
 }
 
-.App-GameState {
+.App-Info {
   font-family: monospace;
   position: absolute;
   left: 10px;
   bottom: 10px;
   background-color: black;
   z-index: 1000;
+  text-transform: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+}
+.App-Info-GameState {
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .Loading {
- display: flex;
- align-items: center;
- justify-content: center;
- height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .ModeTabs {

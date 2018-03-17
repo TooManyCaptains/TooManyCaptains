@@ -2,7 +2,7 @@
   border-radius: 10px;
   border: 2px solid white;
   padding: 15px 20px 15px 20px;
-  width: 250px;
+  /* width: 250px; */
   /* height: 50px; */
   font-size: 24px;
   margin: 15px;
@@ -27,8 +27,9 @@
 .Cheats {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  justify-content: flex-start;
+  margin-top: 25px;
+  /* height: 100%; */
   flex-direction: column;
 }
 
@@ -36,8 +37,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: row-reverse;
-  width: 250px;
+  flex-direction: row;
+  /* width: 250px; */
 }
 
 .VolumeSlider .rangeslider {
@@ -48,8 +49,13 @@
   width: 70px;
 }
 
-.VolumeCheat {
+.VolumeSlider .VolumeTarget {
+  width: 120px;
+}
+
+.VolumeControls {
   border-radius: 10px;
   border: 2px solid white;
   padding: 15px 20px 15px 20px;
+  margin: 15px;
 }
