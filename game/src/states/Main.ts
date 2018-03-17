@@ -268,20 +268,27 @@ export default class Main extends Phaser.State {
     };
 
     const health = this.game.session.health;
-    if (health <= LOW_HEALTH && !this.healthLowFx.isPlaying) {
-      this.healthVeryLowFx.stop();
-      this.healthLowFx.play();
-      this.healthLowFx.volume = 0.6;
-      flashScreen(1200, 0.25);
-    } else if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
+    if (health <= VERY_LOW_HEALTH && !this.healthVeryLowFx.isPlaying) {
       this.healthLowFx.stop();
       this.healthVeryLowFx.play();
       this.healthVeryLowFx.volume = 0.8;
       flashScreen(800, 0.5);
-    } else {
-      // this.healthLowFx.stop();
-      // this.healthVeryLowFx.stop();
-      // flashScreen(0, 0);
+    } else if (
+      health > VERY_LOW_HEALTH &&
+      health <= LOW_HEALTH &&
+      !this.healthLowFx.isPlaying
+    ) {
+      this.healthVeryLowFx.stop();
+      this.healthLowFx.play();
+      this.healthLowFx.volume = 0.6;
+      flashScreen(1200, 0.25);
+    }
+
+    if (health > LOW_HEALTH) {
+      this.healthLowFx.stop();
+      this.healthVeryLowFx.stop();
+      this.healthLowTimer.stop();
+      this.game.camera.resetFX();
     }
 
     // Player is dead!

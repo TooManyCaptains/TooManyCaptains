@@ -1,3 +1,4 @@
+// For text
 export const baseStyle = {
   font: 'Exo 2',
   fontSize: 40,
@@ -7,6 +8,7 @@ export const baseStyle = {
   boundsAlignV: 'middle',
 };
 
+// For graphics/UI
 export enum ColorPalette {
   Orange = Phaser.Color.ORANGE,
   Red = Phaser.Color.RED,
