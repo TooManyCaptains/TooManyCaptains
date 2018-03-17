@@ -11,7 +11,8 @@ class WeaponsPanel extends Panel {
 
   public update(gameState: GameState): void {
     // Update button light
-    const isButtonLit = true;
+    const isButtonLit =
+      gameState === 'in_game' ? this.connections.length > 0 : false;
     rpio.write(this.buttonLightPin, isButtonLit ? rpio.HIGH : rpio.LOW);
 
     // Set LED lights for later batch-update
