@@ -1,15 +1,8 @@
 import { Device, getDeviceList, on as onUsb, InEndpoint } from 'usb';
-import { ScanPacket, CardID } from '../../common/types';
+import { ScanPacket } from '../../common/types';
+import manifest from '../../common/manifest';
 
 const VENDOR_ID = 65535; // 2^16 - 1. Lol. Very lazy of them.
-
-const sequenceToCardId: { [sequence: number]: CardID } = {
-  1051651082: 1,
-  105164714: 2,
-  1049619310: 3,
-  104962298: 4,
-  104962842: 5,
-};
 
 function deviceIsCardScanner(device: Device): boolean {
   return device.deviceDescriptor.idVendor === VENDOR_ID;
@@ -19,7 +12,7 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
   if (!deviceIsCardScanner(device)) {
     return;
   }
-  console.log(`[Scanner] connected`);
+  console.log(`Scanner connected`);
   device.open();
   const iface = device.interfaces[0];
 
@@ -54,19 +47,22 @@ function watchDevice(device: Device, sendPacket: (p: ScanPacket) => any): void {
     } else if (scanCode === 0x28) {
       // If the enter key was pressed
       const sequence = Number(scanCodes.join(''));
-      console.log(`card with sequence: ${sequence}`);
-      const cardID = sequenceToCardId[sequence];
-      console.log(`card ID: ${cardID}`);
-      sendPacket({
-        kind: 'scan',
-        cardID,
-      });
+      console.log(`Read card with sequence: ${sequence}`);
+      const entry = manifest.find(m => m.sequence === sequence);
+      if (entry) {
+        console.log(`Identified ${entry.name} (id ${entry.cardID})`);
+        sendPacket({
+          kind: 'scan',
+          cardID: entry.cardID,
+        });
+      }
+
       scanCodes = [];
     }
   });
 
   endpoint.on('error', error => {
-    console.log(`[Scanner] disconnected`);
+    console.log(`Scanner disconnected`);
   });
 }
 

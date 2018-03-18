@@ -34,7 +34,7 @@ class WeaponsPanel extends Panel {
 class ThrustersPanel extends Panel {
   public readonly subsystem = 'thrusters';
   public readonly pins = [18, 16];
-  public readonly lightIndicies = range(9, 13);
+  public readonly lightIndicies = range(9, 15);
   public readonly buttonLightPin = 28;
 
   public update(gameState: GameState) {

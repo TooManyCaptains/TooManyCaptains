@@ -33,7 +33,7 @@ class ThrustersPanel extends types_1.Panel {
         super(...arguments);
         this.subsystem = 'thrusters';
         this.pins = [18, 16];
-        this.lightIndicies = lodash_1.range(9, 13);
+        this.lightIndicies = lodash_1.range(9, 15);
         this.buttonLightPin = 28;
     }
     update(gameState) {
