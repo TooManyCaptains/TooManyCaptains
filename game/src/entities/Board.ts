@@ -145,6 +145,7 @@ export default class Board extends Phaser.Group {
         this.game.session.health -= enemy.collisionDamage;
       },
     );
+
     // Player <-> asteroid collision
     this.game.physics.arcade.overlap(
       this.asteroids,
@@ -154,7 +155,22 @@ export default class Board extends Phaser.Group {
         this.spritesToDestroy.add(asteroid);
         this.game.camera.shake(0.02, 800);
         this.game.session.health -= asteroid.collisionDamage;
-        this.collideFx.play();
+      },
+    );
+
+    // Player bullet <-> asteroid collision
+    this.game.physics.arcade.overlap(
+      this.asteroids,
+      this.player.weapon,
+
+      (asteroid: Asteroid, playerBullet: PlayerBullet) => {
+        this.movingExplosion(
+          playerBullet.x,
+          playerBullet.y,
+          (asteroid.body as Phaser.Physics.Arcade.Body).velocity,
+          0.4,
+        );
+        playerBullet.kill();
       },
     );
 
@@ -181,5 +197,22 @@ export default class Board extends Phaser.Group {
     explosion.anchor.setTo(0.75, 0.5);
     explosion.animations.add('explosion');
     explosion.play('explosion', 30, false, true);
+    this.collideFx.play();
+  }
+
+  private movingExplosion(
+    x: number,
+    y: number,
+    velocity: Phaser.Point,
+    scale: number,
+  ) {
+    const explosion = this.game.add.sprite(x, y, 'explosion-yellow');
+    this.game.physics.enable(explosion, Phaser.Physics.ARCADE);
+    (explosion.body as Phaser.Physics.Arcade.Body).velocity = velocity;
+    explosion.scale.setTo(scale, scale);
+    explosion.anchor.setTo(0, 0.5);
+    explosion.animations.add('explosion');
+    explosion.play('explosion', 30, false, true);
+    this.collideFx.play();
   }
 }
