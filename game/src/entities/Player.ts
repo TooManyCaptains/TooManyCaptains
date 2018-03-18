@@ -3,7 +3,12 @@ import { range } from 'lodash';
 import { PlayerWeapon } from './PlayerWeapon';
 import { Game } from '../index';
 import HealthBar from './HealthBar';
-import { ThrusterLevel, ThrusterDirection } from '../Session';
+import {
+  ThrusterLevel,
+  ThrusterDirection,
+  VERY_LOW_HEALTH,
+  LOW_HEALTH,
+} from '../Session';
 import { colorsToColorKey, COLORS } from '../utils';
 import { ColorPalette } from '../interface/Styles';
 
@@ -197,8 +202,15 @@ export default class PlayerShip extends Phaser.Group {
   }
 
   private onHealthChanged() {
-    this.healthBar.value =
-      this.game.session.health / this.game.session.maxHealth;
+    const health = this.game.session.health;
+    this.healthBar.value = health / this.game.session.maxHealth;
+    if (health <= VERY_LOW_HEALTH) {
+      this.healthBar.color = ColorPalette.Red;
+    } else if (health <= LOW_HEALTH) {
+      this.healthBar.color = ColorPalette.Orange;
+    } else {
+      this.healthBar.color = ColorPalette.Green;
+    }
   }
 
   private onSubsystemsChanged() {
