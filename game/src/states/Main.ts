@@ -163,6 +163,13 @@ export default class Main extends Phaser.State {
     this.doors.open(() => {
       this.game.session.state = 'in_game';
     });
+
+    this.game.session.signals.debugFlagsChanged.add(() => {
+      console.log('lol');
+      if (this.game.session.debugFlags.boss) {
+        this.board.spawnBoss();
+      }
+    }, this);
   }
 
   private addKeyboardShortcuts() {
@@ -304,7 +311,7 @@ export default class Main extends Phaser.State {
   private onWaveChanged(wave: Wave) {
     console.log('wave changed', wave);
     if (wave.name === 'boss') {
-      console.log('BOSS!');
+      this.board.spawnBoss();
     } else {
       const numEnemies = wave.enemies!;
       times(numEnemies, i => {

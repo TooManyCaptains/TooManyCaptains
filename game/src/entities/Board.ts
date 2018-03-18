@@ -6,12 +6,14 @@ import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
 import { randomColor } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
 import { ColorPalette } from '../interface/Styles';
+import Boss from './Boss';
 
 export default class Board extends Phaser.Group {
   public game: Game;
 
   private enemyBulletPool: EnemyBulletPool;
   private player: Player;
+  private boss: Boss;
   private enemies: Phaser.Group;
   private asteroids: Phaser.Group;
   private collideFx: Phaser.Sound;
@@ -47,13 +49,6 @@ export default class Board extends Phaser.Group {
     // Create recycled bullet pool for enemy bullets
     this.enemyBulletPool = new EnemyBulletPool(this.game, this.player);
 
-    // Add starting enemies
-    // const numStartingEnemies = 3;
-    // _.times(numStartingEnemies, i => {
-    //   this.spawnEnemy(
-    //     height / numStartingEnemies * (i + 1) - height / numStartingEnemies / 2,
-    //   );
-    // });
     this.enemies = new Phaser.Group(this.game, undefined, 'enemies');
     this.add(this.enemies);
 
@@ -72,6 +67,11 @@ export default class Board extends Phaser.Group {
         this.enemyBulletPool,
       ),
     );
+  }
+
+  public spawnBoss() {
+    this.boss = new Boss(this.game, this.width - 700, this.centerY / 2);
+    this.boss.alpha = 1;
   }
 
   public spawnAsteroid() {

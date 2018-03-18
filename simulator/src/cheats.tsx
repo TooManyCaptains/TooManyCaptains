@@ -89,6 +89,7 @@ export default class Cheats extends React.Component<CheatsProps, CheatsState> {
       debugFlags: {
         invuln: false,
         perf: false,
+        boss: false,
       },
     };
   }
@@ -113,7 +114,7 @@ export default class Cheats extends React.Component<CheatsProps, CheatsState> {
         <div className="DebugFlags">
           <fieldset>
             <legend>🏁 Debug Flags</legend>
-            {['perf', 'invuln'].map(flag => {
+            {['perf', 'invuln', 'boss'].map(flag => {
               return (
                 <div>
                   <input

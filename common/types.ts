@@ -56,6 +56,7 @@ export interface CheatPacket extends BasePacket {
 
 export interface DebugFlags {
   perf: boolean;
+  boss: boolean;
   invuln: boolean;
 }
 
