@@ -9,7 +9,7 @@ const ButtonController_1 = require("./ButtonController");
 const PanelController_1 = require("./PanelController");
 const LightController_1 = require("./LightController");
 (function main() {
-    let gameState = 'wait_for_players';
+    let gameState = 'wait_for_cards';
     function onPacket(packet) {
         if (packet.kind === 'gamestate') {
             // Update local copy of game state if different
@@ -42,8 +42,8 @@ const LightController_1 = require("./LightController");
     // Update lights (all at once, since they are daisy-chained via PWM)
     function updatePanelLights() {
         let lights = [];
-        if (gameState === 'wait_for_players') {
-            lightController.startFlashingLights(types_1.LightColor.green, 6, 100000);
+        if (gameState === 'wait_for_start') {
+            lightController.startFlashingLights(types_1.LightColor.green, undefined, 2000);
         }
         else if (gameState === 'game_over') {
             lightController.startFlashingLights(types_1.LightColor.red);
