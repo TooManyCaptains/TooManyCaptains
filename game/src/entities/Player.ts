@@ -1,4 +1,4 @@
-import { range } from 'lodash';
+import { range, difference } from 'lodash';
 
 import { PlayerWeapon } from './PlayerWeapon';
 import { Game } from '../index';
@@ -9,8 +9,9 @@ import {
   VERY_LOW_HEALTH,
   LOW_HEALTH,
 } from '../Session';
-import { colorsToColorKey, COLORS } from '../utils';
+import { colorsToColorKey, COLORS, colorNameToLetter } from '../utils';
 import { ColorPalette } from '../interface/Styles';
+import { Color } from '../../../common/types';
 
 export default class PlayerShip extends Phaser.Group {
   public game: Game;
@@ -40,6 +41,10 @@ export default class PlayerShip extends Phaser.Group {
   private moveSlowFx: Phaser.Sound;
   private shootFx: Phaser.Sound;
   private repairFx: Phaser.Sound;
+  private shieldOnFx: { [letter: string]: Phaser.Sound } = {};
+
+  // Used for sounds
+  private currentShieldColors: Color[];
 
   constructor(game: Game, x: number, y: number) {
     super(game);
@@ -64,6 +69,9 @@ export default class PlayerShip extends Phaser.Group {
     this.moveSlowFx = this.game.add.audio('move_slow');
     this.moveFastFx = this.game.add.audio('move_fast');
     this.repairFx = this.game.add.audio('repairs');
+    COLORS.map(colorNameToLetter).map(letter => {
+      this.shieldOnFx[letter] = this.game.add.audio(`shield_on_${letter}`);
+    });
 
     // Repairs
     this.repairPercentagePerSecond = 0;
@@ -248,6 +256,15 @@ export default class PlayerShip extends Phaser.Group {
     this.shield.animations.play(
       colorsToColorKey(this.game.session.shieldColors),
     );
+    const addedShieldColors = difference(
+      this.game.session.shieldColors,
+      this.currentShieldColors,
+    );
+    addedShieldColors
+      .map(colorNameToLetter)
+      .map(letter => this.shieldOnFx[letter])
+      .forEach(sound => sound.play());
+    this.currentShieldColors = this.game.session.shieldColors;
 
     // Repairs
     const level = this.game.session.repairLevel;
