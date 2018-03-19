@@ -35,7 +35,7 @@ const AssetManifest = {
     'icon-big-thrusters.png',
     'icon-big-repairs.png',
 
-    'icon-mask.png',
+    // 'icon-mask.png',
     'icon-mask-weapons.png',
     'icon-mask-shields.png',
     'icon-mask-thrusters.png',
@@ -63,6 +63,12 @@ const AssetManifest = {
     'instruction-1.png',
     'instruction-2.png',
 
+    // 'map.png',
+    // 'map-icon-player.png',
+
+    // 'boss-ship.png',
+  ],
+  sprites: [
     'id-card-spectra.png',
     'id-card-amber.png',
     'id-card-brick.png',
@@ -70,13 +76,7 @@ const AssetManifest = {
     'id-card-iris.png',
     'id-card-jade.png',
     'id-card-razzmic.png',
-
-    // 'map.png',
-    // 'map-icon-player.png',
-
-    // 'boss-ship.png',
   ],
-  sprites: [],
   audio: [
     'shoot.mp3',
     'move_slow.mp3',

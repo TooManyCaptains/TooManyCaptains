@@ -2,6 +2,7 @@ import { Game } from '../index';
 import { range } from 'lodash';
 import { CardID } from '../../../common/types';
 import { baseStyle } from './Styles';
+import manifest from '../../../common/manifest';
 
 class Instruction extends Phaser.Group {
   public game: Game;
@@ -121,11 +122,16 @@ export default class Lobby extends Phaser.Group {
       this.game.width - highScoreText.width - highScoreTextPadding;
 
     // Cards
-    const paddingBetweenEachCard = 25;
+    const paddingBetweenEachCard = 5;
     const numCards = 7;
     let initialX = 0;
     this.cards = range(numCards).map(i => {
-      const card = new Phaser.Sprite(game, 0, 0, `id_card_${i}`);
+      const entry = manifest.find(m => m.cardID === i);
+      if (!entry) {
+        throw new Error(`card with ID ${i} not found in manifest! Skipping.`);
+      }
+      const firstName = entry.name.split(' ')[0].toLowerCase();
+      const card = new Phaser.Sprite(game, 0, 0, `id-card-${firstName}`);
       card.animations.add('flip', range(31), 30, false);
 
       if (i === 0) {
