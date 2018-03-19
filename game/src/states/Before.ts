@@ -5,60 +5,16 @@ import Lobby from '../interface/Lobby';
 export default class Before extends Phaser.State {
   public game: Game;
 
-  // public preload() {
-  // this.load.spritesheet(
-  //   'id_card_0',
-  //   'assets/sprites/id_card_0_240x600.png',
-  //   240,
-  //   600,
-  // );
-
-  // this.load.spritesheet(
-  //   'id_card_1',
-  //   'assets/sprites/id_card_1_240x600.png',
-  //   240,
-  //   600,
-  // );
-
-  // this.load.spritesheet(
-  //   'id_card_2',
-  //   'assets/sprites/id_card_2_240x600.png',
-  //   240,
-  //   600,
-  // );
-
-  // this.load.spritesheet(
-  //   'id_card_3',
-  //   'assets/sprites/id_card_3_240x600.png',
-  //   240,
-  //   600,
-  // );
-
-  // this.load.spritesheet(
-  //   'id_card_4',
-  //   'assets/sprites/id_card_4_240x600.png',
-  //   240,
-  //   600,
-  // );
-
-  // this.load.spritesheet(
-  //   'id_card_5',
-  //   'assets/sprites/id_card_5_240x600.png',
-  //   240,
-  //   600,
-  // );
-
-  // this.load.spritesheet(
-  //   'id_card_6',
-  //   'assets/sprites/id_card_6_240x600.png',
-  //   240,
-  //   600,
-  // );
-  // }
+  private doors: Doors;
+  private lobby: Lobby;
 
   public create() {
-    this.game.add.existing(new Doors(this.game));
-    (window as any).lobby = this.game.add.existing(new Lobby(this.game));
+    this.doors = new Doors(this.game);
+    this.doors.alpha = 0.7;
+    this.game.add.existing(this.doors);
+
+    this.lobby = new Lobby(this.game);
+    this.game.add.existing(this.lobby);
 
     this.game.session.reset();
     this.game.updateSoundtrack();
@@ -67,11 +23,19 @@ export default class Before extends Phaser.State {
   }
 
   private onFire() {
-    const canStart =
-      this.game.session.captainsInRound.size >= 2 &&
-      this.game.session.cards.has(0);
-    if (canStart) {
-      this.state.start('Main');
+    if (this.game.session.canStartRound) {
+      // Fade out lobby
+      this.game.add
+        .tween(this.lobby)
+        .to({ alpha: 0 }, 300, Phaser.Easing.Linear.None, true);
+
+      // Face in lobby;
+      this.game.add
+        .tween(this.doors)
+        .to({ alpha: 1 }, 300, Phaser.Easing.Linear.None, true)
+        .onComplete.addOnce(() => {
+          this.state.start('Main');
+        });
     }
   }
 }
