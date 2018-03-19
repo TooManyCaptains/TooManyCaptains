@@ -81,7 +81,7 @@ export default class Board extends Phaser.Group {
     // Punish players who are camping
     const y = isPlayerCamping
       ? this.player.y
-      : this.game.physics.arcade.bounds.height * Math.random() + 100;
+      : this.game.physics.arcade.bounds.height * Math.random() + 60;
     const asteroid = new Asteroid(this.game, this.game.width, y);
     this.asteroids.add(asteroid);
     asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
