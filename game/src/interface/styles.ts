@@ -17,4 +17,5 @@ export enum ColorPalette {
   Black = Phaser.Color.BLACK,
   Yellow = 0xf6c92b,
   Blue = 0x42a4ea,
+  Gray = 0xffffff,
 }

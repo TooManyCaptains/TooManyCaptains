@@ -4,16 +4,16 @@ import { CardID } from '../../../common/types';
 import { baseStyle, ColorPalette } from './Styles';
 import manifest from '../../../common/manifest';
 
+const CAPTAINS_NEEDED_TO_START = 2;
+
 class Card extends Phaser.Group {
   public game: Game;
   private card: Phaser.Sprite;
   private placeholder: Phaser.Graphics;
 
-  constructor(
-    game: Phaser.Game,
-    cardID: CardID,
-    placeholderColor = ColorPalette.Blue,
-  ) {
+  private isFlipped = false;
+
+  constructor(game: Phaser.Game, cardID: CardID, placeholderColor: number) {
     super(game);
     const entry = manifest.find(m => m.cardID === cardID);
     if (!entry) {
@@ -26,7 +26,7 @@ class Card extends Phaser.Group {
     this.card = this.game.add.sprite(0, 0, `id-card-${firstName}`, null, this);
     this.card.animations.add('flip', range(61), 120, false);
     this.card.anchor.setTo(0, 0.5);
-    this.card.x = this.game.width;
+    this.card.y = this.game.height;
 
     this.placeholder = this.game.add.graphics(0, -190, this);
     this.placeholder.beginFill(placeholderColor, 0.3);
@@ -50,14 +50,15 @@ class Card extends Phaser.Group {
   }
 
   public flip() {
-    // So other card placeholders won't be drawn above this one when animating
-    this.game.world.bringToTop(this);
-
+    if (this.isFlipped) {
+      return;
+    }
     this.game.add
       .tween(this.card)
-      .to({ x: 0 }, 1500, Phaser.Easing.Cubic.InOut, true)
+      .to({ y: 0 }, 1500, Phaser.Easing.Cubic.InOut, true)
       .onComplete.addOnce(() => {
         this.card.animations.play('flip');
+        this.isFlipped = true;
       });
   }
 }
@@ -80,7 +81,7 @@ class Instruction extends Phaser.Group {
     super(game);
     // Instruction graphic
     this.image = this.game.add.sprite(
-      this.game.world.centerX,
+      this.game.world.centerX - 250,
       this.game.world.centerY - 150,
       imageKey,
       null,
@@ -150,13 +151,13 @@ export default class Lobby extends Phaser.Group {
     super(game);
 
     // Instruction
-    // this.instruction = new Instruction(
-    //   this.game,
-    //   'instruction-0',
-    //   ColorPalette.Yellow,
-    //   'STEP 1',
-    //   'SCAN ENGINEER CARD',
-    // );
+    this.instruction = new Instruction(
+      this.game,
+      'instruction-0',
+      ColorPalette.Yellow,
+      'STEP 1',
+      'SCAN ENGINEER CARD',
+    );
 
     // this.instruction = new Instruction(
     //   this.game,
@@ -166,13 +167,13 @@ export default class Lobby extends Phaser.Group {
     //   'SCAN CAPTAIN CARD',
     // );
 
-    this.instruction = new Instruction(
-      this.game,
-      'instruction-2',
-      0xf2202d,
-      'START',
-      'PRESS RED BUTTON TO START GAME',
-    );
+    // this.instruction = new Instruction(
+    //   this.game,
+    //   'instruction-2',
+    //   0xf2202d,
+    //   'START',
+    //   'PRESS RED BUTTON TO START GAME',
+    // );
 
     this.instruction.x = this.instruction.x;
 
@@ -193,7 +194,13 @@ export default class Lobby extends Phaser.Group {
     const numCards = 7;
     let initialX = 0;
     this.cards = range(numCards).map(i => {
-      const card = new Card(this.game, i as CardID);
+      let placeholderColor = ColorPalette.Gray;
+      if (i === 0) {
+        placeholderColor = ColorPalette.Yellow;
+      } else if (i <= CAPTAINS_NEEDED_TO_START) {
+        placeholderColor = ColorPalette.Blue;
+      }
+      const card = new Card(this.game, i as CardID, placeholderColor);
       if (i === 0) {
         const x =
           paddingBetweenEachCard / 2 +
@@ -218,10 +225,5 @@ export default class Lobby extends Phaser.Group {
 
     // Flip over the captain's card
     this.cards[cardID].flip();
-
-    // If more than 2 captains, show instructions to start game
-    if (this.game.session.cards.size >= 2) {
-      //
-    }
   }
 }
