@@ -134,7 +134,11 @@ export default class Board extends Phaser.Group {
         if (bulletDestroysEnemy) {
           this.spritesToDestroy.add(enemy);
           this.game.session.score += 150;
-          this.createPointsBubble(enemy.position, 150);
+          const position = new Phaser.Point(
+            enemy.position.x - 40,
+            enemy.position.y,
+          );
+          this.createPointsBubble(position, 150);
         } else {
           this.enemyShieldFx.play();
         }
@@ -193,18 +197,28 @@ export default class Board extends Phaser.Group {
   }
 
   private onAsteroidOutOfBounds(asteroid: Asteroid) {
+    const position = new Phaser.Point(
+      this.player.ship.position.x - 90,
+      this.player.ship.position.y - 120,
+    );
+    this.createPointsBubble(position, 250, 28, 'MISS ');
     this.game.session.score += 250;
   }
 
-  private createPointsBubble(position: Phaser.Point, points: number) {
+  private createPointsBubble(
+    position: Phaser.Point,
+    points: number,
+    fontSize = 32,
+    label = '',
+  ) {
     const text = this.game.add.text(
       position.x,
       position.y,
-      `+${points}`,
+      `${label}+${points}`,
       {
         ...baseStyle,
         fill: 'white',
-        fontSize: 32,
+        fontSize,
         stroke: 'black',
         strokeThickness: 6,
       },
@@ -212,7 +226,7 @@ export default class Board extends Phaser.Group {
     );
     this.game.add
       .tween(text)
-      .to({ y: -100, alpha: 0 }, 4000, Phaser.Easing.Cubic.Out, true);
+      .to({ y: -100, alpha: 0 }, 2500, Phaser.Easing.Cubic.InOut, true);
   }
 
   private createExplosion(position: Phaser.Point, scale: number) {

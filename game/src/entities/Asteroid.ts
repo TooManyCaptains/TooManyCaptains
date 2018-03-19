@@ -3,7 +3,7 @@ import { Game } from '../index';
 export default class Asteroid extends Phaser.Sprite {
   public collisionDamage = 35;
   public game: Game;
-  private movementSpeed = 90;
+  private movementSpeed = 400;
 
   constructor(game: Game, x: number, y: number) {
     super(game, x, y, 'asteroid');
