@@ -7,6 +7,7 @@ import {
   Packet,
   CardID,
   DebugFlags,
+  ScorePacket,
 } from '../../common/types';
 import { sortBy } from 'lodash';
 import { seconds, minutes } from './utils';
@@ -116,9 +117,10 @@ export default class Session {
   private _wave: Wave;
   private _waveTimers: number[] = [];
 
-  // Volume
+  // Database-related (readonly)
   private _masterVolume = 1;
   private _musicVolume = 1;
+  private _highScore = 0;
 
   private _debugFlags: DebugFlags;
 
@@ -186,6 +188,10 @@ export default class Session {
       music: this._musicVolume,
       master: this._masterVolume,
     };
+  }
+
+  get highScore() {
+    return this._highScore;
   }
 
   get score(): number {
@@ -266,6 +272,10 @@ export default class Session {
         this.cards.add(packet.cardID);
         this.signals.cards.dispatch(packet.cardID);
       }
+    } else if (packet.kind === 'score') {
+      if (packet.confirmedHighScore) {
+        this._highScore = packet.points;
+      }
     } else if (packet.kind === 'cheat') {
       this.signals.cheat.dispatch(packet.cheat);
       if (packet.cheat.code === 'set_volume') {
@@ -289,11 +299,23 @@ export default class Session {
     }
   }
 
+  private notifyScore() {
+    const packet: ScorePacket = {
+      kind: 'score',
+      points: this.score,
+      confirmedHighScore: false,
+    };
+    this.socket.emit('packet', packet);
+  }
+
   private notifyGameState(state: GameState) {
     const packet: Packet = {
       kind: 'gamestate',
       state,
     };
+    if (state === 'game_over') {
+      this.notifyScore();
+    }
     this.socket.emit('packet', packet);
   }
 }
