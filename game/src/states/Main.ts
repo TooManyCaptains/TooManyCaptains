@@ -10,7 +10,7 @@ import {
   LOW_HEALTH,
 } from '../Session';
 
-import Map from '../interface/Map';
+// import Map from '../interface/Map';
 import { COLORS, colorNameToLetter } from '../utils';
 import { Cheat } from '../../../common/cheats';
 import { times } from 'lodash';
@@ -127,9 +127,10 @@ export default class Main extends Phaser.State {
     // tslint:disable-next-line:no-unused-expression
     new HUD(this.game, 0, this.board.bottom);
 
-    // Minimap
-    // tslint:disable-next-line:no-unused-expression
-    new Map(this.game);
+    // No minimap for now.
+    // // Minimap
+    // // tslint:disable-next-line:no-unused-expression
+    // new Map(this.game);
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20;
