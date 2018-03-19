@@ -5,7 +5,7 @@ import { Game } from '../index';
 import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
 import { randomColor } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
-import { ColorPalette } from '../interface/Styles';
+import { ColorPalette, baseStyle } from '../interface/Styles';
 import Boss from './Boss';
 
 export default class Board extends Phaser.Group {
@@ -104,7 +104,7 @@ export default class Board extends Phaser.Group {
           this.game.session.health -= bullet.strength;
           this.damagedFx.play();
           this.game.camera.shake(0.005, 400);
-          this.expolosion(bullet.x, bullet.y, 0.5);
+          this.createExplosion(bullet.position, 0.5);
         } else {
           this.game.session.health -= bullet.strength * 0.05;
           this.player.shieldTint();
@@ -122,13 +122,14 @@ export default class Board extends Phaser.Group {
       this.enemies,
       this.player.weapon,
       (enemy: Enemy, playerBullet: PlayerBullet) => {
-        const playerBulletCanHurtEnemy = playerBullet.color.includes(
+        const bulletDestroysEnemy = playerBullet.color.includes(
           enemy.shipColor,
         );
         // Bullet hits
-        if (playerBulletCanHurtEnemy) {
+        if (bulletDestroysEnemy) {
           this.spritesToDestroy.add(enemy);
           this.game.session.score += 150;
+          this.createPointsBubble(enemy.position, 150);
         } else {
           this.shieldFx.play();
         }
@@ -151,7 +152,7 @@ export default class Board extends Phaser.Group {
       this.asteroids,
       this.player.ship,
       (playerShip: Phaser.Sprite, asteroid: Asteroid) => {
-        this.expolosion(asteroid.x, asteroid.y, 1.0);
+        this.createExplosion(asteroid.position, 1.0);
         this.spritesToDestroy.add(asteroid);
         this.game.camera.shake(0.02, 800);
         this.game.session.health -= asteroid.collisionDamage;
@@ -165,8 +166,7 @@ export default class Board extends Phaser.Group {
 
       (asteroid: Asteroid, playerBullet: PlayerBullet) => {
         this.movingExplosion(
-          playerBullet.x,
-          playerBullet.y,
+          playerBullet.position,
           (asteroid.body as Phaser.Physics.Arcade.Body).velocity,
           0.4,
         );
@@ -191,8 +191,31 @@ export default class Board extends Phaser.Group {
     this.game.session.score += 250;
   }
 
-  private expolosion(x: number, y: number, scale: number) {
-    const explosion = this.game.add.sprite(x, y, 'explosion-yellow');
+  private createPointsBubble(position: Phaser.Point, points: number) {
+    const text = this.game.add.text(
+      position.x,
+      position.y,
+      `+${points}`,
+      {
+        ...baseStyle,
+        fill: 'white',
+        fontSize: 32,
+        stroke: 'black',
+        strokeThickness: 6,
+      },
+      this,
+    );
+    this.game.add
+      .tween(text)
+      .to({ y: -100, alpha: 0 }, 4000, Phaser.Easing.Cubic.Out, true);
+  }
+
+  private createExplosion(position: Phaser.Point, scale: number) {
+    const explosion = this.game.add.sprite(
+      position.x,
+      position.y,
+      'explosion-yellow',
+    );
     explosion.scale.setTo(scale, scale);
     explosion.anchor.setTo(0.75, 0.5);
     explosion.animations.add('explosion');
@@ -201,12 +224,15 @@ export default class Board extends Phaser.Group {
   }
 
   private movingExplosion(
-    x: number,
-    y: number,
+    position: Phaser.Point,
     velocity: Phaser.Point,
     scale: number,
   ) {
-    const explosion = this.game.add.sprite(x, y, 'explosion-yellow');
+    const explosion = this.game.add.sprite(
+      position.x,
+      position.y,
+      'explosion-yellow',
+    );
     this.game.physics.enable(explosion, Phaser.Physics.ARCADE);
     (explosion.body as Phaser.Physics.Arcade.Body).velocity = velocity;
     explosion.scale.setTo(scale, scale);
