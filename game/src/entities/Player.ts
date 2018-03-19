@@ -134,11 +134,8 @@ export default class PlayerShip extends Phaser.Group {
 
     this.game.session.signals.subsystems.add(this.onSubsystemsChanged, this);
     this.game.session.signals.fire.add(this.fireWeapon, this);
-    this.game.session.signals.move.add(this.onMove, this);
+    this.game.session.signals.move.add(this.updateThrusters, this);
     this.game.session.signals.health.add(this.onHealthChanged, this);
-
-    this.onSubsystemsChanged();
-    this.onHealthChanged();
   }
 
   get x() {
@@ -168,7 +165,8 @@ export default class PlayerShip extends Phaser.Group {
     setTimeout(() => (this.shield.tint = ColorPalette.White), 50);
   }
 
-  private onMove(direction: ThrusterDirection) {
+  private updateThrusters() {
+    const direction = this.game.session.thrusterDirection;
     const level = this.game.session.thrusterLevel;
     const movementSpeed = [0, 25, 100][level];
     const animationSpeed = [0, 10, 30][level];
@@ -185,8 +183,8 @@ export default class PlayerShip extends Phaser.Group {
     }
 
     this.thruster.visible = true;
-    this.thruster.animations.play(direction);
-    this.thruster.animations.getAnimation(direction).speed = animationSpeed;
+    const animation = this.thruster.animations.play(direction);
+    animation.speed = animationSpeed;
 
     if (direction === ThrusterDirection.Up) {
       this.ship.body.velocity.y = -movementSpeed;
@@ -196,8 +194,10 @@ export default class PlayerShip extends Phaser.Group {
 
     if (level === ThrusterLevel.Slow) {
       this.moveFastFx.play();
+      this.moveSlowFx.stop();
     } else if (level === ThrusterLevel.Fast) {
       this.moveSlowFx.play();
+      this.moveFastFx.stop();
     }
   }
 
@@ -214,7 +214,8 @@ export default class PlayerShip extends Phaser.Group {
   }
 
   private onSubsystemsChanged() {
-    // Thrusters have no visible change when enabled
+    // Thrusters
+    this.updateThrusters();
 
     // Weapons
     this.weaponLightTop.visible = false;

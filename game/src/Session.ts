@@ -97,6 +97,7 @@ export default class Session {
 
   // Thrusters
   public thrusterLevel: ThrusterLevel;
+  public thrusterDirection: ThrusterDirection;
 
   // Cards
   public cards: Set<CardID>;
@@ -149,6 +150,7 @@ export default class Session {
     this.wave = WAVES[0];
     this._waveTimers = [];
     this.health = this.maxHealth;
+    this.thrusterDirection = ThrusterDirection.Stopped;
   }
 
   set configurations(configurations: WiringConfiguration[]) {
@@ -251,6 +253,7 @@ export default class Session {
         }
         return ThrusterDirection.Down;
       })();
+      this.thrusterDirection = thrusterDirection;
       this.signals.move.dispatch(thrusterDirection);
     } else if (packet.kind === 'fire') {
       // ignore button-down events, only care about button-up events
