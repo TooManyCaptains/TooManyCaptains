@@ -6,39 +6,28 @@ import manifest from '../../../common/manifest';
 
 const CAPTAINS_NEEDED_TO_START = 2;
 
+class Placeholder extends Phaser.Graphics {
+  constructor(lobby: Lobby, color: number) {
+    super(lobby.game, 0, 0);
+
+    this.beginFill(color, 0.3);
+    const radius = 20;
+    this.drawRoundedRect(radius / 2, 0, 260 - radius, 380, radius);
+  }
+}
+
 class Card extends Phaser.Group {
   public game: Game;
-  private card: Phaser.Sprite;
-  private placeholder: Phaser.Graphics;
+  public isFlipped = false;
+  public card: Phaser.Sprite;
 
-  private isFlipped = false;
-
-  constructor(lobby: Lobby, cardID: CardID, placeholderColor: number) {
+  constructor(lobby: Lobby) {
     super(lobby.game, lobby);
-    const entry = manifest.find(m => m.cardID === cardID);
-    if (!entry) {
-      throw new Error(
-        `card with ID ${cardID} not found in manifest! Skipping.`,
-      );
-    }
 
-    const firstName = entry.name.split(' ')[0].toLowerCase();
-    this.card = this.game.add.sprite(0, 0, `id-card-${firstName}`, null, this);
+    this.card = this.game.add.sprite(0, 0, 'id-card-razzmic', null, this);
     this.card.animations.add('flip', range(61), 120, false);
     this.card.anchor.setTo(0, 0.5);
     this.card.y = this.game.height;
-
-    this.placeholder = this.game.add.graphics(0, -190, this);
-    this.placeholder.beginFill(placeholderColor, 0.3);
-    const radius = 20;
-    this.placeholder.drawRoundedRect(
-      radius / 2,
-      0,
-      this.card.width - radius,
-      this.card.height - 220,
-      radius,
-    );
-    this.card.bringToTop();
   }
 
   get width() {
@@ -49,19 +38,34 @@ class Card extends Phaser.Group {
     return this.card.height;
   }
 
-  public flip(onComplete?: () => void) {
-    if (this.isFlipped) {
-      return;
+  public flipAs(
+    cardID: CardID,
+    onSlideComplete?: () => void,
+    onFlipComplete?: () => void,
+  ) {
+    this.game.world.bringToTop(this);
+    this.isFlipped = true;
+    // Set card identity
+    const entry = manifest.find(m => m.cardID === cardID);
+    if (!entry) {
+      throw new Error(
+        `card with ID ${cardID} not found in manifest! Skipping.`,
+      );
     }
+    const firstName = entry.name.split(' ')[0].toLowerCase();
+    this.card.loadTexture(`id-card-${firstName}`);
+
     this.game.add
       .tween(this.card)
-      .to({ y: 0 }, 1500, Phaser.Easing.Cubic.InOut, true)
+      .to({ y: 0 }, 1200, Phaser.Easing.Cubic.InOut, true)
       .onComplete.addOnce(() => {
         const animation = this.card.animations.play('flip');
-        if (onComplete) {
-          animation.onComplete.addOnce(onComplete);
+        if (onSlideComplete) {
+          onSlideComplete();
         }
-        this.isFlipped = true;
+        if (onFlipComplete) {
+          animation.onComplete.addOnce(onFlipComplete);
+        }
       });
   }
 }
@@ -158,9 +162,11 @@ class Instruction extends Phaser.Group {
 export default class Lobby extends Phaser.Group {
   public game: Game;
 
-  private cards: Card[];
-  private captainJoinedFx: Phaser.Sound;
+  private cards: Card[] = [];
+  private placeholders: Placeholder[] = [];
   private instruction: Instruction;
+  private rightInstruction: Instruction;
+  private instructionsSplit = false;
 
   constructor(game: Game) {
     super(game);
@@ -185,32 +191,46 @@ export default class Lobby extends Phaser.Group {
     highScoreText.x =
       this.game.width - highScoreText.width - highScoreTextPadding;
 
-    // Cards
+    // Cards and placeholders
     const paddingBetweenEachCard = 5;
     const numCards = 7;
     let initialX = 0;
-    this.cards = range(numCards).map(i => {
-      let placeholderColor = ColorPalette.Gray;
+    range(numCards).forEach(i => {
+      let x = 0;
+      const y = this.game.world.centerY + 325;
+
+      // Create card
+      const card = new Card(this);
+
+      // Calculate position
       if (i === 0) {
-        placeholderColor = ColorPalette.Yellow;
-      } else if (i <= 2) {
-        placeholderColor = ColorPalette.Blue;
-      }
-      const card = new Card(this, i as CardID, placeholderColor);
-      if (i === 0) {
-        const x =
+        x =
           paddingBetweenEachCard / 2 +
           (game.width - (card.width + paddingBetweenEachCard) * numCards) / 2;
-        card.x = x;
         initialX = x;
       } else {
-        card.x = initialX + (card.width + paddingBetweenEachCard) * i;
+        x = initialX + (card.width + paddingBetweenEachCard) * i;
       }
-      card.y = this.game.world.centerY + 325;
-      return card;
-    });
 
-    this.captainJoinedFx = this.game.add.audio('scan_success');
+      // Placeholder
+      let placeHolder: Placeholder;
+      if (i === 0) {
+        placeHolder = new Placeholder(this, ColorPalette.Yellow);
+      } else if (i <= 2) {
+        placeHolder = new Placeholder(this, ColorPalette.Blue);
+      } else {
+        placeHolder = new Placeholder(this, ColorPalette.Gray);
+      }
+      placeHolder.x = x;
+      placeHolder.y = y - 190;
+      this.placeholders.push(placeHolder);
+
+      // Set card position and draw on top of placeholder
+      card.x = x;
+      card.y = y;
+      this.cards.push(card);
+      this.add(placeHolder, undefined, 0);
+    });
 
     this.game.session.signals.cards.add(this.onCaptainJoined, this);
   }
@@ -229,48 +249,76 @@ export default class Lobby extends Phaser.Group {
         'SCAN CAPTAIN CARD',
       );
     } else if (this.game.session.canStartRound) {
-      // Create new instructions
-      this.instruction.destroy();
-      this.instruction = new Instruction(
-        this,
-        'instruction-1',
-        ColorPalette.Blue,
-        'ADD',
-        'CONTINUE SCANNING TO ADD CAPTAINS',
-      );
-      const rightInstruction = new Instruction(
-        this,
-        'instruction-2',
-        0xf2202d,
-        'START',
-        'PRESS RED BUTTON TO START GAME',
-      );
-      rightInstruction.alpha = 0;
-
-      // Scale (and alpha for right instruction)
-      this.game.add
-        .tween(rightInstruction)
-        .to(
-          { x: 650, y: 50, alpha: 1 },
-          500,
-          Phaser.Easing.Quadratic.InOut,
-          true,
+      if (this.instructionsSplit) {
+        if (this.game.session.captainsInRound.size === 6) {
+          this.game.add
+            .tween(this.instruction)
+            .to({ alpha: 0 }, 500, Phaser.Easing.Quadratic.InOut, true);
+          this.game.add
+            .tween(this.rightInstruction)
+            .to({ x: 50 }, 500, Phaser.Easing.Quadratic.InOut, true);
+        }
+      } else {
+        this.instructionsSplit = true;
+        // Create new instructions
+        this.instruction.destroy();
+        this.instruction = new Instruction(
+          this,
+          'instruction-1',
+          ColorPalette.Blue,
+          'ADD',
+          'CONTINUE SCANNING TO ADD CAPTAINS',
         );
-      this.game.add
-        .tween(this.instruction)
-        .to({ x: -350, y: 50 }, 500, Phaser.Easing.Quadratic.InOut, true);
+        this.rightInstruction = new Instruction(
+          this,
+          'instruction-2',
+          0xf2202d,
+          'START',
+          'PRESS RED BUTTON TO START GAME',
+        );
+        this.rightInstruction.alpha = 0;
 
-      // Shrink
-      this.instruction.shrink(0.9);
-      rightInstruction.shrink(0.9);
+        // Scale (and alpha for right instruction)
+        this.game.add
+          .tween(this.rightInstruction)
+          .to(
+            { x: 650, y: 50, alpha: 1 },
+            500,
+            Phaser.Easing.Quadratic.InOut,
+            true,
+          );
+        this.game.add
+          .tween(this.instruction)
+          .to({ x: -350, y: 50 }, 500, Phaser.Easing.Quadratic.InOut, true);
+
+        // Shrink
+        this.instruction.shrink(0.9);
+        this.rightInstruction.shrink(0.9);
+      }
     }
   }
 
   private onCaptainJoined(cardID: CardID) {
-    // Play a sound
-    this.captainJoinedFx.play();
+    // Play sound
+    this.game.sound.add('scan_success').play();
 
     // Flip over the captain's card
-    this.cards[cardID].flip(this.updateInstructions.bind(this));
+    const card = this.cards.find(c => c.isFlipped === false);
+    if (card) {
+      const index = this.cards.indexOf(card);
+      const onSlideComplete = () => {
+        this.placeholders[index].visible = false;
+      };
+      const onFlipComplete = () => {
+        console.log('flip complete for ', index);
+        this.updateInstructions();
+        if (index === 0) {
+          card.destroy();
+        }
+      };
+      card.flipAs(cardID, onSlideComplete, onFlipComplete);
+    } else {
+      console.error('too many captains!');
+    }
   }
 }
