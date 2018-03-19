@@ -55,16 +55,16 @@ class PanelController {
     poll() {
         const newConnections = this.getConnections();
         // console.log(newConnections);
+        // Update panels (including which button lights should be on!)
+        this.panels.forEach(panel => {
+            panel.connections = newConnections.filter(conn => conn.panel.subsystem === panel.subsystem);
+            panel.update(this.getGameState());
+        });
         // If there were no new/changed connections, just return early
         if (_.isEqual(newConnections, this.connections)) {
             return;
         }
         // console.log(_.difference(newConnections, this.connections));
-        // Update panels
-        this.panels.forEach(panel => {
-            panel.connections = newConnections.filter(conn => conn.panel.subsystem === panel.subsystem);
-            panel.update(this.getGameState());
-        });
         // Send
         this.sendConnections();
         this.connections = newConnections;
@@ -93,7 +93,7 @@ class PanelController {
         const panel = this.panels.find(({ subsystem, pins }) => {
             return pins.some((p, i) => {
                 const wireIsConnectedToPin = Boolean(rpio.read(p));
-                console.log(p, wireIsConnectedToPin);
+                // console.log(p, wireIsConnectedToPin);
                 if (wireIsConnectedToPin) {
                     position = i;
                 }

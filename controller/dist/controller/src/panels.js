@@ -3,6 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const rpio = require("rpio");
 const lodash_1 = require("lodash");
 const types_1 = require("./types");
+var ButtonLightState;
+(function (ButtonLightState) {
+    ButtonLightState[ButtonLightState["Off"] = 0] = "Off";
+    ButtonLightState[ButtonLightState["On"] = 1] = "On";
+    ButtonLightState[ButtonLightState["Blinking"] = 2] = "Blinking";
+})(ButtonLightState || (ButtonLightState = {}));
 class WeaponsPanel extends types_1.Panel {
     constructor() {
         super(...arguments);
@@ -10,11 +16,26 @@ class WeaponsPanel extends types_1.Panel {
         this.pins = [40, 36, 38]; // Physically wired in this order. Oops.
         this.lightIndicies = lodash_1.range(6);
         this.buttonLightPin = 32;
+        this.buttonLightState = ButtonLightState.Off;
+        this.blinkTimer = null;
+        this.isBlinkHigh = true;
+        this.blinkRate = 750; // milliseconds
     }
     update(gameState) {
-        // Update button light
-        const isButtonLit = gameState === 'in_game' ? this.connections.length > 0 : true;
-        rpio.write(this.buttonLightPin, isButtonLit ? rpio.HIGH : rpio.LOW);
+        if (gameState === 'in_game') {
+            // In game, light button if wires are plugged into the panel
+            if (this.connections.length > 0) {
+                this.buttonLightState = ButtonLightState.On;
+            }
+            else {
+                this.buttonLightState = ButtonLightState.Off;
+            }
+        }
+        else {
+            // Otherwise, blink the button light
+            this.buttonLightState = ButtonLightState.Blinking;
+        }
+        this.updateLightState();
         // Set LED lights for later batch-update
         this.lights = [];
         const pixelsPerPosition = Math.floor(this.lightIndicies.length / this.pins.length);
@@ -26,6 +47,22 @@ class WeaponsPanel extends types_1.Panel {
                 });
             });
         });
+    }
+    updateLightState() {
+        if (this.buttonLightState === ButtonLightState.Blinking) {
+            if (!this.blinkTimer) {
+                this.blinkTimer = setInterval(this.onBlinkTimer.bind(this), this.blinkRate);
+            }
+        }
+        else {
+            clearInterval(this.blinkTimer);
+            this.blinkTimer = null;
+            rpio.write(this.buttonLightPin, this.buttonLightState === ButtonLightState.On ? rpio.HIGH : rpio.LOW);
+        }
+    }
+    onBlinkTimer() {
+        rpio.write(this.buttonLightPin, this.isBlinkHigh ? rpio.HIGH : rpio.LOW);
+        this.isBlinkHigh = !this.isBlinkHigh;
     }
 }
 class ThrustersPanel extends types_1.Panel {

@@ -3,17 +3,37 @@ import { range } from 'lodash';
 import { Panel, LightColor } from './types';
 import { GameState } from '../../common/types';
 
+enum ButtonLightState {
+  Off,
+  On,
+  Blinking,
+}
+
 class WeaponsPanel extends Panel {
   public readonly subsystem = 'weapons';
   public readonly pins = [40, 36, 38]; // Physically wired in this order. Oops.
   public readonly lightIndicies = range(6);
   public readonly buttonLightPin = 32;
 
+  private buttonLightState: ButtonLightState = ButtonLightState.Off;
+  private blinkTimer: NodeJS.Timer | null = null;
+  private isBlinkHigh: boolean = true;
+  private readonly blinkRate = 750; // milliseconds
+
   public update(gameState: GameState): void {
-    // Update button light
-    const isButtonLit =
-      gameState === 'in_game' ? this.connections.length > 0 : true;
-    rpio.write(this.buttonLightPin, isButtonLit ? rpio.HIGH : rpio.LOW);
+    if (gameState === 'in_game') {
+      // In game, light button if wires are plugged into the panel
+      if (this.connections.length > 0) {
+        this.buttonLightState = ButtonLightState.On;
+      } else {
+        this.buttonLightState = ButtonLightState.Off;
+      }
+    } else {
+      // Otherwise, blink the button light
+      this.buttonLightState = ButtonLightState.Blinking;
+    }
+
+    this.updateLightState();
 
     // Set LED lights for later batch-update
     this.lights = [];
@@ -28,6 +48,29 @@ class WeaponsPanel extends Panel {
         });
       });
     });
+  }
+
+  private updateLightState() {
+    if (this.buttonLightState === ButtonLightState.Blinking) {
+      if (!this.blinkTimer) {
+        this.blinkTimer = setInterval(
+          this.onBlinkTimer.bind(this),
+          this.blinkRate,
+        );
+      }
+    } else {
+      clearInterval(this.blinkTimer!);
+      this.blinkTimer = null;
+      rpio.write(
+        this.buttonLightPin,
+        this.buttonLightState === ButtonLightState.On ? rpio.HIGH : rpio.LOW,
+      );
+    }
+  }
+
+  private onBlinkTimer() {
+    rpio.write(this.buttonLightPin, this.isBlinkHigh ? rpio.HIGH : rpio.LOW);
+    this.isBlinkHigh = !this.isBlinkHigh;
   }
 }
 
