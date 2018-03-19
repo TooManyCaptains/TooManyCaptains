@@ -66,8 +66,11 @@ export default class PlayerShip extends Phaser.Group {
 
     // Sound effects
     this.shootFx = this.game.add.audio('shoot');
+    this.shootFx.volume = 0.7;
     this.moveSlowFx = this.game.add.audio('move_slow');
     this.moveFastFx = this.game.add.audio('move_fast');
+    this.moveFastFx.volume = 0.7;
+    this.moveSlowFx.volume = 0.7;
     this.repairFx = this.game.add.audio('repairs');
     COLORS.map(colorNameToLetter).map(letter => {
       this.shieldOnFx[letter] = this.game.add.audio(`shield_on_${letter}`);
