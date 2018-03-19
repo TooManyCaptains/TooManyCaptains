@@ -274,8 +274,8 @@ class CaptainsLog extends Phaser.Group {
     Array.from(captains).forEach((cardID, i) => {
       const entry = new CaptainEntry(this.game, cardID as CaptainCardID, i);
       const rightSide = i % 2 === 1;
-      entry.x = rightSide ? 300 : 50;
-      entry.y = 80 + 90 * Math.floor(i / 2);
+      entry.x = rightSide ? 310 : 40;
+      entry.y = 95 + 90 * Math.floor(i / 2);
       this.add(entry);
       this.entries.push(entry);
     });

@@ -147,6 +147,7 @@ export default class Session {
     this.repairLevel = RepairLevel.Off;
     this.thrusterLevel = ThrusterLevel.Off;
     this.shieldColors = [];
+    // this.cards = new Set([0, 1, 2, 3, 5, 6, 4] as CardID[]);
     this.cards = new Set();
     this.weaponColorPositions = [];
     this.score = 0;
