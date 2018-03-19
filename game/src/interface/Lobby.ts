@@ -1,8 +1,66 @@
 import { Game } from '../index';
 import { range } from 'lodash';
 import { CardID } from '../../../common/types';
-import { baseStyle } from './Styles';
+import { baseStyle, ColorPalette } from './Styles';
 import manifest from '../../../common/manifest';
+
+class Card extends Phaser.Group {
+  public game: Game;
+  private card: Phaser.Sprite;
+  private placeholder: Phaser.Graphics;
+
+  constructor(
+    game: Phaser.Game,
+    cardID: CardID,
+    placeholderColor = ColorPalette.Blue,
+  ) {
+    super(game);
+    const entry = manifest.find(m => m.cardID === cardID);
+    if (!entry) {
+      throw new Error(
+        `card with ID ${cardID} not found in manifest! Skipping.`,
+      );
+    }
+
+    const firstName = entry.name.split(' ')[0].toLowerCase();
+    this.card = this.game.add.sprite(0, 0, `id-card-${firstName}`, null, this);
+    this.card.animations.add('flip', range(61), 120, false);
+    this.card.anchor.setTo(0, 0.5);
+    this.card.x = this.game.width;
+
+    this.placeholder = this.game.add.graphics(0, -190, this);
+    this.placeholder.beginFill(placeholderColor, 0.3);
+    const radius = 20;
+    this.placeholder.drawRoundedRect(
+      radius / 2,
+      0,
+      this.card.width - radius,
+      this.card.height - 220,
+      radius,
+    );
+    this.card.bringToTop();
+  }
+
+  get width() {
+    return this.card.width;
+  }
+
+  get height() {
+    return this.card.height;
+  }
+
+  public flip() {
+    // So other card placeholders won't be drawn above this one when animating
+    this.game.world.bringToTop(this);
+
+    this.game.add
+      .tween(this.card)
+      .to({ x: 0 }, 1500, Phaser.Easing.Cubic.InOut, true)
+      .onComplete.addOnce(() => {
+        this.card.animations.play('flip');
+      });
+  }
+}
 
 class Instruction extends Phaser.Group {
   public game: Game;
@@ -29,6 +87,15 @@ class Instruction extends Phaser.Group {
       this,
     );
     this.image.anchor.setTo(0.5, 0.5);
+    const mask = this.game.add.graphics(0, 0, this);
+    mask.drawRoundedRect(
+      this.image.x - this.image.width / 2,
+      this.image.y - this.image.height / 2,
+      this.image.width,
+      this.image.height,
+      15,
+    );
+    this.image.mask = mask;
 
     const radius = 15;
     const fontSize = 60;
@@ -75,7 +142,7 @@ class Instruction extends Phaser.Group {
 export default class Lobby extends Phaser.Group {
   public game: Game;
 
-  private cards: Phaser.Sprite[];
+  private cards: Card[];
   private captainJoinedFx: Phaser.Sound;
   private instruction: Instruction;
 
@@ -126,25 +193,17 @@ export default class Lobby extends Phaser.Group {
     const numCards = 7;
     let initialX = 0;
     this.cards = range(numCards).map(i => {
-      const entry = manifest.find(m => m.cardID === i);
-      if (!entry) {
-        throw new Error(`card with ID ${i} not found in manifest! Skipping.`);
-      }
-      const firstName = entry.name.split(' ')[0].toLowerCase();
-      const card = new Phaser.Sprite(game, 0, 0, `id-card-${firstName}`);
-      card.animations.add('flip', range(31), 30, false);
-
+      const card = new Card(this.game, i as CardID);
       if (i === 0) {
-        card.x =
+        const x =
           paddingBetweenEachCard / 2 +
           (game.width - (card.width + paddingBetweenEachCard) * numCards) / 2;
-        initialX = card.x;
+        card.x = x;
+        initialX = x;
       } else {
         card.x = initialX + (card.width + paddingBetweenEachCard) * i;
       }
       card.y = this.game.world.centerY + 325;
-      card.anchor.setTo(0, 0.5);
-      this.add(card);
       return card;
     });
 
@@ -158,7 +217,7 @@ export default class Lobby extends Phaser.Group {
     this.captainJoinedFx.play();
 
     // Flip over the captain's card
-    this.cards[cardID].animations.play('flip');
+    this.cards[cardID].flip();
 
     // If more than 2 captains, show instructions to start game
     if (this.game.session.cards.size >= 2) {
