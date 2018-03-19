@@ -75,7 +75,9 @@ const AssetManifest = {
     'id-card-hickory.png',
     'id-card-iris.png',
     'id-card-jade.png',
-    'id-card-razzmic.png'
+    'id-card-razzmic.png',
+
+    'id-card-spectra-static.png'
 
     // 'map.png',
     // 'map-icon-player.png',
