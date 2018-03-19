@@ -9,7 +9,7 @@ import { LightController } from './LightController';
 import { GameState, Packet } from '../../common/types';
 
 (function main() {
-  let gameState: GameState = 'wait_for_players';
+  let gameState: GameState = 'wait_for_cards';
 
   function onPacket(packet: Packet) {
     if (packet.kind === 'gamestate') {
@@ -58,8 +58,8 @@ import { GameState, Packet } from '../../common/types';
   // Update lights (all at once, since they are daisy-chained via PWM)
   function updatePanelLights() {
     let lights: Light[] = [];
-    if (gameState === 'wait_for_players') {
-      lightController.startFlashingLights(LightColor.green, 6, 100000);
+    if (gameState === 'wait_for_start') {
+      lightController.startFlashingLights(LightColor.green, undefined, 2000);
     } else if (gameState === 'game_over') {
       lightController.startFlashingLights(LightColor.red);
     } else if (gameState === 'in_game') {

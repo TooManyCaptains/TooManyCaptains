@@ -8,6 +8,7 @@ import {
   CardID,
   DebugFlags,
   ScorePacket,
+  CaptainCardID,
 } from '../../common/types';
 import { sortBy } from 'lodash';
 import { seconds, minutes } from './utils';
@@ -142,7 +143,7 @@ export default class Session {
   }
 
   public reset() {
-    this.state = 'wait_for_players';
+    this.state = 'wait_for_cards';
     this.repairLevel = RepairLevel.Off;
     this.thrusterLevel = ThrusterLevel.Off;
     this.shieldColors = [];
@@ -171,12 +172,16 @@ export default class Session {
     this.signals.subsystems.dispatch();
   }
 
+  get canStartRound(): boolean {
+    return this.captainsInRound.size >= 2 && this.cards.has(0);
+  }
+
   get captainsInRound() {
     const justCaptains = new Set(this.cards);
     if (justCaptains.has(0)) {
       justCaptains.delete(0);
     }
-    return justCaptains;
+    return justCaptains as Set<CaptainCardID>;
   }
 
   get debugFlags() {
@@ -269,8 +274,10 @@ export default class Session {
       this.signals.fire.dispatch(packet.state);
     } else if (packet.kind === 'scan') {
       if (!this.cards.has(packet.cardID)) {
-        this.cards.add(packet.cardID);
-        this.signals.cards.dispatch(packet.cardID);
+        if (packet.cardID === 0 || (this.cards.has(0) && packet.cardID > 0)) {
+          this.cards.add(packet.cardID);
+          this.signals.cards.dispatch(packet.cardID);
+        }
       }
     } else if (packet.kind === 'score') {
       if (packet.confirmedHighScore) {

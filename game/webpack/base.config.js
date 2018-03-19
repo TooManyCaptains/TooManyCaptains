@@ -58,11 +58,8 @@ module.exports = {
         },
       },
       {
-        test: /\.(gif|png|jpe?g|svg)$/i,
-        loader: 'file-loader',
-        options: {
-          name: 'images/[name].[ext]',
-        },
+        test: /\.(png|jpg|gif|svg|pvr|pkm)$/,
+        use: ['file-loader?name=assets/[name].[ext]?[hash]'],
       },
       {
         test: /\.css$/,

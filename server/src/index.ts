@@ -60,7 +60,7 @@ function emitHighScoreFromDatabase(socket: SocketIO.Socket) {
   } as ScorePacket);
 }
 
-let gameState: GameState = 'wait_for_players';
+let gameState: GameState = 'wait_for_cards';
 
 // set CORS headers
 app.use((req, res, next) => {
