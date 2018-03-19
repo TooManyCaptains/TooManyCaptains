@@ -8,6 +8,7 @@ import {
   GameStatePacket,
   Packet,
   CheatPacket,
+  ScorePacket,
 } from '../../common/types';
 import { SetVolumeCheat } from '../../common/cheats';
 const app = express();
@@ -31,7 +32,8 @@ db
 
 // Sends the volumes that have been previously saved to disk
 // via the LowDB database
-function emitVolumesFromDisk(socket: SocketIO.Socket) {
+function emitVolumesFromDatabase(socket: SocketIO.Socket) {
+  console.log('💾  emitting high score packet');
   db
     .get('volume')
     .forEach((volume: number, target: string) => {
@@ -45,6 +47,17 @@ function emitVolumesFromDisk(socket: SocketIO.Socket) {
       } as CheatPacket);
     })
     .value();
+}
+
+// Sends the stored highscore
+function emitHighScoreFromDatabase(socket: SocketIO.Socket) {
+  console.log('💾  emitting volume packets');
+  const points = db.get('highScore').value() as number;
+  socket.emit('packet', {
+    kind: 'score',
+    points,
+    confirmedHighScore: true,
+  } as ScorePacket);
 }
 
 let gameState: GameState = 'wait_for_players';
@@ -62,27 +75,34 @@ app.use((req, res, next) => {
 io.on('connection', socket => {
   console.log('⚡️  connected');
 
-  console.log('emitting gamestate packet');
+  console.log('ℹ️   emitting gamestate packet');
   socket.emit('packet', {
     kind: 'gamestate',
     state: gameState,
   } as GameStatePacket);
 
-  console.log('emitting volume packets');
-  emitVolumesFromDisk(socket);
+  emitVolumesFromDatabase(socket);
+  emitHighScoreFromDatabase(socket);
 
   // Rebroadcast all packets
   socket.on('packet', (packet: Packet) => {
-    // Save game state in memory only
     if (packet.kind === 'gamestate') {
+      // Save game state in memory only
       gameState = packet.state;
-      // Save volume to disk
     } else if (packet.kind === 'cheat' && packet.cheat.code === 'set_volume') {
+      // Save volume to disk
       db.set(`volume.${packet.cheat.target}`, packet.cheat.volume).write();
+    } else if (packet.kind === 'score') {
+      // Save score to disk, if high score
+      const currentHighScore = db.get('highScore').value() as number;
+      if (packet.points > currentHighScore) {
+        db.set('highScore', packet.points).write();
+        emitHighScoreFromDatabase(socket);
+      }
     }
 
     socket.broadcast.emit('packet', packet);
-    console.log(`relaying packet: ${JSON.stringify(packet)}`);
+    console.log(`👂  relaying packet: ${JSON.stringify(packet)}`);
   });
 
   socket.on('disconnect', () => {

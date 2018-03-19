@@ -54,6 +54,12 @@ export interface CheatPacket extends BasePacket {
   cheat: Cheat;
 }
 
+export interface ScorePacket extends BasePacket {
+  readonly kind: 'score';
+  points: number;
+  confirmedHighScore: boolean;
+}
+
 export interface DebugFlags {
   perf: boolean;
   boss: boolean;
@@ -66,4 +72,5 @@ export type Packet =
   | WiringPacket
   | ScanPacket
   | CheatPacket
+  | ScorePacket
   | GameStatePacket;

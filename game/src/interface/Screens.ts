@@ -124,7 +124,7 @@ export class StartScreen extends Phaser.Group {
       game,
       this.game.world.centerX,
       labelTopMargin,
-      'SCAN ID CARD TO BOARD SHIP',
+      `HIGH SCORE: ${this.game.session.highScore}`,
       0,
     );
 
