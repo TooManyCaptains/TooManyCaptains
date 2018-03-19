@@ -63,6 +63,14 @@ const AssetManifest = {
     'instruction-1.png',
     'instruction-2.png',
 
+    'id-card-spectra.png',
+    'id-card-amber.png',
+    'id-card-brick.png',
+    'id-card-hickory.png',
+    'id-card-iris.png',
+    'id-card-jade.png',
+    'id-card-razzmic.png',
+
     // 'map.png',
     // 'map-icon-player.png',
 
