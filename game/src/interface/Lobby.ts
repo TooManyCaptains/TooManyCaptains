@@ -256,7 +256,7 @@ export default class Lobby extends Phaser.Group {
             .to({ alpha: 0 }, 500, Phaser.Easing.Quadratic.InOut, true);
           this.game.add
             .tween(this.rightInstruction)
-            .to({ x: 50 }, 500, Phaser.Easing.Quadratic.InOut, true);
+            .to({ x: 90 }, 500, Phaser.Easing.Quadratic.InOut, true);
         }
       } else {
         this.instructionsSplit = true;
@@ -310,10 +310,11 @@ export default class Lobby extends Phaser.Group {
         this.placeholders[index].visible = false;
       };
       const onFlipComplete = () => {
-        console.log('flip complete for ', index);
         this.updateInstructions();
+        // XXX: Hack! Without this, frame rate drops to 1fps.
+        // Seems to be related to changing the y-position of the card.
         if (index === 0) {
-          card.destroy();
+          card.card.loadTexture('id-card-spectra-static');
         }
       };
       card.flipAs(cardID, onSlideComplete, onFlipComplete);

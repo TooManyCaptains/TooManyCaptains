@@ -73,10 +73,7 @@ const AssetManifest = {
     'instruction-1.png',
     'instruction-2.png',
 
-    // 'map.png',
-    // 'map-icon-player.png',
-
-    // 'boss-ship.png',
+    'id-card-spectra-static.png',
   ],
   sprites: [
     'id-card-spectra.png',
@@ -86,13 +83,6 @@ const AssetManifest = {
     'id-card-iris.png',
     'id-card-jade.png',
     'id-card-razzmic.png',
-
-    'id-card-spectra-static.png',
-
-    // 'map.png',
-    // 'map-icon-player.png',
-
-    // 'boss-ship.png',
   ],
   audio: [
     'shoot.mp3',
