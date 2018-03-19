@@ -14,24 +14,32 @@ import { ColorPalette } from '../interface/Styles';
 
 export default class PlayerShip extends Phaser.Group {
   public game: Game;
+
+  // Sprite components of player
   public ship: Phaser.Sprite;
   public weapon: PlayerWeapon;
-
   private shield: Phaser.Sprite;
   private repair: Phaser.Sprite;
   private thruster: Phaser.Sprite;
   private explosions: Phaser.Group;
+
+  // Repairs
   private repairIntervalMsec: number;
   private repairPercentagePerSecond: number;
+
+  // Weapon
   private nextFire = 0;
   private fireRate = 350;
   private healthBar: HealthBar;
   private weaponLightTop: Phaser.Sprite;
   private weaponLightMiddle: Phaser.Sprite;
   private weaponLightBottom: Phaser.Sprite;
+
+  // Sounds
   private moveFastFx: Phaser.Sound;
   private moveSlowFx: Phaser.Sound;
   private shootFx: Phaser.Sound;
+  private repairFx: Phaser.Sound;
 
   constructor(game: Game, x: number, y: number) {
     super(game);
@@ -55,6 +63,7 @@ export default class PlayerShip extends Phaser.Group {
     this.shootFx = this.game.add.audio('shoot');
     this.moveSlowFx = this.game.add.audio('move_slow');
     this.moveFastFx = this.game.add.audio('move_fast');
+    this.repairFx = this.game.add.audio('repairs');
 
     // Repairs
     this.repairPercentagePerSecond = 0;
@@ -244,8 +253,15 @@ export default class PlayerShip extends Phaser.Group {
     const level = this.game.session.repairLevel;
     const repairSpeedMap = [0, 0.02, 0.0325, 0.05];
     const repairAnimationSpeedMap = [0, 10, 30, 90];
+    const prevRepairLevel = repairSpeedMap.indexOf(
+      this.repairPercentagePerSecond,
+    );
     this.repairPercentagePerSecond = repairSpeedMap[level];
     if (level > 0) {
+      // Only play sound if repair level increased, not if decreased
+      if (level > prevRepairLevel) {
+        this.repairFx.play();
+      }
       this.repair.visible = true;
       this.repair.animations.getAnimation('repairing').speed =
         repairAnimationSpeedMap[level];
