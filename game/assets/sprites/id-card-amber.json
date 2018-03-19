@@ -1,6 +1,6 @@
 {"frames": {
 
-"fliping-card-5_00000.png":
+"fliping-card-2_00000.png":
 {
 	"frame": {"x":0,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -8,7 +8,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00001.png":
+"fliping-card-2_00001.png":
 {
 	"frame": {"x":260,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -16,7 +16,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00002.png":
+"fliping-card-2_00002.png":
 {
 	"frame": {"x":520,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -24,7 +24,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00003.png":
+"fliping-card-2_00003.png":
 {
 	"frame": {"x":780,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -32,7 +32,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00004.png":
+"fliping-card-2_00004.png":
 {
 	"frame": {"x":1040,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -40,7 +40,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00005.png":
+"fliping-card-2_00005.png":
 {
 	"frame": {"x":1300,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -48,7 +48,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00006.png":
+"fliping-card-2_00006.png":
 {
 	"frame": {"x":1560,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -56,7 +56,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00007.png":
+"fliping-card-2_00007.png":
 {
 	"frame": {"x":1820,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -64,7 +64,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00008.png":
+"fliping-card-2_00008.png":
 {
 	"frame": {"x":2080,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -72,7 +72,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00009.png":
+"fliping-card-2_00009.png":
 {
 	"frame": {"x":2340,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -80,7 +80,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00010.png":
+"fliping-card-2_00010.png":
 {
 	"frame": {"x":2600,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -88,7 +88,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00011.png":
+"fliping-card-2_00011.png":
 {
 	"frame": {"x":2860,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -96,7 +96,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00012.png":
+"fliping-card-2_00012.png":
 {
 	"frame": {"x":3120,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -104,7 +104,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00013.png":
+"fliping-card-2_00013.png":
 {
 	"frame": {"x":3380,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -112,7 +112,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00014.png":
+"fliping-card-2_00014.png":
 {
 	"frame": {"x":3640,"y":0,"w":260,"h":600},
 	"rotated": false,
@@ -120,7 +120,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00015.png":
+"fliping-card-2_00015.png":
 {
 	"frame": {"x":0,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -128,7 +128,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00016.png":
+"fliping-card-2_00016.png":
 {
 	"frame": {"x":260,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -136,7 +136,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00017.png":
+"fliping-card-2_00017.png":
 {
 	"frame": {"x":520,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -144,7 +144,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00018.png":
+"fliping-card-2_00018.png":
 {
 	"frame": {"x":780,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -152,7 +152,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00019.png":
+"fliping-card-2_00019.png":
 {
 	"frame": {"x":1040,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -160,7 +160,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00020.png":
+"fliping-card-2_00020.png":
 {
 	"frame": {"x":1300,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -168,7 +168,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00021.png":
+"fliping-card-2_00021.png":
 {
 	"frame": {"x":1560,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -176,7 +176,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00022.png":
+"fliping-card-2_00022.png":
 {
 	"frame": {"x":1820,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -184,7 +184,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00023.png":
+"fliping-card-2_00023.png":
 {
 	"frame": {"x":2080,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -192,7 +192,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00024.png":
+"fliping-card-2_00024.png":
 {
 	"frame": {"x":2340,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -200,7 +200,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00025.png":
+"fliping-card-2_00025.png":
 {
 	"frame": {"x":2600,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -208,7 +208,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00026.png":
+"fliping-card-2_00026.png":
 {
 	"frame": {"x":2860,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -216,7 +216,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00027.png":
+"fliping-card-2_00027.png":
 {
 	"frame": {"x":3120,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -224,7 +224,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00028.png":
+"fliping-card-2_00028.png":
 {
 	"frame": {"x":3380,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -232,7 +232,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00029.png":
+"fliping-card-2_00029.png":
 {
 	"frame": {"x":3640,"y":600,"w":260,"h":600},
 	"rotated": false,
@@ -240,7 +240,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00030.png":
+"fliping-card-2_00030.png":
 {
 	"frame": {"x":0,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -248,7 +248,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00031.png":
+"fliping-card-2_00031.png":
 {
 	"frame": {"x":260,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -256,7 +256,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00032.png":
+"fliping-card-2_00032.png":
 {
 	"frame": {"x":520,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -264,7 +264,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00033.png":
+"fliping-card-2_00033.png":
 {
 	"frame": {"x":780,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -272,7 +272,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00034.png":
+"fliping-card-2_00034.png":
 {
 	"frame": {"x":1040,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -280,7 +280,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00035.png":
+"fliping-card-2_00035.png":
 {
 	"frame": {"x":1300,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -288,7 +288,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00036.png":
+"fliping-card-2_00036.png":
 {
 	"frame": {"x":1560,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -296,7 +296,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00037.png":
+"fliping-card-2_00037.png":
 {
 	"frame": {"x":1820,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -304,7 +304,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00038.png":
+"fliping-card-2_00038.png":
 {
 	"frame": {"x":2080,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -312,7 +312,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00039.png":
+"fliping-card-2_00039.png":
 {
 	"frame": {"x":2340,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -320,7 +320,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00040.png":
+"fliping-card-2_00040.png":
 {
 	"frame": {"x":2600,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -328,7 +328,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00041.png":
+"fliping-card-2_00041.png":
 {
 	"frame": {"x":2860,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -336,7 +336,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00042.png":
+"fliping-card-2_00042.png":
 {
 	"frame": {"x":3120,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -344,7 +344,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00043.png":
+"fliping-card-2_00043.png":
 {
 	"frame": {"x":3380,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -352,7 +352,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00044.png":
+"fliping-card-2_00044.png":
 {
 	"frame": {"x":3640,"y":1200,"w":260,"h":600},
 	"rotated": false,
@@ -360,7 +360,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00045.png":
+"fliping-card-2_00045.png":
 {
 	"frame": {"x":0,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -368,7 +368,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00046.png":
+"fliping-card-2_00046.png":
 {
 	"frame": {"x":260,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -376,7 +376,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00047.png":
+"fliping-card-2_00047.png":
 {
 	"frame": {"x":520,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -384,7 +384,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00048.png":
+"fliping-card-2_00048.png":
 {
 	"frame": {"x":780,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -392,7 +392,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00049.png":
+"fliping-card-2_00049.png":
 {
 	"frame": {"x":1040,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -400,7 +400,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00050.png":
+"fliping-card-2_00050.png":
 {
 	"frame": {"x":1300,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -408,7 +408,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00051.png":
+"fliping-card-2_00051.png":
 {
 	"frame": {"x":1560,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -416,7 +416,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00052.png":
+"fliping-card-2_00052.png":
 {
 	"frame": {"x":1820,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -424,7 +424,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00053.png":
+"fliping-card-2_00053.png":
 {
 	"frame": {"x":2080,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -432,7 +432,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00054.png":
+"fliping-card-2_00054.png":
 {
 	"frame": {"x":2340,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -440,7 +440,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00055.png":
+"fliping-card-2_00055.png":
 {
 	"frame": {"x":2600,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -448,7 +448,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00056.png":
+"fliping-card-2_00056.png":
 {
 	"frame": {"x":2860,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -456,7 +456,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00057.png":
+"fliping-card-2_00057.png":
 {
 	"frame": {"x":3120,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -464,7 +464,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00058.png":
+"fliping-card-2_00058.png":
 {
 	"frame": {"x":3380,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -472,7 +472,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":600},
 	"sourceSize": {"w":260,"h":600}
 },
-"fliping-card-5_00059.png":
+"fliping-card-2_00059.png":
 {
 	"frame": {"x":3640,"y":1800,"w":260,"h":600},
 	"rotated": false,
@@ -483,10 +483,10 @@
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "id_card_5_260x600.png",
+	"image": "id-card-amber.png",
 	"format": "RGBA8888",
 	"size": {"w":3900,"h":2400},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:674d51f11ba1e2ac4de598d837a4d138:ed1d73656faa7271cdf76f5a2f248016:9591df40a61d8da597923679e145ae42$"
+	"smartupdate": "$TexturePacker:SmartUpdate:925988133212b4f809dd07629d85ef2e:f1d0405a2419b13c4423c36a8ba99fd5:e3facab8a22943e5aea5d5a32846bef8$"
 }
 }
