@@ -1,7 +1,7 @@
 import { Game } from '../index';
-import { baseStyle, ColorPalette } from './Styles';
+import { baseStyle } from './Styles';
 import { range } from 'lodash';
-import { CardID } from '../../../common/types';
+import { CaptainCardID } from '../../../common/types';
 
 class BlinkingButtonLabel extends Phaser.Group {
   constructor(game: Game, x: number, y: number, actionText: string = '') {
@@ -44,7 +44,7 @@ class BlinkingLabel extends Phaser.Group {
   ) {
     super(game);
 
-    const color = ColorPalette.Green;
+    const color = 0x32fc39;
     const text = this.game.add.text(x, y, textString, {
       ...baseStyle,
       fill: `#${color.toString(16)}`,
@@ -83,12 +83,21 @@ class BlinkingLabel extends Phaser.Group {
 export class StartScreen extends Phaser.Group {
   public game: Game;
   private cards: Phaser.Sprite[];
+  private addedCaptains: CaptainCardID[] = [];
   private scanCardLabel: BlinkingLabel;
   private startLabel: BlinkingButtonLabel;
   private captainJoinedFx: Phaser.Sound;
 
   constructor(game: Game) {
     super(game);
+
+    // // Title
+    // const title = this.create(
+    //   this.game.world.centerX,
+    //   this.game.height - 200,
+    //   'title',
+    // );
+    // title.anchor.setTo(0.5, 0.5);
 
     const paddingBetweenEachCard = 25;
     const numCards = 7;
@@ -124,16 +133,29 @@ export class StartScreen extends Phaser.Group {
       game,
       this.game.world.centerX,
       labelTopMargin,
-      `HIGH SCORE: ${this.game.session.highScore}`,
+      'SCAN ID CARD TO BOARD SHIP',
       0,
     );
 
     this.add(this.scanCardLabel);
 
-    this.game.session.signals.cards.add(this.onCaptainJoined, this);
+    const blinkTimer = this.game.time.create(true);
+    blinkTimer.loop(50, this.checkForNewCaptains, this);
+    blinkTimer.start();
   }
 
-  private onCaptainJoined(cardID: CardID) {
+  private checkForNewCaptains() {
+    if (this.addedCaptains.length !== this.game.captains.length) {
+      this.game.captains.forEach(captain => {
+        if (!this.addedCaptains.includes(captain)) {
+          this.addedCaptains.push(captain);
+          this.onCaptainJoined(captain);
+        }
+      });
+    }
+  }
+
+  private onCaptainJoined(cardID: CaptainCardID) {
     // Play a sound
     this.captainJoinedFx.play();
 
@@ -141,7 +163,7 @@ export class StartScreen extends Phaser.Group {
     this.cards[cardID].animations.play('flip');
 
     // If more than 2 captains, show instructions to start game
-    if (this.game.session.cards.size >= 2) {
+    if (this.addedCaptains.length >= 2) {
       this.scanCardLabel.destroy();
       // We need to create the button here so that the blink
       // time begins when it first added to the group.
@@ -167,7 +189,7 @@ export class EndScreen extends Phaser.Group {
     // Score
     const x = this.game.world.centerX;
     const y = this.game.world.centerY * 0.5;
-    const text = this.game.add.text(x, y, `SCORE: ${this.game.session.score}`, {
+    const text = this.game.add.text(x, y, `SCORE: ${this.game.score}`, {
       ...baseStyle,
       fontSize: 110,
     });

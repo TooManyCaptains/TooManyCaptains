@@ -10,6 +10,12 @@ const AssetManifest = {
     'door-left.png',
     'door-right.png',
 
+    'marquee-small.png',
+
+    'icon-score.png',
+    'icon-high-score.png',
+    'icon-high-score-green.png',
+
     'enemy_bullet_R.png',
     'enemy_bullet_B.png',
     'enemy_bullet_Y.png',
@@ -25,6 +31,10 @@ const AssetManifest = {
     'shield_R.png',
     'shield_RY.png',
     'shield_Y.png',
+
+    'shield-enemy_B.png',
+    'shield-enemy_R.png',
+    'shield-enemy_Y.png',
 
     'icon-weapons.png',
     'icon-shields.png',
@@ -76,6 +86,13 @@ const AssetManifest = {
     'id-card-iris.png',
     'id-card-jade.png',
     'id-card-razzmic.png',
+
+    'id-card-spectra-static.png',
+
+    // 'map.png',
+    // 'map-icon-player.png',
+
+    // 'boss-ship.png',
   ],
   audio: [
     'shoot.mp3',
