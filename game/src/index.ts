@@ -65,9 +65,7 @@ export class Game extends Phaser.Game {
 
   public updateSoundtrack() {
     let key = '';
-    if (this.session.state === 'wait_for_players') {
-      key = 'music_background';
-    } else if (this.session.state === 'in_game') {
+    if (this.session.state === 'in_game') {
       key = this.session.wave.soundtrack;
     }
     // We're not supposed to be playing anything

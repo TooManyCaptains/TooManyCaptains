@@ -1,6 +1,6 @@
-import { StartScreen } from '../interface/Screens';
 import Doors from '../interface/Doors';
 import { Game } from '../index';
+import Lobby from '../interface/Lobby';
 
 export default class Before extends Phaser.State {
   public game: Game;
@@ -58,7 +58,7 @@ export default class Before extends Phaser.State {
 
   public create() {
     this.game.add.existing(new Doors(this.game));
-    this.game.add.existing(new StartScreen(this.game));
+    this.game.add.existing(new Lobby(this.game));
 
     this.game.session.reset();
     this.game.updateSoundtrack();

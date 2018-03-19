@@ -41,7 +41,7 @@ class App extends React.Component<{}, AppState> {
       activeTab: 'controller',
       isLoading: true,
       socket: io(serverURL),
-      gameState: 'wait_for_players',
+      gameState: 'wait_for_cards',
     };
   }
 

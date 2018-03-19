@@ -142,7 +142,7 @@ export default class Session {
   }
 
   public reset() {
-    this.state = 'wait_for_players';
+    this.state = 'wait_for_cards';
     this.repairLevel = RepairLevel.Off;
     this.thrusterLevel = ThrusterLevel.Off;
     this.shieldColors = [];

@@ -8,7 +8,11 @@ export interface ColorPosition {
 }
 
 export type Subsystem = 'weapons' | 'shields' | 'thrusters' | 'repairs';
-export type GameState = 'wait_for_players' | 'in_game' | 'game_over';
+export type GameState =
+  | 'wait_for_cards'
+  | 'wait_for_start'
+  | 'in_game'
+  | 'game_over';
 export type ButtonState = 'pressed' | 'released';
 export type EngineerCardID = 0;
 export type CaptainCardID = 1 | 2 | 3 | 4 | 5 | 6;

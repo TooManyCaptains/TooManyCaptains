@@ -59,6 +59,10 @@ const AssetManifest = {
     'captain-icon-jade.png',
     'captain-icon-razzmic.png',
 
+    'instruction-0.png',
+    'instruction-1.png',
+    'instruction-2.png',
+
     // 'map.png',
     // 'map-icon-player.png',
 
