@@ -3,7 +3,7 @@ import { Enemy } from '../entities/Enemy';
 import Asteroid from './Asteroid';
 import { Game } from '../index';
 import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
-import { randomColor } from '../utils';
+import { randomColor, COLORS, colorNameToLetter } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
 import { ColorPalette, baseStyle } from '../interface/Styles';
 import Boss from './Boss';
@@ -18,7 +18,8 @@ export default class Board extends Phaser.Group {
   private asteroids: Phaser.Group;
   private collideFx: Phaser.Sound;
   private damagedFx: Phaser.Sound;
-  private shieldFx: Phaser.Sound;
+  private enemyShieldFx: Phaser.Sound;
+  private shieldHitFx: { [letter: string]: Phaser.Sound } = {};
 
   private spritesToDestroy: Set<Phaser.Sprite> = new Set();
 
@@ -31,10 +32,14 @@ export default class Board extends Phaser.Group {
     // this.game.world.setBounds(0, 0, width, height);
     this.game.physics.arcade.setBounds(0, 50, width - 100, height - 75);
 
-    // Sound FX
-    this.shieldFx = this.game.add.audio('shield');
+    // Sounds
+    this.enemyShieldFx = this.game.add.audio('enemy_shield');
+    this.enemyShieldFx.volume = 0.5;
     this.damagedFx = this.game.add.audio('damaged');
     this.collideFx = this.game.add.audio('collide');
+    COLORS.map(colorNameToLetter).map(letter => {
+      this.shieldHitFx[letter] = this.game.add.audio(`shield_hit_${letter}`);
+    });
 
     // Asteroids
     this.asteroids = new Phaser.Group(this.game, undefined, 'asteroids');
@@ -108,7 +113,7 @@ export default class Board extends Phaser.Group {
         } else {
           this.game.session.health -= bullet.strength * 0.05;
           this.player.shieldTint();
-          this.shieldFx.play();
+          this.shieldHitFx[colorNameToLetter(bullet.color)].play();
         }
         bullet.kill();
       },
@@ -131,7 +136,7 @@ export default class Board extends Phaser.Group {
           this.game.session.score += 150;
           this.createPointsBubble(enemy.position, 150);
         } else {
-          this.shieldFx.play();
+          this.enemyShieldFx.play();
         }
         playerBullet.kill();
       },

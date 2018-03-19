@@ -208,35 +208,25 @@ export default class Main extends Phaser.State {
       ];
     }, this);
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.UP)
-      .onDown.add(
-        () => this.game.session.signals.move.dispatch(ThrusterDirection.Up),
-        this,
-      );
+    this.game.input.keyboard.addKey(Phaser.Keyboard.UP).onDown.add(() => {
+      this.game.session.thrusterDirection = ThrusterDirection.Up;
+      this.game.session.signals.move.dispatch(ThrusterDirection.Up);
+    }, this);
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.UP)
-      .onUp.add(
-        () =>
-          this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
-        this,
-      );
+    this.game.input.keyboard.addKey(Phaser.Keyboard.UP).onUp.add(() => {
+      this.game.session.thrusterDirection = ThrusterDirection.Stopped;
+      this.game.session.signals.move.dispatch(ThrusterDirection.Stopped);
+    }, this);
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.DOWN)
-      .onUp.add(
-        () =>
-          this.game.session.signals.move.dispatch(ThrusterDirection.Stopped),
-        this,
-      );
+    this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN).onUp.add(() => {
+      this.game.session.thrusterDirection = ThrusterDirection.Stopped;
+      this.game.session.signals.move.dispatch(ThrusterDirection.Stopped);
+    }, this);
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.DOWN)
-      .onDown.add(
-        () => this.game.session.signals.move.dispatch(ThrusterDirection.Down),
-        this,
-      );
+    this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN).onDown.add(() => {
+      this.game.session.thrusterDirection = ThrusterDirection.Down;
+      this.game.session.signals.move.dispatch(ThrusterDirection.Down);
+    }, this);
 
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.K)

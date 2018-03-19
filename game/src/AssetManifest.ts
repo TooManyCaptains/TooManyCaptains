@@ -2,7 +2,6 @@
 const AssetManifest = {
   images: [
     'title.png',
-    // 'planet.png',
     'background.png',
     'gameover-text.png',
     'red-button.png',
@@ -31,14 +30,12 @@ const AssetManifest = {
     'icon-shields.png',
     'icon-thrusters.png',
     'icon-repairs.png',
-    // new BIG icons -- March 13th
     'icon-big-weapons.png',
     'icon-big-shields.png',
     'icon-big-thrusters.png',
     'icon-big-repairs.png',
 
     'icon-mask.png',
-    // new masks with names of subsystem -- March 13th
     'icon-mask-weapons.png',
     'icon-mask-shields.png',
     'icon-mask-thrusters.png',
@@ -62,10 +59,10 @@ const AssetManifest = {
     'captain-icon-jade.png',
     'captain-icon-razzmic.png',
 
-    'map.png',
-    'map-icon-player.png',
+    // 'map.png',
+    // 'map-icon-player.png',
 
-    'boss-ship.png',
+    // 'boss-ship.png',
   ],
   sprites: [],
   audio: [
@@ -87,7 +84,7 @@ const AssetManifest = {
     'shield_on_B.mp3',
     'shield_on_R.mp3',
     'shield_on_Y.mp3',
-    'wrong_weapon.mp3',
+    'enemy_shield.mp3',
     'repairs.mp3',
     'health_low.mp3',
     'health_very_low.mp3',
