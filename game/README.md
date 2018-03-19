@@ -8,15 +8,19 @@ Our hope is to open source all the hardware and provide detailed instructions on
 
 ## Getting set up
 
-1. Install Node.JS and [yarn](https://yarnpkg.com/en/): `brew install yarn`
+1.  Install Node.JS and [yarn](https://yarnpkg.com/en/): `brew install yarn`
 
-2. Install project dependencies: `yarn install`
+2.  Install project dependencies: `yarn install`
 
 ## Developing locally
 
-1. `yarn hack`
-2. Open http://localhost:3000
+1.  `yarn hack`
+2.  Open http://localhost:3000
 
 ## Deploying to http://play.toomanycaptains.com
 
-1. `yarn deploy`
+1.  `yarn deploy`
+
+### Setting up the controller
+
+1.  `sudo dd bs=1m if=starship_controller_mar_18_2018.img of=/dev/diskX`

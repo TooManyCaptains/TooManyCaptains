@@ -1,0 +1,14 @@
+[Unit]
+Description=TooManyCaptains Controller
+Requires=docker.service
+After=docker.service
+
+[Service]
+TimeoutStartSec=60
+Restart=always
+ExecStartPre=-/usr/bin/docker stop controller
+ExecStartPre=-/usr/bin/docker rm controller
+ExecStart=/usr/bin/docker run --net=host --privileged --name controller toomanycaptains/controller
+
+[Install]
+WantedBy=multi-user.target

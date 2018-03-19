@@ -77,8 +77,8 @@ else
 
     eval $(docker-machine env --shell=sh starship)
 
-    echo "\n🚀 Launching ${bold}$image${normal}\n"
-    ssh crew@starship "ssh pi@starship-controller 'docker stop controller ||:&& docker rm controller ||:&& docker run -dit --restart unless-stopped --net=host --privileged --name controller toomanycaptains/controller'"
+    echo "\n🚀 Restarting ${bold}$image${normal}\n"
+    ssh crew@starship "ssh pi@starship-controller 'sudo systemctl restart toomanycaptains-controller'"
 
     echo "\n🛸🌈 We did it fam"
 
