@@ -7,6 +7,7 @@ import { randomColor, COLORS, colorNameToLetter } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
 import { ColorPalette, baseStyle } from '../interface/Styles';
 import Boss from './Boss';
+import { Color } from '../../../common/types';
 
 export default class Board extends Phaser.Group {
   public game: Game;
@@ -136,7 +137,11 @@ export default class Board extends Phaser.Group {
           this.game.session.score += 150;
           this.createPointsBubble(enemy.position, 150);
         } else {
-          this.enemyShieldFx.play();
+          this.createEnemyShield(
+            enemy.position,
+            (enemy.body as Phaser.Physics.Arcade.Body).velocity,
+            playerBullet.color
+          );
         }
         playerBullet.kill();
       },
@@ -214,6 +219,22 @@ export default class Board extends Phaser.Group {
       .tween(text)
       .to({ y: -100, alpha: 0 }, 4000, Phaser.Easing.Cubic.Out, true);
   }
+
+  private createEnemyShield(position: Phaser.Point,
+    velocity: Phaser.Point,
+    color: Color
+  ) {
+    const shield = this.game.add.sprite(
+      position.x,
+      position.y,
+      `shield-enemy_${colorNameToLetter(color)}`
+    );
+    shield.anchor.setTo(0.5, 0.5);
+    this.game.physics.enable(shield, Phaser.Physics.ARCADE);
+    (shield.body as Phaser.Physics.Arcade.Body).velocity = velocity;
+    this.enemyShieldFx.play();
+    setTimeout(() => (shield.kill()), 100);
+  };
 
   private createExplosion(position: Phaser.Point, scale: number) {
     const explosion = this.game.add.sprite(
