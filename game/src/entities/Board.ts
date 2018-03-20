@@ -7,6 +7,7 @@ import { randomColor, colorNameToLetter } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
 import { ColorPalette, baseStyle } from '../interface/Styles';
 import Boss from './Boss';
+import { random } from 'lodash';
 
 export default class Board extends Phaser.Group {
   public game: Game;
@@ -30,7 +31,7 @@ export default class Board extends Phaser.Group {
 
     // Keep game sprites (which respect bounds) within the bounds of the board
     // this.game.world.setBounds(0, 0, width, height);
-    this.game.physics.arcade.setBounds(0, 90, width - 100, height - 130);
+    this.game.physics.arcade.setBounds(0, 90, width, height - 130);
 
     // Sounds
     this.enemyShieldFx = this.game.add.audio('shield');
@@ -69,8 +70,10 @@ export default class Board extends Phaser.Group {
     this.enemies.add(
       new Enemy(
         this.game,
-        y ? this.game.width : this.game.width + 50,
-        y || this.game.physics.arcade.bounds.height * Math.random() + 100,
+        random(this.game.width - 250, this.game.width - 100),
+        y ||
+          this.game.physics.arcade.bounds.top +
+            this.game.physics.arcade.bounds.height * Math.random(),
         randomColor(),
         randomColor(),
         this.enemyBulletPool,

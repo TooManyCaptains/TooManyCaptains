@@ -26,6 +26,8 @@ export class Enemy extends Phaser.Sprite {
 
   private enemyBulletPool: EnemyBulletPool;
 
+  // private hasArrived: boolean;
+
   constructor(
     game: Game,
     x: number,
@@ -47,16 +49,15 @@ export class Enemy extends Phaser.Sprite {
 
     this.movementSpeed *= moveSpeedModifier;
     this.verticalDriftSpeed *= moveSpeedModifier;
-    // console.log('enemyFireInterval', fireIntervalModifier);
     const firingRate =
       this.baseFiringRate * fireIntervalModifier +
       this.baseFiringRate * Math.random() * fireIntervalModifier;
-    // console.log(
-    //   'enemy created with movement speed',
-    //   this.movementSpeed,
-    //   'firing rate',
-    //   firingRate,
-    // );
+
+    console.log('oncomplete');
+    // Weapon
+    this.fireTimer = this.game.time.create();
+    this.fireTimer.loop(firingRate, () => this.fire());
+    this.fireTimer.start();
 
     this.shipColor = shipColor;
     this.weaponColor = weaponColor;
@@ -69,24 +70,17 @@ export class Enemy extends Phaser.Sprite {
     this.health = 20;
     this.maxHealth = this.health;
 
-    // Weapon
-    this.fireTimer = this.game.time.create();
-    this.fireTimer.loop(firingRate, () => this.fire());
-    this.fireTimer.start();
-
-    // Physics and movement
-    this.game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.body.collideWorldBounds = true;
-    this.body.bounce.set(1);
-    this.body.velocity.x =
-      -this.movementSpeed + this.movementSpeed * Math.random();
-    this.body.velocity.y =
-      Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed;
-
-    // Hitbox size adjustment
-    this.body.setSize(102, 38, 13.5, 12.5);
-
     this.explosionFx = this.game.add.audio('explosion');
+
+    this.game.add
+      .tween(this)
+      .from(
+        { x: this.game.width + this.width, alpha: 0 },
+        1500,
+        Phaser.Easing.Cubic.InOut,
+        true,
+      )
+      .onComplete.add(this.onArrived, this);
   }
 
   public update() {
@@ -126,6 +120,19 @@ export class Enemy extends Phaser.Sprite {
     this.game.add
       .tween(this.shield)
       .to({ alpha: 0 }, 750, Phaser.Easing.Cubic.In, true);
+  }
+
+  private onArrived() {
+    // Physics and movement
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.body.collideWorldBounds = true;
+    this.body.bounce.set(1);
+    this.body.velocity.x =
+      -this.movementSpeed + this.movementSpeed * Math.random();
+    this.body.velocity.y =
+      Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed;
+    // Hitbox size adjustment
+    this.body.setSize(102, 38, 13.5, 12.5);
   }
 
   private explode() {
