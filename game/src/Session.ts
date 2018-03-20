@@ -11,33 +11,9 @@ import {
   CaptainCardID,
 } from '../../common/types';
 import { sortBy } from 'lodash';
-import { seconds, minutes } from './utils';
-
-export interface Wave {
-  startTime: number;
-  enemies?: number;
-}
 
 export const LOW_HEALTH = 35;
 export const VERY_LOW_HEALTH = 15;
-
-const WAVES: Wave[] = [
-  {
-    startTime: seconds(10),
-    enemies: 3,
-  },
-  {
-    startTime: minutes(1.7),
-    enemies: 10,
-  },
-  {
-    startTime: minutes(3.5),
-    enemies: 15,
-  },
-  {
-    startTime: minutes(5.4),
-  },
-];
 
 export enum RepairLevel {
   Off = 0,
@@ -72,7 +48,6 @@ export default class Session {
     fire: new Phaser.Signal(),
     move: new Phaser.Signal(),
     cheat: new Phaser.Signal(),
-    wave: new Phaser.Signal(),
     volume: new Phaser.Signal(),
     serverConnection: new Phaser.Signal(),
     debugFlagsChanged: new Phaser.Signal(),
@@ -103,10 +78,6 @@ export default class Session {
 
   // Game state
   private _state: GameState;
-
-  // Waves and timers
-  private _wave: Wave;
-  private _waveTimers: number[] = [];
 
   // Database-related (readonly)
   private _masterVolume = 1;
@@ -142,8 +113,6 @@ export default class Session {
     this.cards = new Set();
     this.weaponColorPositions = [];
     this.score = 0;
-    this.wave = WAVES[0];
-    this._waveTimers = [];
     this.health = this.maxHealth;
     this.thrusterDirection = ThrusterDirection.Stopped;
   }
@@ -200,15 +169,6 @@ export default class Session {
     this.signals.score.dispatch();
   }
 
-  get wave() {
-    return this._wave;
-  }
-
-  set wave(wave: Wave) {
-    this._wave = wave;
-    this.signals.wave.dispatch(this.wave);
-  }
-
   get health(): number {
     return this._health;
   }
@@ -224,18 +184,8 @@ export default class Session {
 
   set state(state: GameState) {
     this.signals.state.dispatch(state);
-    if (state === 'in_game') {
-      this.setWaveTimers();
-    }
     this.notifyGameState(state);
     this._state = state;
-  }
-
-  private setWaveTimers() {
-    WAVES.forEach(wave => {
-      const timer = setTimeout(() => (this.wave = wave), wave.startTime);
-      this._waveTimers.push(timer);
-    });
   }
 
   private onPacket(packet: Packet) {

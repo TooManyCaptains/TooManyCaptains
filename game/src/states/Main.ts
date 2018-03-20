@@ -3,17 +3,12 @@ import HUD from '../interface/HUD';
 import { Game } from '../index';
 import Doors from '../interface/Doors';
 import { ColorPosition } from '../../../common/types';
-import {
-  ThrusterDirection,
-  Wave,
-  VERY_LOW_HEALTH,
-  LOW_HEALTH,
-} from '../Session';
+import { ThrusterDirection, VERY_LOW_HEALTH, LOW_HEALTH } from '../Session';
 
 // import Map from '../interface/Map';
 import { COLORS, colorNameToLetter } from '../utils';
 import { Cheat } from '../../../common/cheats';
-import { times } from 'lodash';
+import { times, clone } from 'lodash';
 import { baseStyle, ColorPalette } from '../interface/Styles';
 
 class ScoreInfo extends Phaser.Group {
@@ -92,6 +87,12 @@ class ScoreInfo extends Phaser.Group {
   }
 }
 
+interface Wave {
+  number: number;
+  seconds: number;
+  enemies: number;
+}
+
 export default class Main extends Phaser.State {
   public game: Game;
 
@@ -102,6 +103,8 @@ export default class Main extends Phaser.State {
   private healthVeryLowFx: Phaser.Sound;
   private healthLowTimer: Phaser.Timer;
   private soundtrack: Phaser.Sound;
+  private waveTimer: Phaser.Timer;
+  private wave: Wave;
 
   public preload() {
     // Load all enemies
@@ -225,6 +228,9 @@ export default class Main extends Phaser.State {
     scoreTimer.loop(250, this.onScoreTimer, this);
     scoreTimer.start();
 
+    // Waves
+    this.waveTimer = this.game.time.create();
+
     // Keyboard shortcuts (for debugging)
     this.addKeyboardShortcuts();
 
@@ -235,14 +241,61 @@ export default class Main extends Phaser.State {
     // Bind signals
     this.game.session.signals.health.add(this.onHealthChanged, this);
     this.game.session.signals.cheat.add(this.onCheat, this);
-    this.game.session.signals.wave.add(this.onWaveChanged, this);
     this.game.session.signals.volume.add(this.onVolumeChanged, this);
 
     this.game.world.bringToTop(this.doors);
-    this.doors.open(() => {
-      this.game.session.state = 'in_game';
-      this.nextSoundtrack();
-    });
+    this.doors.open(() => this.onDoorsOpened());
+  }
+
+  private getNextWave(): Wave {
+    const currentWave = clone(this.wave);
+    let seconds = 0;
+    let enemies = 0;
+    if (!this.wave) {
+      return {
+        number: 0,
+        seconds: 2,
+        enemies: 2,
+      };
+    } else if (this.wave.number === 1) {
+      seconds = 2;
+      enemies = 2;
+    } else if (this.wave.number === 2) {
+      seconds = 2;
+      enemies = 2;
+    } else {
+      seconds = currentWave.seconds;
+      enemies = Math.min(15, currentWave.enemies * 1.5);
+    }
+    return {
+      number: currentWave.number + 1,
+      seconds,
+      enemies,
+    } as Wave;
+  }
+
+  private onDoorsOpened() {
+    this.game.session.state = 'in_game';
+    this.nextSoundtrack();
+    this.wave = this.getNextWave();
+    this.onWaveTimer();
+  }
+
+  private onDoorsClosed() {
+    this.game.state.start('After');
+  }
+
+  private onWaveTimer() {
+    this.waveTimer.add(
+      this.wave.seconds * 1000,
+      () => {
+        this.spawnWave(this.wave);
+        this.wave = this.getNextWave();
+        this.onWaveTimer();
+      },
+      this,
+    );
+    this.waveTimer.start();
   }
 
   private nextSoundtrack() {
@@ -394,7 +447,7 @@ export default class Main extends Phaser.State {
     }
   }
 
-  private onWaveChanged(wave: Wave) {
+  private spawnWave(wave: Wave) {
     const numEnemies = wave.enemies!;
     times(numEnemies, i => {
       this.board.spawnEnemy(
@@ -415,8 +468,6 @@ export default class Main extends Phaser.State {
     }
     this.game.session.state = 'game_over';
     this.game.world.bringToTop(this.doors);
-    this.doors.close(() => {
-      this.game.state.start('After');
-    });
+    this.doors.close(() => this.onDoorsClosed());
   }
 }
