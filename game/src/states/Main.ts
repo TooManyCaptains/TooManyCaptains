@@ -14,12 +14,90 @@ import {
 import { COLORS, colorNameToLetter } from '../utils';
 import { Cheat } from '../../../common/cheats';
 import { times } from 'lodash';
+import { baseStyle, ColorPalette } from '../interface/Styles';
+
+class ScoreInfo extends Phaser.Group {
+  private text: Phaser.Text;
+  private icon: Phaser.Sprite;
+  private background: Phaser.Graphics;
+
+  private w = 270;
+  private h = 70;
+  private paddingTop = 10;
+  private paddingSide = 25;
+
+  constructor(public game: Game, x: number, y: number) {
+    super(game);
+    this.x = x;
+    this.y = y;
+    // Icon
+    this.icon = this.game.add.sprite(
+      0,
+      this.paddingTop,
+      'icon-score',
+      null,
+      this,
+    );
+    // this.icon.anchor.setTo(0.5, 0);
+    this.icon.scale.setTo(0.5, 0.5);
+
+    // Text
+    this.text = this.game.add.text(
+      0,
+      this.paddingTop,
+      '',
+      { ...baseStyle },
+      this,
+    );
+    this.text.anchor.setTo(0, 0);
+    // this.text.width = width;
+
+    // Background
+    this.background = this.game.add.graphics(0, 0, this);
+
+    this.bringToTop(this.text);
+    this.bringToTop(this.icon);
+
+    // Listen for changes to score
+    this.game.session.signals.score.add(this.onScoreChanged, this);
+    this.onScoreChanged();
+  }
+
+  private onScoreChanged() {
+    this.text.text = `SCORE: ${this.game.session.score}`;
+    const scoreLength = String(this.game.session.score).length;
+    const letterSize = 22.5;
+    const bgLeft = -this.w / 2 - letterSize / 2 * scoreLength;
+
+    this.background.clear();
+    this.background.beginFill(ColorPalette.Black, 1);
+    this.background.drawRoundedRect(
+      bgLeft,
+      0,
+      this.w + letterSize * scoreLength,
+      this.h,
+      100,
+    );
+    this.background.lineStyle(2, ColorPalette.White, 1);
+    this.background.drawRoundedRect(
+      bgLeft,
+      0,
+      this.w + letterSize * scoreLength,
+      this.h,
+      100,
+    );
+
+    this.text.x = bgLeft + this.paddingSide + 70;
+    this.icon.x = bgLeft + this.paddingSide;
+  }
+}
 
 export default class Main extends Phaser.State {
   public game: Game;
 
   private board: Board;
   private doors: Doors;
+  private scoreInfo: ScoreInfo;
   private healthLowFx: Phaser.Sound;
   private healthVeryLowFx: Phaser.Sound;
   private healthLowTimer: Phaser.Timer;
@@ -119,6 +197,10 @@ export default class Main extends Phaser.State {
     // HUD at bottom of screen
     // tslint:disable-next-line:no-unused-expression
     new HUD(this.game, 0, this.board.bottom);
+
+    // Show score at top of screen
+    this.scoreInfo = new ScoreInfo(this.game, this.game.world.centerX, 15);
+    this.scoreInfo.x = this.scoreInfo.x;
 
     // No minimap for now.
     // // Minimap
