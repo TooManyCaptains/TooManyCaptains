@@ -91,6 +91,12 @@ interface Wave {
   number: number;
   seconds: number;
   enemies: number;
+  modifiers: {
+    enemyMoveSpeed: number;
+    enemyFireInterval: number;
+    asteroidSpawnInterval: number;
+    asteroidMoveSpeed: number;
+  };
 }
 
 export default class Main extends Phaser.State {
@@ -105,6 +111,8 @@ export default class Main extends Phaser.State {
   private soundtrack: Phaser.Sound;
   private waveTimer: Phaser.Timer;
   private wave: Wave;
+  private asteroidTimer: Phaser.Timer;
+  private asteroidSpawnIntervalSecs = 20;
 
   public preload() {
     // Load all enemies
@@ -206,22 +214,7 @@ export default class Main extends Phaser.State {
     this.scoreInfo = new ScoreInfo(this.game, this.game.world.centerX, 15);
     this.scoreInfo.x = this.scoreInfo.x;
 
-    // No minimap for now.
-    // // Minimap
-    // // tslint:disable-next-line:no-unused-expression
-    // new Map(this.game);
-
-    // Periodically spawn an asteroid
-    const asteroidSpawnIntervalSecs = 20;
-    const asteroidTimer = this.game.time.create();
-    asteroidTimer.loop(
-      asteroidSpawnIntervalSecs * 1000,
-      this.board.spawnAsteroid,
-      this.board,
-    );
-    asteroidTimer.start();
-
-    this.healthLowTimer = this.game.time.create();
+    this.asteroidTimer = this.game.time.create();
 
     // Score timer
     const scoreTimer = this.game.time.create();
@@ -234,9 +227,10 @@ export default class Main extends Phaser.State {
     // Keyboard shortcuts (for debugging)
     this.addKeyboardShortcuts();
 
-    // Sounds
+    // Health
     this.healthLowFx = this.game.add.audio('health_low');
     this.healthVeryLowFx = this.game.add.audio('health_very_low');
+    this.healthLowTimer = this.game.time.create();
 
     // Bind signals
     this.game.session.signals.health.add(this.onHealthChanged, this);
@@ -249,29 +243,56 @@ export default class Main extends Phaser.State {
 
   private getNextWave(): Wave {
     const currentWave = clone(this.wave);
-    let seconds = 0;
-    let enemies = 0;
     if (!this.wave) {
       return {
         number: 0,
         seconds: 2,
         enemies: 2,
+        modifiers: {
+          enemyFireInterval: 1.0,
+          enemyMoveSpeed: 1.0,
+          asteroidMoveSpeed: 1.0,
+          asteroidSpawnInterval: 1.0,
+        },
+      };
+    } else if (this.wave.number === 0) {
+      return {
+        number: 1,
+        seconds: 20,
+        enemies: 4,
+        modifiers: {
+          enemyFireInterval: 1.0,
+          enemyMoveSpeed: 1.0,
+          asteroidMoveSpeed: 1.0,
+          asteroidSpawnInterval: 1.0,
+        },
       };
     } else if (this.wave.number === 1) {
-      seconds = 2;
-      enemies = 2;
-    } else if (this.wave.number === 2) {
-      seconds = 2;
-      enemies = 2;
+      return {
+        number: 2,
+        seconds: 30,
+        enemies: 5,
+        modifiers: {
+          enemyFireInterval: 1.0,
+          enemyMoveSpeed: 1.0,
+          asteroidMoveSpeed: 1.0,
+          asteroidSpawnInterval: 1.0,
+        },
+      };
     } else {
-      seconds = currentWave.seconds;
-      enemies = Math.min(15, currentWave.enemies * 1.5);
+      return {
+        number: currentWave.number + 1,
+        seconds: 30,
+        enemies: Math.min(15, currentWave.enemies * 1.5),
+        modifiers: {
+          enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.9,
+          enemyMoveSpeed: currentWave.modifiers.enemyMoveSpeed * 1.1,
+          asteroidMoveSpeed: currentWave.modifiers.asteroidMoveSpeed * 1.1,
+          asteroidSpawnInterval:
+            currentWave.modifiers.asteroidSpawnInterval * 0.9,
+        },
+      };
     }
-    return {
-      number: currentWave.number + 1,
-      seconds,
-      enemies,
-    } as Wave;
   }
 
   private onDoorsOpened() {
@@ -296,6 +317,21 @@ export default class Main extends Phaser.State {
       this,
     );
     this.waveTimer.start();
+  }
+
+  private onAsteroidTimer() {
+    this.asteroidTimer.add(
+      this.asteroidSpawnIntervalSecs *
+        this.wave.modifiers.asteroidSpawnInterval *
+        1000,
+      () => {
+        this.board.spawnAsteroid(this.wave.modifiers.asteroidMoveSpeed);
+        this.spawnWave(this.wave);
+        this.onAsteroidTimer();
+      },
+      this,
+    );
+    this.asteroidTimer.start();
   }
 
   private nextSoundtrack() {
@@ -324,7 +360,7 @@ export default class Main extends Phaser.State {
   private addKeyboardShortcuts() {
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.E)
-      .onDown.add(() => this.board.spawnEnemy(), this);
+      .onDown.add(() => this.board.spawnEnemy(undefined), this);
 
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.A)
@@ -448,11 +484,15 @@ export default class Main extends Phaser.State {
   }
 
   private spawnWave(wave: Wave) {
+    console.log(`spawning wave #${wave.number}`);
+    console.log(wave);
     const numEnemies = wave.enemies!;
     times(numEnemies, i => {
       this.board.spawnEnemy(
         this.board.height / numEnemies * (i + 1) -
           this.board.height / numEnemies / 2,
+        wave.modifiers.enemyMoveSpeed,
+        wave.modifiers.enemyFireInterval,
       );
     });
   }

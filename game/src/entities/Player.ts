@@ -243,7 +243,6 @@ export default class PlayerShip extends Phaser.Group {
   }
 
   private onSubsystemsChanged(playSounds = true) {
-    console.log(this.game.session.configurations);
     // Thrusters
     this.updateThrusters();
 

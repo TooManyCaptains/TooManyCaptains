@@ -61,7 +61,11 @@ export default class Board extends Phaser.Group {
     this.add(this.player);
   }
 
-  public spawnEnemy(y?: number) {
+  public spawnEnemy(
+    y?: number,
+    moveSpeedModifier = 1.0,
+    fireIntervalModifier = 1.0,
+  ) {
     this.enemies.add(
       new Enemy(
         this.game,
@@ -70,6 +74,8 @@ export default class Board extends Phaser.Group {
         randomColor(),
         randomColor(),
         this.enemyBulletPool,
+        moveSpeedModifier,
+        fireIntervalModifier,
       ),
     );
   }
@@ -79,7 +85,7 @@ export default class Board extends Phaser.Group {
     this.boss.alpha = 1;
   }
 
-  public spawnAsteroid() {
+  public spawnAsteroid(moveSpeedModifier = 1.0) {
     const isPlayerCamping =
       this.game.session.shieldColors.length === 3 ||
       this.game.session.repairLevel === 3;
@@ -87,7 +93,12 @@ export default class Board extends Phaser.Group {
     const y = isPlayerCamping
       ? this.player.y
       : this.game.physics.arcade.bounds.height * Math.random() + 60;
-    const asteroid = new Asteroid(this.game, this.game.width, y);
+    const asteroid = new Asteroid(
+      this.game,
+      this.game.width,
+      y,
+      moveSpeedModifier,
+    );
     this.asteroids.add(asteroid);
     asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
   }

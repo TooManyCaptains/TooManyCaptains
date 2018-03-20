@@ -33,6 +33,8 @@ export class Enemy extends Phaser.Sprite {
     shipColor: Color,
     weaponColor: Color,
     enemyBulletPool: EnemyBulletPool,
+    moveSpeedModifier = 1.0,
+    fireIntervalModifier = 1.0,
   ) {
     super(
       game,
@@ -42,6 +44,19 @@ export class Enemy extends Phaser.Sprite {
     );
     this.animations.add('move');
     this.animations.play('move', 15, true);
+
+    this.movementSpeed *= moveSpeedModifier;
+    this.verticalDriftSpeed *= moveSpeedModifier;
+    // console.log('enemyFireInterval', fireIntervalModifier);
+    const firingRate =
+      this.baseFiringRate * fireIntervalModifier +
+      this.baseFiringRate * Math.random() * fireIntervalModifier;
+    // console.log(
+    //   'enemy created with movement speed',
+    //   this.movementSpeed,
+    //   'firing rate',
+    //   firingRate,
+    // );
 
     this.shipColor = shipColor;
     this.weaponColor = weaponColor;
@@ -56,10 +71,7 @@ export class Enemy extends Phaser.Sprite {
 
     // Weapon
     this.fireTimer = this.game.time.create();
-    this.fireTimer.loop(
-      this.baseFiringRate + this.baseFiringRate * Math.random(),
-      () => this.fire(),
-    );
+    this.fireTimer.loop(firingRate, () => this.fire());
     this.fireTimer.start();
 
     // Physics and movement

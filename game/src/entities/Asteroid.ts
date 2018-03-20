@@ -5,8 +5,10 @@ export default class Asteroid extends Phaser.Sprite {
   public game: Game;
   private movementSpeed = 90;
 
-  constructor(game: Game, x: number, y: number) {
+  constructor(game: Game, x: number, y: number, moveSpeedModifier = 1.0) {
     super(game, x, y, 'asteroid');
+
+    this.movementSpeed *= moveSpeedModifier;
 
     // Physics and movement
     this.anchor.setTo(0.5, 0.5);
