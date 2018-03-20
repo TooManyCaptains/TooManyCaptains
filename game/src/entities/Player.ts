@@ -184,8 +184,14 @@ export default class PlayerShip extends Phaser.Group {
   }
 
   public shieldTint() {
-    this.shield.tint = ColorPalette.Black;
-    setTimeout(() => (this.shield.tint = ColorPalette.White), 50);
+    this.game.add
+      .tween(this.shield)
+      .to({ alpha: 0.3 }, 75, Phaser.Easing.Cubic.InOut, true)
+      .onComplete.addOnce(() => {
+        this.game.add
+          .tween(this.shield)
+          .to({ alpha: 1 }, 75, Phaser.Easing.Cubic.InOut, true);
+      });
   }
 
   private updateThrusters() {
