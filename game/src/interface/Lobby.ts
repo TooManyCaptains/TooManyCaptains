@@ -179,18 +179,6 @@ export default class Lobby extends Phaser.Group {
       'SCAN ENGINEER CARD',
     );
 
-    // High score text
-    const highScoreTextPadding = 25;
-    const highScoreText = this.game.add.text(
-      0,
-      highScoreTextPadding / 2,
-      `HIGH SCORE: ${this.game.session.highScore}`,
-      { ...baseStyle, fontSize: 50, stroke: 'black', strokeThickness: 10 },
-      this,
-    );
-    highScoreText.x =
-      this.game.width - highScoreText.width - highScoreTextPadding;
-
     // Cards and placeholders
     const paddingBetweenEachCard = 5;
     const numCards = 7;
@@ -233,7 +221,7 @@ export default class Lobby extends Phaser.Group {
       this.add(placeHolder, undefined, 0);
     });
 
-    this.game.session.signals.cards.add(this.onCaptainJoined, this);
+    this.game.session.signals.cards.add(this.onCardScanned, this);
   }
 
   private updateInstructions() {
@@ -299,9 +287,20 @@ export default class Lobby extends Phaser.Group {
     }
   }
 
-  private onCaptainJoined(cardID: CardID) {
-    // Play sound
-    this.game.sound.add('scan_success').play();
+  private onCardScanned(cardID: CardID) {
+    // Don't add any card that already exists
+    if (this.game.session.cards.has(cardID)) {
+      this.game.sound.add('scan_fail').play();
+      return;
+    }
+    // Only add captains if engineer has scanned
+    if (cardID === 0 || (this.game.session.cards.has(0) && cardID > 0)) {
+      this.game.sound.add('scan_success').play();
+      this.game.session.cards.add(cardID);
+    } else {
+      this.game.sound.add('scan_fail').play();
+      return;
+    }
 
     // Flip over the captain's card
     const card = this.cards.find(c => c.isFlipped === false);

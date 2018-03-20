@@ -10,7 +10,7 @@ const AssetManifest = {
     'door-left.png',
     'door-right.png',
 
-    'marquee-small.png',
+    'marquee.png',
 
     'icon-score.png',
     'icon-high-score.png',

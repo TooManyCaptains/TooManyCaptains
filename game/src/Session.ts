@@ -274,12 +274,7 @@ export default class Session {
       }
       this.signals.fire.dispatch(packet.state);
     } else if (packet.kind === 'scan') {
-      if (!this.cards.has(packet.cardID)) {
-        if (packet.cardID === 0 || (this.cards.has(0) && packet.cardID > 0)) {
-          this.cards.add(packet.cardID);
-          this.signals.cards.dispatch(packet.cardID);
-        }
-      }
+      this.signals.cards.dispatch(packet.cardID);
     } else if (packet.kind === 'score') {
       if (packet.confirmedHighScore) {
         this._highScore = packet.points;
