@@ -6,7 +6,6 @@ import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
 import { randomColor, colorNameToLetter } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
 import { ColorPalette, baseStyle } from '../interface/Styles';
-import Boss from './Boss';
 import { random, times, clone } from 'lodash';
 
 interface Wave {
@@ -26,7 +25,6 @@ export default class Board extends Phaser.Group {
 
   private enemyBulletPool: EnemyBulletPool;
   private player: Player;
-  private boss: Boss;
   private enemies: Phaser.Group;
   private asteroids: Phaser.Group;
   private collideFx: Phaser.Sound;
@@ -97,56 +95,6 @@ export default class Board extends Phaser.Group {
       },
     };
     this.onWaveTimer();
-  }
-
-  public spawnEnemy(
-    y?: number,
-    moveSpeedModifier = 1.0,
-    fireIntervalModifier = 1.0,
-  ) {
-    this.enemies.add(
-      new Enemy(
-        this.game,
-        random(this.game.width - 250, this.game.width - 100),
-        y ||
-          this.game.physics.arcade.bounds.top +
-            this.game.physics.arcade.bounds.height * Math.random(),
-        randomColor(),
-        randomColor(),
-        this.enemyBulletPool,
-        moveSpeedModifier,
-        fireIntervalModifier,
-      ),
-    );
-  }
-
-  public destroy() {
-    this.asteroidTimer.destroy();
-    this.waveTimer.destroy();
-    super.destroy();
-  }
-
-  public spawnBoss() {
-    this.boss = new Boss(this.game, this.width - 700, this.centerY / 2);
-    this.boss.alpha = 1;
-  }
-
-  public spawnAsteroid(moveSpeedModifier = 1.0) {
-    const isPlayerCamping =
-      this.game.session.shieldColors.length === 3 ||
-      this.game.session.repairLevel === 3;
-    // Punish players who are camping
-    const y = isPlayerCamping
-      ? this.player.y
-      : this.game.physics.arcade.bounds.height * Math.random() + 60;
-    const asteroid = new Asteroid(
-      this.game,
-      this.game.width,
-      y,
-      moveSpeedModifier,
-    );
-    this.asteroids.add(asteroid);
-    asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
   }
 
   public update() {
@@ -222,7 +170,7 @@ export default class Board extends Phaser.Group {
       this.player.weapon,
 
       (asteroid: Asteroid, playerBullet: PlayerBullet) => {
-        this.movingExplosion(
+        this.createMovingExplosion(
           playerBullet.position,
           (asteroid.body as Phaser.Physics.Arcade.Body).velocity,
           0.4,
@@ -244,6 +192,30 @@ export default class Board extends Phaser.Group {
     super.update();
   }
 
+  private onAsteroidTimer() {
+    this.asteroidTimer.add(
+      this.asteroidSpawnIntervalSecs *
+        this.wave.modifiers.asteroidSpawnInterval *
+        1000,
+      () => {
+        this.spawnAsteroid(this.wave.modifiers.asteroidMoveSpeed);
+        this.spawnWave(this.wave);
+        this.onAsteroidTimer();
+      },
+      this,
+    );
+    this.asteroidTimer.start();
+  }
+
+  private onAsteroidOutOfBounds(asteroid: Asteroid) {
+    const position = new Phaser.Point(
+      this.player.ship.position.x - 90,
+      this.player.ship.position.y - 120,
+    );
+    this.createPointsBubble(position, 250, 28, 'MISS ');
+    this.game.session.score += 250;
+  }
+
   private onWaveTimer() {
     this.waveTimer.add(
       this.wave.seconds * 1000,
@@ -255,6 +227,24 @@ export default class Board extends Phaser.Group {
       this,
     );
     this.waveTimer.start();
+  }
+
+  private spawnAsteroid(moveSpeedModifier = 1.0) {
+    const isPlayerCamping =
+      this.game.session.shieldColors.length === 3 ||
+      this.game.session.repairLevel === 3;
+    // Punish players who are camping
+    const y = isPlayerCamping
+      ? this.player.y
+      : this.game.physics.arcade.bounds.height * Math.random() + 60;
+    const asteroid = new Asteroid(
+      this.game,
+      this.game.width,
+      y,
+      moveSpeedModifier,
+    );
+    this.asteroids.add(asteroid);
+    asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
   }
 
   private spawnWave(wave: Wave) {
@@ -270,19 +260,25 @@ export default class Board extends Phaser.Group {
     });
   }
 
-  private onAsteroidTimer() {
-    this.asteroidTimer.add(
-      this.asteroidSpawnIntervalSecs *
-        this.wave.modifiers.asteroidSpawnInterval *
-        1000,
-      () => {
-        this.spawnAsteroid(this.wave.modifiers.asteroidMoveSpeed);
-        this.spawnWave(this.wave);
-        this.onAsteroidTimer();
-      },
-      this,
+  private spawnEnemy(
+    y?: number,
+    moveSpeedModifier = 1.0,
+    fireIntervalModifier = 1.0,
+  ) {
+    this.enemies.add(
+      new Enemy(
+        this.game,
+        random(this.game.width - 250, this.game.width - 100),
+        y ||
+          this.game.physics.arcade.bounds.top +
+            this.game.physics.arcade.bounds.height * Math.random(),
+        randomColor(),
+        randomColor(),
+        this.enemyBulletPool,
+        moveSpeedModifier,
+        fireIntervalModifier,
+      ),
     );
-    this.asteroidTimer.start();
   }
 
   private getNextWave(): Wave {
@@ -327,15 +323,6 @@ export default class Board extends Phaser.Group {
     }
   }
 
-  private onAsteroidOutOfBounds(asteroid: Asteroid) {
-    const position = new Phaser.Point(
-      this.player.ship.position.x - 90,
-      this.player.ship.position.y - 120,
-    );
-    this.createPointsBubble(position, 250, 28, 'MISS ');
-    this.game.session.score += 250;
-  }
-
   private createPointsBubble(
     position: Phaser.Point,
     points: number,
@@ -373,7 +360,7 @@ export default class Board extends Phaser.Group {
     this.collideFx.play();
   }
 
-  private movingExplosion(
+  private createMovingExplosion(
     position: Phaser.Point,
     velocity: Phaser.Point,
     scale: number,
