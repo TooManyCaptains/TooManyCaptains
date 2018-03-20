@@ -39,7 +39,12 @@ export default class Before extends Phaser.State {
         .tween(this.lobby)
         .to({ alpha: 0 }, 300, Phaser.Easing.Linear.None, true);
 
-      // Face in lobby;
+      // Fade out lobby
+      this.game.add
+        .tween(this.marquee)
+        .to({ y: -this.marquee.height }, 300, Phaser.Easing.Cubic.InOut, true);
+
+      // Face in doors
       this.game.add
         .tween(this.doors)
         .to({ alpha: 1 }, 300, Phaser.Easing.Linear.None, true)

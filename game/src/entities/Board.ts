@@ -66,13 +66,12 @@ export default class Board extends Phaser.Group {
 
     // Player ship
     this.add(this.player);
-
-    this.reset();
   }
 
   public reset() {
     // Waves
     if (this.waveTimer) {
+      this.waveTimer.stop();
       this.waveTimer.destroy();
     }
     this.waveTimer = this.game.time.create();
@@ -312,6 +311,7 @@ export default class Board extends Phaser.Group {
   }
 
   private onWaveTimer() {
+    console.log('onWaveTimer');
     this.waveTimer.add(
       this.wave.seconds * 1000,
       () => {
@@ -328,7 +328,7 @@ export default class Board extends Phaser.Group {
     const currentWave = this.wave;
     return {
       number: currentWave.number + 1,
-      seconds: 30,
+      seconds: 30 + currentWave.enemies,
       enemies: Math.min(15, currentWave.enemies * 1.5),
       modifiers: {
         enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.95,
