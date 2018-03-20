@@ -260,6 +260,10 @@ export default class Main extends Phaser.State {
       .addKey(Phaser.Keyboard.A)
       .onDown.add(() => this.board.spawnAsteroid(), this);
 
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.R)
+      .onDown.add(() => this.board.asteroidStorm(), this);
+
     this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(() => {
       const allPositions: ColorPosition[] = [
         { color: 'blue', position: 0 },

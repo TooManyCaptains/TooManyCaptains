@@ -212,6 +212,27 @@ export default class Board extends Phaser.Group {
     asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
   }
 
+  public asteroidStorm() {
+    const haystack = 12;
+    const needle = random(3, 8);
+    times(haystack, i => {
+      if (i < 3) {
+        return;
+      }
+      if (i >= needle - 2 && i <= needle + 2) {
+        return;
+      }
+      const asteroid = new Asteroid(
+        this.game,
+        this.game.width - 100 * Math.random(),
+        i * 50,
+        this.wave.modifiers.asteroidMoveSpeed,
+      );
+      this.asteroids.add(asteroid);
+      // asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
+    });
+  }
+
   public manuallySpawnEnemy() {
     this.enemies.add(
       new Enemy(
@@ -261,6 +282,10 @@ export default class Board extends Phaser.Group {
         ),
       );
     });
+
+    if (wave.number > 0 && wave.number % 2 === 0) {
+      this.asteroidStorm();
+    }
   }
 
   private onAsteroidTimer() {
@@ -303,12 +328,12 @@ export default class Board extends Phaser.Group {
     const currentWave = this.wave;
     return {
       number: currentWave.number + 1,
-      seconds: 30 - currentWave.number,
+      seconds: 30,
       enemies: Math.min(15, currentWave.enemies * 1.35),
       modifiers: {
         enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.95,
         enemyMoveSpeed: currentWave.modifiers.enemyMoveSpeed * 1.05,
-        asteroidMoveSpeed: currentWave.modifiers.asteroidMoveSpeed * 1.3,
+        asteroidMoveSpeed: currentWave.modifiers.asteroidMoveSpeed * 1.05,
         asteroidSpawnInterval:
           currentWave.modifiers.asteroidSpawnInterval * 0.8,
       },
