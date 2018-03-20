@@ -42,8 +42,6 @@ export class Game extends Phaser.Game {
   public params: Config;
   public session: Session;
 
-  private soundtrack: Phaser.Sound;
-
   constructor() {
     super(1920, 1080, Phaser.CANVAS, 'surface');
     this.state.add('Boot', Boot, false);
@@ -63,29 +61,6 @@ export class Game extends Phaser.Game {
     this.state.onStateChange.add(this.onStateChange, this);
   }
 
-  public updateSoundtrack() {
-    let key = '';
-    if (this.session.state === 'in_game') {
-      key = this.session.wave.soundtrack;
-    }
-    // We're not supposed to be playing anything
-    if (key === '') {
-      if (this.soundtrack) {
-        this.soundtrack.stop();
-      }
-      return;
-    }
-    // No soundtrack yet
-    if (!this.soundtrack || this.soundtrack.key !== key) {
-      if (this.soundtrack) {
-        this.soundtrack.stop();
-      }
-      this.soundtrack = this.add
-        .audio(key, this.session.volume.music, true)
-        .play();
-    }
-  }
-
   private onDebugFlagsChanged() {
     if (this.session.debugFlags.perf) {
       this.enablePerformanceStatistics();
@@ -98,7 +73,6 @@ export class Game extends Phaser.Game {
     console.log('onVolumeChanged');
     console.log(this.session.volume);
     this.sound.volume = this.session.volume.master;
-    this.soundtrack.volume = this.session.volume.music;
   }
 
   private enablePerformanceStatistics() {
@@ -133,12 +107,8 @@ export class Game extends Phaser.Game {
     // we need to un-bind all of the existing signals!
     values(this.session.signals).forEach(signal => {
       signal.removeAll();
-      // XXX: Hack for two reasons. One, we need to re-attach the signal handlers
-      // after removing them all. Two, we only want to bind after
-      // the sound system is atually set up!
+      // XXX: Hack to re-attach the signal handlers after removing them all.
       if (['Before', 'Main', 'After'].includes(this.state.current)) {
-        this.session.signals.state.add(this.updateSoundtrack, this);
-        this.session.signals.wave.add(this.updateSoundtrack, this);
         this.session.signals.volume.add(this.onVolumeChanged, this);
         this.session.signals.debugFlagsChanged.add(
           this.onDebugFlagsChanged,

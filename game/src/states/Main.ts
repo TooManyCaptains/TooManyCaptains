@@ -101,6 +101,7 @@ export default class Main extends Phaser.State {
   private healthLowFx: Phaser.Sound;
   private healthVeryLowFx: Phaser.Sound;
   private healthLowTimer: Phaser.Timer;
+  private soundtrack: Phaser.Sound;
 
   public preload() {
     // Load all enemies
@@ -227,6 +228,7 @@ export default class Main extends Phaser.State {
     // Keyboard shortcuts (for debugging)
     this.addKeyboardShortcuts();
 
+    // Sounds
     this.healthLowFx = this.game.add.audio('health_low');
     this.healthVeryLowFx = this.game.add.audio('health_very_low');
 
@@ -234,18 +236,36 @@ export default class Main extends Phaser.State {
     this.game.session.signals.health.add(this.onHealthChanged, this);
     this.game.session.signals.cheat.add(this.onCheat, this);
     this.game.session.signals.wave.add(this.onWaveChanged, this);
+    this.game.session.signals.volume.add(this.onVolumeChanged, this);
 
     this.game.world.bringToTop(this.doors);
     this.doors.open(() => {
       this.game.session.state = 'in_game';
+      this.nextSoundtrack();
     });
+  }
 
-    this.game.session.signals.debugFlagsChanged.add(() => {
-      console.log('lol');
-      if (this.game.session.debugFlags.boss) {
-        this.board.spawnBoss();
-      }
-    }, this);
+  private nextSoundtrack() {
+    if (this.game.session.state !== 'in_game') {
+      return;
+    }
+    let key = 'music_stage_4';
+    if (!this.soundtrack) {
+      key = 'music_stage_2';
+    } else if (this.soundtrack.key === 'music_stage_2') {
+      key = 'music_stage_3';
+    }
+    this.soundtrack = this.game.add
+      .sound(key, this.game.session.volume.music, false)
+      .play();
+    console.log('changing soundtrack to: ', key);
+    this.soundtrack.onStop.addOnce(this.nextSoundtrack, this);
+  }
+
+  private onVolumeChanged() {
+    if (this.soundtrack) {
+      this.soundtrack.volume = this.game.session.volume.music;
+    }
   }
 
   private addKeyboardShortcuts() {
@@ -375,18 +395,13 @@ export default class Main extends Phaser.State {
   }
 
   private onWaveChanged(wave: Wave) {
-    console.log('wave changed', wave);
-    if (wave.name === 'boss') {
-      this.board.spawnBoss();
-    } else {
-      const numEnemies = wave.enemies!;
-      times(numEnemies, i => {
-        this.board.spawnEnemy(
-          this.board.height / numEnemies * (i + 1) -
-            this.board.height / numEnemies / 2,
-        );
-      });
-    }
+    const numEnemies = wave.enemies!;
+    times(numEnemies, i => {
+      this.board.spawnEnemy(
+        this.board.height / numEnemies * (i + 1) -
+          this.board.height / numEnemies / 2,
+      );
+    });
   }
 
   private onScoreTimer() {

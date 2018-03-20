@@ -32,7 +32,8 @@ export default class After extends Phaser.State {
 
   private gameOverText: Phaser.Image;
   private marquee: Marquee;
-  private secondsBeforeReset = 6;
+  private resetTickTimer: Phaser.Timer;
+  private secondsBeforeReset: number;
 
   public create() {
     this.game.add.existing(new Doors(this.game));
@@ -45,16 +46,18 @@ export default class After extends Phaser.State {
     // GAME OVER text
     this.gameOverText = this.game.add.image(
       this.game.world.centerX,
-      this.game.world.centerY,
+      this.game.world.centerY - 100,
       'gameover-text',
     );
     this.gameOverText.anchor.setTo(0.5, 0.5);
-    const resetTickTimer = this.game.time.create();
-    resetTickTimer.loop(1000, this.onResetTick, this);
-    resetTickTimer.start();
+    this.resetTickTimer = this.game.time.create();
+    this.resetTickTimer.loop(1000, this.onResetTick, this);
+    this.resetTickTimer.start();
+
+    this.secondsBeforeReset = 10;
 
     // Score statistics
-    const y = 800;
+    const y = 700;
     this.game.add.existing(
       new ScoreStat(
         this.game,

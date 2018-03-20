@@ -15,9 +15,7 @@ import { seconds, minutes } from './utils';
 
 export interface Wave {
   startTime: number;
-  name: number | 'boss';
   enemies?: number;
-  soundtrack: string;
 }
 
 export const LOW_HEALTH = 35;
@@ -26,26 +24,18 @@ export const VERY_LOW_HEALTH = 15;
 const WAVES: Wave[] = [
   {
     startTime: seconds(10),
-    name: 2,
     enemies: 3,
-    soundtrack: 'music_stage_1',
   },
   {
     startTime: minutes(1.7),
-    name: 3,
     enemies: 10,
-    soundtrack: 'music_stage_2',
   },
   {
     startTime: minutes(3.5),
-    name: 4,
     enemies: 15,
-    soundtrack: 'music_stage_3',
   },
   {
     startTime: minutes(5.4),
-    name: 'boss',
-    soundtrack: 'music_stage_4',
   },
 ];
 
@@ -123,6 +113,7 @@ export default class Session {
   private _musicVolume = 1;
   private _highScore = 0;
 
+  // Debug flags
   private _debugFlags: DebugFlags;
 
   // Game server
@@ -207,10 +198,6 @@ export default class Session {
   set score(score) {
     this._score = score;
     this.signals.score.dispatch();
-  }
-
-  get totalTimeToBoss() {
-    return WAVES.find(({ name }) => name === 'boss')!.startTime;
   }
 
   get wave() {

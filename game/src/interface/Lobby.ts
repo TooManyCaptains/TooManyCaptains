@@ -271,16 +271,11 @@ export default class Lobby extends Phaser.Group {
 
         // Scale (and alpha for right instruction)
         this.game.add
-          .tween(this.rightInstruction)
-          .to(
-            { x: 650, y: 50, alpha: 1 },
-            500,
-            Phaser.Easing.Quadratic.InOut,
-            true,
-          );
-        this.game.add
           .tween(this.instruction)
-          .to({ x: -350, y: 50 }, 500, Phaser.Easing.Quadratic.InOut, true);
+          .to({ x: -450 }, 500, Phaser.Easing.Quadratic.InOut, true);
+        this.game.add
+          .tween(this.rightInstruction)
+          .to({ x: 550, alpha: 1 }, 500, Phaser.Easing.Quadratic.InOut, true);
       }
     }
   }

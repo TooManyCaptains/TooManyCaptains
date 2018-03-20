@@ -28,7 +28,6 @@ export default class Before extends Phaser.State {
     this.game.add.existing(this.marquee);
 
     this.game.session.reset();
-    this.game.updateSoundtrack();
 
     this.game.session.signals.fire.add(this.onFire, this);
   }
