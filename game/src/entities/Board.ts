@@ -146,15 +146,15 @@ export default class Board extends Phaser.Group {
       },
     );
 
-    // Enemy <-> player ship (no shield) collision
-    this.game.physics.arcade.overlap(
-      this.enemies,
-      this.player.ship,
-      (playerShip: Phaser.Sprite, enemy: Enemy) => {
-        this.spritesToDestroy.add(enemy);
-        this.game.session.health -= enemy.collisionDamage;
-      },
-    );
+    // // Enemy <-> player ship (no shield) collision
+    // this.game.physics.arcade.overlap(
+    //   this.enemies,
+    //   this.player.ship,
+    //   (playerShip: Phaser.Sprite, enemy: Enemy) => {
+    //     this.spritesToDestroy.add(enemy);
+    //     this.game.session.health -= enemy.collisionDamage;
+    //   },
+    // );
 
     // Player <-> asteroid collision
     this.game.physics.arcade.overlap(
@@ -182,6 +182,16 @@ export default class Board extends Phaser.Group {
         playerBullet.kill();
       },
     );
+
+    // // Enemy <-> asteroid collision
+    // this.game.physics.arcade.overlap(
+    //   this.asteroids,
+    //   this.enemies,
+    //   (asteroid: Asteroid, enemy: Enemy) => {
+    //     this.createExplosion(asteroid.position, 1.0);
+    //     this.spritesToDestroy.add(enemy);
+    // },
+    // );
 
     // Destroying a sprite sets all of its properties to null,
     // causing any subsequent operations on the sprite to fail.

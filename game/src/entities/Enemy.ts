@@ -5,6 +5,7 @@ import { EnemyBulletPool } from './EnemyWeapon';
 
 export class Enemy extends Phaser.Sprite {
   public game: Game;
+  public body: Phaser.Physics.Arcade.Body;
   public explosionFx: Phaser.Sound;
 
   public collisionDamage = 35;
@@ -31,7 +32,12 @@ export class Enemy extends Phaser.Sprite {
     weaponColor: Color,
     enemyBulletPool: EnemyBulletPool,
   ) {
-    super(game, x, y, `enemy_${colorNameToLetter(shipColor)}${colorNameToLetter(weaponColor)}`);
+    super(
+      game,
+      x,
+      y,
+      `enemy_${colorNameToLetter(shipColor)}${colorNameToLetter(weaponColor)}`,
+    );
     this.animations.add('move');
     this.animations.play('move', 15, true);
 
@@ -48,8 +54,9 @@ export class Enemy extends Phaser.Sprite {
 
     // Weapon
     this.fireTimer = this.game.time.create();
-    this.fireTimer.loop(this.baseFiringRate + (this.baseFiringRate * Math.random()), () =>
-      this.fire(),
+    this.fireTimer.loop(
+      this.baseFiringRate + this.baseFiringRate * Math.random(),
+      () => this.fire(),
     );
     this.fireTimer.start();
 
@@ -66,6 +73,14 @@ export class Enemy extends Phaser.Sprite {
     this.body.setSize(102, 38, 13.5, 12.5);
 
     this.explosionFx = this.game.add.audio('explosion');
+  }
+
+  public update() {
+    super.update();
+    // Don't go beyond midway-ish point
+    if (this.x <= this.game.world.centerX * Math.random() * 0.95) {
+      this.body.velocity.setMagnitude(0);
+    }
   }
 
   public destroy() {

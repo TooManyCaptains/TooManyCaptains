@@ -34,7 +34,7 @@ export default class Preload extends Phaser.State {
       .load()
       .then(() => {
         if (this.game.params.skip) {
-          this.game.state.start('After');
+          this.game.state.start('Main');
         } else {
           this.game.state.start('Before');
         }
