@@ -22,6 +22,8 @@ export class Enemy extends Phaser.Sprite {
   private baseFiringRate = 10000;
   private fireTimer: Phaser.Timer;
 
+  private shield: Phaser.Sprite;
+
   private enemyBulletPool: EnemyBulletPool;
 
   constructor(
@@ -86,11 +88,32 @@ export class Enemy extends Phaser.Sprite {
   public destroy() {
     this.explode();
     this.fireTimer.stop();
+    if (this.shield) {
+      this.shield.destroy();
+    }
     super.destroy();
   }
 
   public fire() {
     this.enemyBulletPool.fire(this);
+  }
+
+  public flashShield(color: Color) {
+    const key = `shield-enemy-${colorNameToLetter(color)}`;
+    if (this.shield) {
+      this.shield.loadTexture(key);
+    } else {
+      this.shield = this.game.add.sprite(this.x, this.y, key);
+      this.shield.anchor.setTo(0.5, 0.5);
+      this.shield.update = () => {
+        this.shield.x = this.x;
+        this.shield.y = this.y;
+      };
+    }
+    this.shield.alpha = 1;
+    this.game.add
+      .tween(this.shield)
+      .to({ alpha: 0 }, 750, Phaser.Easing.Cubic.In, true);
   }
 
   private explode() {

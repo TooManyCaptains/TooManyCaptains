@@ -32,9 +32,9 @@ const AssetManifest = {
     'shield_RY.png',
     'shield_Y.png',
 
-    'shield-enemy_B.png',
-    'shield-enemy_R.png',
-    'shield-enemy_Y.png',
+    'shield-enemy-B.png',
+    'shield-enemy-R.png',
+    'shield-enemy-Y.png',
 
     'icon-weapons.png',
     'icon-shields.png',

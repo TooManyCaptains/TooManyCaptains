@@ -30,7 +30,7 @@ export default class Board extends Phaser.Group {
 
     // Keep game sprites (which respect bounds) within the bounds of the board
     // this.game.world.setBounds(0, 0, width, height);
-    this.game.physics.arcade.setBounds(0, 90, width - 100, height - 75);
+    this.game.physics.arcade.setBounds(0, 90, width - 100, height - 130);
 
     // Sounds
     this.enemyShieldFx = this.game.add.audio('enemy_shield');
@@ -127,11 +127,8 @@ export default class Board extends Phaser.Group {
       this.enemies,
       this.player.weapon,
       (enemy: Enemy, playerBullet: PlayerBullet) => {
-        const bulletDestroysEnemy = playerBullet.color.includes(
-          enemy.shipColor,
-        );
-        // Bullet hits
-        if (bulletDestroysEnemy) {
+        if (playerBullet.color === enemy.shipColor) {
+          // Bullet hurts enemy
           this.spritesToDestroy.add(enemy);
           this.game.session.score += 150;
           const position = new Phaser.Point(
@@ -140,6 +137,8 @@ export default class Board extends Phaser.Group {
           );
           this.createPointsBubble(position, 150);
         } else {
+          // Enemy is not hurt
+          enemy.flashShield(playerBullet.color);
           this.enemyShieldFx.play();
         }
         playerBullet.kill();
