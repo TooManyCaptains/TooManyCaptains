@@ -53,7 +53,6 @@ export class Enemy extends Phaser.Sprite {
       this.baseFiringRate * fireIntervalModifier +
       this.baseFiringRate * Math.random() * fireIntervalModifier;
 
-    console.log('oncomplete');
     // Weapon
     this.fireTimer = this.game.time.create();
     this.fireTimer.loop(firingRate, () => this.fire());

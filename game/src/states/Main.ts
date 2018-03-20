@@ -5,10 +5,8 @@ import Doors from '../interface/Doors';
 import { ColorPosition } from '../../../common/types';
 import { ThrusterDirection, VERY_LOW_HEALTH, LOW_HEALTH } from '../Session';
 
-// import Map from '../interface/Map';
 import { COLORS, colorNameToLetter } from '../utils';
 import { Cheat } from '../../../common/cheats';
-import { times, clone } from 'lodash';
 import { baseStyle, ColorPalette } from '../interface/Styles';
 
 class ScoreInfo extends Phaser.Group {
@@ -87,18 +85,6 @@ class ScoreInfo extends Phaser.Group {
   }
 }
 
-interface Wave {
-  number: number;
-  seconds: number;
-  enemies: number;
-  modifiers: {
-    enemyMoveSpeed: number;
-    enemyFireInterval: number;
-    asteroidSpawnInterval: number;
-    asteroidMoveSpeed: number;
-  };
-}
-
 export default class Main extends Phaser.State {
   public game: Game;
 
@@ -109,13 +95,8 @@ export default class Main extends Phaser.State {
   private healthVeryLowFx: Phaser.Sound;
   private healthLowTimer: Phaser.Timer;
   private soundtrack: Phaser.Sound;
-  private waveTimer: Phaser.Timer;
-  private wave: Wave;
-  private asteroidTimer: Phaser.Timer;
-  private asteroidSpawnIntervalSecs = 20;
 
   public preload() {
-    // Load all enemies
     const enemyWidth = 150;
     const enemyHeight = 65;
     const letters = COLORS.map(colorNameToLetter);
@@ -214,15 +195,10 @@ export default class Main extends Phaser.State {
     this.scoreInfo = new ScoreInfo(this.game, this.game.world.centerX, 15);
     this.scoreInfo.x = this.scoreInfo.x;
 
-    this.asteroidTimer = this.game.time.create();
-
     // Score timer
     const scoreTimer = this.game.time.create();
     scoreTimer.loop(250, this.onScoreTimer, this);
     scoreTimer.start();
-
-    // Waves
-    this.waveTimer = this.game.time.create();
 
     // Keyboard shortcuts (for debugging)
     this.addKeyboardShortcuts();
@@ -241,105 +217,24 @@ export default class Main extends Phaser.State {
     this.doors.open(() => this.onDoorsOpened());
   }
 
-  private getNextWave(): Wave {
-    const currentWave = clone(this.wave);
-    if (!this.wave) {
-      return {
-        number: 0,
-        seconds: 2,
-        enemies: 2,
-        modifiers: {
-          enemyFireInterval: 1.0,
-          enemyMoveSpeed: 1.0,
-          asteroidMoveSpeed: 1.0,
-          asteroidSpawnInterval: 1.0,
-        },
-      };
-    } else if (this.wave.number === 0) {
-      return {
-        number: 1,
-        seconds: 20,
-        enemies: 4,
-        modifiers: {
-          enemyFireInterval: 1.0,
-          enemyMoveSpeed: 1.0,
-          asteroidMoveSpeed: 1.0,
-          asteroidSpawnInterval: 1.0,
-        },
-      };
-    } else if (this.wave.number === 1) {
-      return {
-        number: 2,
-        seconds: 30,
-        enemies: 5,
-        modifiers: {
-          enemyFireInterval: 1.0,
-          enemyMoveSpeed: 1.0,
-          asteroidMoveSpeed: 1.0,
-          asteroidSpawnInterval: 1.0,
-        },
-      };
-    } else {
-      return {
-        number: currentWave.number + 1,
-        seconds: 30,
-        enemies: Math.min(15, currentWave.enemies * 1.5),
-        modifiers: {
-          enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.9,
-          enemyMoveSpeed: currentWave.modifiers.enemyMoveSpeed * 1.1,
-          asteroidMoveSpeed: currentWave.modifiers.asteroidMoveSpeed * 1.1,
-          asteroidSpawnInterval:
-            currentWave.modifiers.asteroidSpawnInterval * 0.9,
-        },
-      };
-    }
-  }
-
   private onDoorsOpened() {
     this.game.session.state = 'in_game';
-    this.nextSoundtrack();
-    this.wave = this.getNextWave();
-    this.onWaveTimer();
+    this.board.reset();
+    this.nextSoundtrack(true);
   }
 
   private onDoorsClosed() {
     this.game.state.start('After');
   }
 
-  private onWaveTimer() {
-    this.waveTimer.add(
-      this.wave.seconds * 1000,
-      () => {
-        this.spawnWave(this.wave);
-        this.wave = this.getNextWave();
-        this.onWaveTimer();
-      },
-      this,
-    );
-    this.waveTimer.start();
-  }
-
-  private onAsteroidTimer() {
-    this.asteroidTimer.add(
-      this.asteroidSpawnIntervalSecs *
-        this.wave.modifiers.asteroidSpawnInterval *
-        1000,
-      () => {
-        this.board.spawnAsteroid(this.wave.modifiers.asteroidMoveSpeed);
-        this.spawnWave(this.wave);
-        this.onAsteroidTimer();
-      },
-      this,
-    );
-    this.asteroidTimer.start();
-  }
-
-  private nextSoundtrack() {
+  private nextSoundtrack(reset = false) {
     if (this.game.session.state !== 'in_game') {
       return;
     }
     let key = 'music_stage_4';
-    if (!this.soundtrack) {
+    if (reset) {
+      key = 'music_stage_1';
+    } else if (this.soundtrack.key === 'music_stage_1') {
       key = 'music_stage_2';
     } else if (this.soundtrack.key === 'music_stage_2') {
       key = 'music_stage_3';
@@ -347,7 +242,6 @@ export default class Main extends Phaser.State {
     this.soundtrack = this.game.add
       .sound(key, this.game.session.volume.music, false)
       .play();
-    console.log('changing soundtrack to: ', key);
     this.soundtrack.onStop.addOnce(this.nextSoundtrack, this);
   }
 
@@ -481,20 +375,6 @@ export default class Main extends Phaser.State {
     if (health <= 0) {
       this.onPlayerDead();
     }
-  }
-
-  private spawnWave(wave: Wave) {
-    console.log(`spawning wave #${wave.number}`);
-    console.log(wave);
-    const numEnemies = wave.enemies!;
-    times(numEnemies, i => {
-      this.board.spawnEnemy(
-        this.board.height / numEnemies * (i + 1) -
-          this.board.height / numEnemies / 2,
-        wave.modifiers.enemyMoveSpeed,
-        wave.modifiers.enemyFireInterval,
-      );
-    });
   }
 
   private onScoreTimer() {

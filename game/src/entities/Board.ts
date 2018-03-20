@@ -7,7 +7,19 @@ import { randomColor, colorNameToLetter } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
 import { ColorPalette, baseStyle } from '../interface/Styles';
 import Boss from './Boss';
-import { random } from 'lodash';
+import { random, times, clone } from 'lodash';
+
+interface Wave {
+  number: number;
+  seconds: number;
+  enemies: number;
+  modifiers: {
+    enemyMoveSpeed: number;
+    enemyFireInterval: number;
+    asteroidSpawnInterval: number;
+    asteroidMoveSpeed: number;
+  };
+}
 
 export default class Board extends Phaser.Group {
   public game: Game;
@@ -20,37 +32,32 @@ export default class Board extends Phaser.Group {
   private collideFx: Phaser.Sound;
   private damagedFx: Phaser.Sound;
   private enemyShieldFx: Phaser.Sound;
-  // private shieldHitFx: { [letter: string]: Phaser.Sound } = {};
+  private waveTimer: Phaser.Timer;
+  private wave: Wave;
+  private asteroidTimer: Phaser.Timer;
+  private asteroidSpawnIntervalSecs = 20;
 
   private spritesToDestroy: Set<Phaser.Sprite> = new Set();
 
   constructor(game: Game, width: number, height: number) {
     super(game);
-
     this.player = new Player(this.game, 150, height / 2);
 
     // Keep game sprites (which respect bounds) within the bounds of the board
     // this.game.world.setBounds(0, 0, width, height);
     this.game.physics.arcade.setBounds(0, 90, width, height - 130);
 
-    // Sounds
-    this.enemyShieldFx = this.game.add.audio('shield');
-    this.enemyShieldFx.volume = 0.5;
-    this.damagedFx = this.game.add.audio('damaged');
-    this.collideFx = this.game.add.audio('collide');
-    // COLORS.map(colorNameToLetter).map(letter => {
-    //   this.shieldHitFx[letter] = this.game.add.audio(`shield_hit_${letter}`);
-    // });
-
-    // Asteroids
-    this.asteroids = new Phaser.Group(this.game, undefined, 'asteroids');
-    this.add(this.asteroids);
-
     // Mask (overflow)
     const mask = this.game.add.graphics(0, 0, this);
     mask.beginFill(ColorPalette.Black);
     mask.drawRect(0, 0, width, height);
     this.mask = mask;
+
+    // Sounds
+    this.enemyShieldFx = this.game.add.audio('shield');
+    this.enemyShieldFx.volume = 0.5;
+    this.damagedFx = this.game.add.audio('damaged');
+    this.collideFx = this.game.add.audio('collide');
 
     // Create recycled bullet pool for enemy bullets
     this.enemyBulletPool = new EnemyBulletPool(this.game, this.player);
@@ -60,6 +67,36 @@ export default class Board extends Phaser.Group {
 
     // Player ship
     this.add(this.player);
+
+    this.reset();
+  }
+
+  public reset() {
+    // Asteroids
+    if (this.asteroidTimer) {
+      this.asteroidTimer.destroy();
+    }
+    this.asteroidTimer = this.game.time.create();
+    this.asteroids = new Phaser.Group(this.game, undefined, 'asteroids');
+    this.add(this.asteroids);
+
+    // Waves
+    if (this.waveTimer) {
+      this.waveTimer.destroy();
+    }
+    this.waveTimer = this.game.time.create();
+    this.wave = {
+      number: 0,
+      seconds: 2,
+      enemies: 2,
+      modifiers: {
+        enemyFireInterval: 1.0,
+        enemyMoveSpeed: 1.0,
+        asteroidMoveSpeed: 1.0,
+        asteroidSpawnInterval: 1.0,
+      },
+    };
+    this.onWaveTimer();
   }
 
   public spawnEnemy(
@@ -81,6 +118,12 @@ export default class Board extends Phaser.Group {
         fireIntervalModifier,
       ),
     );
+  }
+
+  public destroy() {
+    this.asteroidTimer.destroy();
+    this.waveTimer.destroy();
+    super.destroy();
   }
 
   public spawnBoss() {
@@ -161,16 +204,6 @@ export default class Board extends Phaser.Group {
       },
     );
 
-    // // Enemy <-> player ship (no shield) collision
-    // this.game.physics.arcade.overlap(
-    //   this.enemies,
-    //   this.player.ship,
-    //   (playerShip: Phaser.Sprite, enemy: Enemy) => {
-    //     this.spritesToDestroy.add(enemy);
-    //     this.game.session.health -= enemy.collisionDamage;
-    //   },
-    // );
-
     // Player <-> asteroid collision
     this.game.physics.arcade.overlap(
       this.asteroids,
@@ -198,16 +231,6 @@ export default class Board extends Phaser.Group {
       },
     );
 
-    // // Enemy <-> asteroid collision
-    // this.game.physics.arcade.overlap(
-    //   this.asteroids,
-    //   this.enemies,
-    //   (asteroid: Asteroid, enemy: Enemy) => {
-    //     this.createExplosion(asteroid.position, 1.0);
-    //     this.spritesToDestroy.add(enemy);
-    // },
-    // );
-
     // Destroying a sprite sets all of its properties to null,
     // causing any subsequent operations on the sprite to fail.
     // This can happen if a sprite is destroyed "twice", such as if
@@ -219,6 +242,89 @@ export default class Board extends Phaser.Group {
     this.spritesToDestroy.clear();
 
     super.update();
+  }
+
+  private onWaveTimer() {
+    this.waveTimer.add(
+      this.wave.seconds * 1000,
+      () => {
+        this.spawnWave(this.wave);
+        this.wave = this.getNextWave();
+        this.onWaveTimer();
+      },
+      this,
+    );
+    this.waveTimer.start();
+  }
+
+  private spawnWave(wave: Wave) {
+    console.log(`spawned wave ${wave.number}`);
+    console.log(wave);
+    const numEnemies = wave.enemies!;
+    times(numEnemies, i => {
+      this.spawnEnemy(
+        this.height / numEnemies * (i + 1) - this.height / numEnemies / 2,
+        wave.modifiers.enemyMoveSpeed,
+        wave.modifiers.enemyFireInterval,
+      );
+    });
+  }
+
+  private onAsteroidTimer() {
+    this.asteroidTimer.add(
+      this.asteroidSpawnIntervalSecs *
+        this.wave.modifiers.asteroidSpawnInterval *
+        1000,
+      () => {
+        this.spawnAsteroid(this.wave.modifiers.asteroidMoveSpeed);
+        this.spawnWave(this.wave);
+        this.onAsteroidTimer();
+      },
+      this,
+    );
+    this.asteroidTimer.start();
+  }
+
+  private getNextWave(): Wave {
+    const currentWave = clone(this.wave);
+    if (currentWave.number === 0) {
+      return {
+        number: 1,
+        seconds: 20,
+        enemies: 4,
+        modifiers: {
+          enemyFireInterval: 1.0,
+          enemyMoveSpeed: 1.0,
+          asteroidMoveSpeed: 1.0,
+          asteroidSpawnInterval: 1.0,
+        },
+      };
+    } else if (currentWave.number === 1) {
+      return {
+        number: 2,
+        seconds: 30,
+        enemies: 5,
+        modifiers: {
+          enemyFireInterval: 1.0,
+          enemyMoveSpeed: 1.0,
+          asteroidMoveSpeed: 1.0,
+          asteroidSpawnInterval: 1.0,
+        },
+      };
+    } else {
+      return {
+        number: currentWave.number + 1,
+        seconds: 30,
+        enemies: Math.min(15, currentWave.enemies * 1.5),
+        modifiers: {
+          enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.9,
+          enemyMoveSpeed: currentWave.modifiers.enemyMoveSpeed * 1.1,
+          asteroidMoveSpeed: currentWave.modifiers.asteroidMoveSpeed * 1.1,
+          asteroidSpawnInterval:
+            currentWave.modifiers.asteroidSpawnInterval * 0.9,
+        },
+      };
+    }
   }
 
   private onAsteroidOutOfBounds(asteroid: Asteroid) {
