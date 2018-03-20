@@ -329,7 +329,7 @@ export default class Board extends Phaser.Group {
     return {
       number: currentWave.number + 1,
       seconds: 30,
-      enemies: Math.min(15, currentWave.enemies * 1.35),
+      enemies: Math.min(15, currentWave.enemies * 1.5),
       modifiers: {
         enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.95,
         enemyMoveSpeed: currentWave.modifiers.enemyMoveSpeed * 1.05,
