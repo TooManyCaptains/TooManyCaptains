@@ -192,6 +192,60 @@ export default class Board extends Phaser.Group {
     super.update();
   }
 
+  public spawnAsteroid(moveSpeedModifier = 1.0) {
+    const isPlayerCamping =
+      this.game.session.shieldColors.length === 3 ||
+      this.game.session.repairLevel === 3;
+    // Punish players who are camping
+    const y = isPlayerCamping
+      ? this.player.y
+      : this.game.physics.arcade.bounds.height * Math.random() + 60;
+    const asteroid = new Asteroid(
+      this.game,
+      this.game.width,
+      y,
+      moveSpeedModifier,
+    );
+    this.asteroids.add(asteroid);
+    asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
+  }
+
+  public spawnWave(wave: Wave) {
+    console.log(`spawned wave ${wave.number}`);
+    console.log(wave);
+    const numEnemies = wave.enemies!;
+    times(numEnemies, i => {
+      this.spawnEnemy(
+        this.game.physics.arcade.bounds.top +
+          this.game.physics.arcade.bounds.height / numEnemies * (i + 1) -
+          this.game.physics.arcade.bounds.height / numEnemies / 2,
+        wave.modifiers.enemyMoveSpeed,
+        wave.modifiers.enemyFireInterval,
+      );
+    });
+  }
+
+  public spawnEnemy(
+    y?: number,
+    moveSpeedModifier = 1.0,
+    fireIntervalModifier = 1.0,
+  ) {
+    this.enemies.add(
+      new Enemy(
+        this.game,
+        random(this.game.width - 250, this.game.width - 100),
+        y ||
+          this.game.physics.arcade.bounds.top +
+            this.game.physics.arcade.bounds.height * Math.random(),
+        randomColor(),
+        randomColor(),
+        this.enemyBulletPool,
+        moveSpeedModifier,
+        fireIntervalModifier,
+      ),
+    );
+  }
+
   private onAsteroidTimer() {
     this.asteroidTimer.add(
       this.asteroidSpawnIntervalSecs *
@@ -229,58 +283,6 @@ export default class Board extends Phaser.Group {
     this.waveTimer.start();
   }
 
-  private spawnAsteroid(moveSpeedModifier = 1.0) {
-    const isPlayerCamping =
-      this.game.session.shieldColors.length === 3 ||
-      this.game.session.repairLevel === 3;
-    // Punish players who are camping
-    const y = isPlayerCamping
-      ? this.player.y
-      : this.game.physics.arcade.bounds.height * Math.random() + 60;
-    const asteroid = new Asteroid(
-      this.game,
-      this.game.width,
-      y,
-      moveSpeedModifier,
-    );
-    this.asteroids.add(asteroid);
-    asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
-  }
-
-  private spawnWave(wave: Wave) {
-    console.log(`spawned wave ${wave.number}`);
-    console.log(wave);
-    const numEnemies = wave.enemies!;
-    times(numEnemies, i => {
-      this.spawnEnemy(
-        this.height / numEnemies * (i + 1) - this.height / numEnemies / 2,
-        wave.modifiers.enemyMoveSpeed,
-        wave.modifiers.enemyFireInterval,
-      );
-    });
-  }
-
-  private spawnEnemy(
-    y?: number,
-    moveSpeedModifier = 1.0,
-    fireIntervalModifier = 1.0,
-  ) {
-    this.enemies.add(
-      new Enemy(
-        this.game,
-        random(this.game.width - 250, this.game.width - 100),
-        y ||
-          this.game.physics.arcade.bounds.top +
-            this.game.physics.arcade.bounds.height * Math.random(),
-        randomColor(),
-        randomColor(),
-        this.enemyBulletPool,
-        moveSpeedModifier,
-        fireIntervalModifier,
-      ),
-    );
-  }
-
   private getNextWave(): Wave {
     const currentWave = clone(this.wave);
     if (currentWave.number === 0) {
@@ -298,7 +300,7 @@ export default class Board extends Phaser.Group {
     } else if (currentWave.number === 1) {
       return {
         number: 2,
-        seconds: 30,
+        seconds: 35,
         enemies: 5,
         modifiers: {
           enemyFireInterval: 1.0,
