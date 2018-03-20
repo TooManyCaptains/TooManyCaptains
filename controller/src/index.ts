@@ -58,14 +58,16 @@ import { GameState, Packet } from '../../common/types';
   // Update lights (all at once, since they are daisy-chained via PWM)
   function updatePanelLights() {
     let lights: Light[] = [];
-    if (gameState === 'wait_for_start') {
-      lightController.startFlashingLights(LightColor.green, undefined, 2000);
+    if (gameState === 'wait_for_cards') {
+      lightController.setAllLightToColor(LightColor.green);
     } else if (gameState === 'game_over') {
       lightController.startFlashingLights(LightColor.red);
     } else if (gameState === 'in_game') {
-      lightController.stopFlashingLights();
       lights = flatten(panelController.panels.map(panel => panel.lights));
       lightController.setLights(lights);
+    } else {
+      // clear lights
+      lightController.setAllLightToColor(0);
     }
   }
 

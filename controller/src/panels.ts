@@ -28,9 +28,11 @@ class WeaponsPanel extends Panel {
       } else {
         this.buttonLightState = ButtonLightState.Off;
       }
-    } else {
+    } else if (gameState === 'wait_for_start') {
       // Otherwise, blink the button light
       this.buttonLightState = ButtonLightState.Blinking;
+    } else {
+      this.buttonLightState = ButtonLightState.Off;
     }
 
     this.updateLightState();

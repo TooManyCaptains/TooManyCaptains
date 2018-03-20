@@ -18,6 +18,11 @@ export class LightController {
     this.updateLights();
   }
 
+  public setAllLightToColor(color: LightColor) {
+    this.stopFlashingLights();
+    this.setLights(_.times(this.numLights, index => ({ index, color })));
+  }
+
   public teardown(): void {
     ws281x.reset();
   }

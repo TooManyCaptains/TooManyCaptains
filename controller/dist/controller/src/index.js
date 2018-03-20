@@ -42,16 +42,19 @@ const LightController_1 = require("./LightController");
     // Update lights (all at once, since they are daisy-chained via PWM)
     function updatePanelLights() {
         let lights = [];
-        if (gameState === 'wait_for_start') {
-            lightController.startFlashingLights(types_1.LightColor.green, undefined, 2000);
+        if (gameState === 'wait_for_cards') {
+            lightController.setAllLightToColor(types_1.LightColor.green);
         }
         else if (gameState === 'game_over') {
             lightController.startFlashingLights(types_1.LightColor.red);
         }
         else if (gameState === 'in_game') {
-            lightController.stopFlashingLights();
             lights = lodash_1.flatten(panelController.panels.map(panel => panel.lights));
             lightController.setLights(lights);
+        }
+        else {
+            // clear lights
+            lightController.setAllLightToColor(0);
         }
     }
     console.info(`\nWire poll rate: ${1000 / panelController.pollRateMsec} Hz`);

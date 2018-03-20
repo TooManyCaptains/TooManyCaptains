@@ -238,6 +238,7 @@ export default class Lobby extends Phaser.Group {
         'SCAN CAPTAIN CARD',
       );
     } else if (this.game.session.canStartRound) {
+      this.game.session.state = 'wait_for_start';
       if (this.instructionsSplit) {
         if (this.game.session.captainsInRound.size === 6) {
           this.game.add
