@@ -6,7 +6,8 @@ import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
 import { randomColor, colorNameToLetter } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
 import { ColorPalette, baseStyle } from '../interface/Styles';
-import { random, times, clone } from 'lodash';
+import { random, times, sample } from 'lodash';
+import { Color } from '../../../common/types';
 
 interface Wave {
   number: number;
@@ -33,7 +34,7 @@ export default class Board extends Phaser.Group {
   private waveTimer: Phaser.Timer;
   private wave: Wave;
   private asteroidTimer: Phaser.Timer;
-  private asteroidSpawnIntervalSecs = 20;
+  private asteroidBaseSpawnInterval = 20;
 
   private spritesToDestroy: Set<Phaser.Sprite> = new Set();
 
@@ -70,14 +71,6 @@ export default class Board extends Phaser.Group {
   }
 
   public reset() {
-    // Asteroids
-    if (this.asteroidTimer) {
-      this.asteroidTimer.destroy();
-    }
-    this.asteroidTimer = this.game.time.create();
-    this.asteroids = new Phaser.Group(this.game, undefined, 'asteroids');
-    this.add(this.asteroids);
-
     // Waves
     if (this.waveTimer) {
       this.waveTimer.destroy();
@@ -95,6 +88,15 @@ export default class Board extends Phaser.Group {
       },
     };
     this.onWaveTimer();
+
+    // Asteroids
+    if (this.asteroidTimer) {
+      this.asteroidTimer.destroy();
+    }
+    this.asteroidTimer = this.game.time.create();
+    this.asteroids = new Phaser.Group(this.game, undefined, 'asteroids');
+    this.add(this.asteroids);
+    this.onAsteroidTimer();
   }
 
   public update() {
@@ -210,50 +212,64 @@ export default class Board extends Phaser.Group {
     asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
   }
 
-  public spawnWave(wave: Wave) {
-    console.log(`spawned wave ${wave.number}`);
-    console.log(wave);
-    const numEnemies = wave.enemies!;
-    times(numEnemies, i => {
-      this.spawnEnemy(
-        this.game.physics.arcade.bounds.top +
-          this.game.physics.arcade.bounds.height / numEnemies * (i + 1) -
-          this.game.physics.arcade.bounds.height / numEnemies / 2,
-        wave.modifiers.enemyMoveSpeed,
-        wave.modifiers.enemyFireInterval,
-      );
-    });
-  }
-
-  public spawnEnemy(
-    y?: number,
-    moveSpeedModifier = 1.0,
-    fireIntervalModifier = 1.0,
-  ) {
+  public manuallySpawnEnemy() {
     this.enemies.add(
       new Enemy(
         this.game,
         random(this.game.width - 250, this.game.width - 100),
-        y ||
-          this.game.physics.arcade.bounds.top +
-            this.game.physics.arcade.bounds.height * Math.random(),
+        this.game.physics.arcade.bounds.top +
+          this.game.physics.arcade.bounds.height * Math.random(),
         randomColor(),
         randomColor(),
         this.enemyBulletPool,
-        moveSpeedModifier,
-        fireIntervalModifier,
       ),
     );
   }
 
+  private spawnWave(wave: Wave) {
+    console.log(`spawned wave ${wave.number}`);
+    console.log(wave);
+
+    const firstWaveColors = sample([
+      {
+        weapons: ['blue', 'yellow'],
+        ships: ['red', 'blue'],
+      },
+      {
+        weapons: ['yellow', 'red'],
+        ships: ['blue', 'yellow'],
+      },
+      {
+        weapons: ['red', 'yellow'],
+        ships: ['yellow', 'blue'],
+      },
+    ] as Array<{ weapons: Color[]; ships: Color[] }>)!;
+
+    times(wave.enemies, i => {
+      this.enemies.add(
+        new Enemy(
+          this.game,
+          random(this.game.width - 250, this.game.width - 100),
+          this.game.physics.arcade.bounds.top +
+            this.game.physics.arcade.bounds.height / wave.enemies * (i + 1) -
+            this.game.physics.arcade.bounds.height / wave.enemies / 2,
+          wave.number === 0 ? firstWaveColors.ships[i]! : randomColor(),
+          wave.number === 0 ? firstWaveColors.weapons[i]! : randomColor(),
+          this.enemyBulletPool,
+          wave.modifiers.enemyMoveSpeed,
+          wave.modifiers.enemyFireInterval,
+        ),
+      );
+    });
+  }
+
   private onAsteroidTimer() {
     this.asteroidTimer.add(
-      this.asteroidSpawnIntervalSecs *
+      this.asteroidBaseSpawnInterval *
         this.wave.modifiers.asteroidSpawnInterval *
         1000,
       () => {
         this.spawnAsteroid(this.wave.modifiers.asteroidMoveSpeed);
-        this.spawnWave(this.wave);
         this.onAsteroidTimer();
       },
       this,
@@ -284,45 +300,19 @@ export default class Board extends Phaser.Group {
   }
 
   private getNextWave(): Wave {
-    const currentWave = clone(this.wave);
-    if (currentWave.number === 0) {
-      return {
-        number: 1,
-        seconds: 20,
-        enemies: 4,
-        modifiers: {
-          enemyFireInterval: 1.0,
-          enemyMoveSpeed: 1.0,
-          asteroidMoveSpeed: 1.0,
-          asteroidSpawnInterval: 1.0,
-        },
-      };
-    } else if (currentWave.number === 1) {
-      return {
-        number: 2,
-        seconds: 35,
-        enemies: 5,
-        modifiers: {
-          enemyFireInterval: 1.0,
-          enemyMoveSpeed: 1.0,
-          asteroidMoveSpeed: 1.0,
-          asteroidSpawnInterval: 1.0,
-        },
-      };
-    } else {
-      return {
-        number: currentWave.number + 1,
-        seconds: 30,
-        enemies: Math.min(15, currentWave.enemies * 1.5),
-        modifiers: {
-          enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.9,
-          enemyMoveSpeed: currentWave.modifiers.enemyMoveSpeed * 1.1,
-          asteroidMoveSpeed: currentWave.modifiers.asteroidMoveSpeed * 1.1,
-          asteroidSpawnInterval:
-            currentWave.modifiers.asteroidSpawnInterval * 0.9,
-        },
-      };
-    }
+    const currentWave = this.wave;
+    return {
+      number: currentWave.number + 1,
+      seconds: 30 - currentWave.number,
+      enemies: Math.min(15, currentWave.enemies * 1.35),
+      modifiers: {
+        enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.95,
+        enemyMoveSpeed: currentWave.modifiers.enemyMoveSpeed * 1.05,
+        asteroidMoveSpeed: currentWave.modifiers.asteroidMoveSpeed * 1.3,
+        asteroidSpawnInterval:
+          currentWave.modifiers.asteroidSpawnInterval * 0.8,
+      },
+    };
   }
 
   private createPointsBubble(

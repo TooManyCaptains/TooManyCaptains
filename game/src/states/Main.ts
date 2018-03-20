@@ -254,7 +254,7 @@ export default class Main extends Phaser.State {
   private addKeyboardShortcuts() {
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.E)
-      .onDown.add(() => this.board.spawnEnemy(undefined), this);
+      .onDown.add(() => this.board.manuallySpawnEnemy(), this);
 
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.A)
@@ -331,7 +331,7 @@ export default class Main extends Phaser.State {
     if (cheat.code === 'kill_player') {
       this.game.session.health = 0;
     } else if (cheat.code === 'spawn_enemy') {
-      this.board.spawnEnemy();
+      this.board.manuallySpawnEnemy();
     } else if (cheat.code === 'spawn_asteroid') {
       this.board.spawnAsteroid();
     }
