@@ -34,7 +34,7 @@ export default class Board extends Phaser.Group {
   private waveTimer: Phaser.Timer;
   private wave: Wave;
   private asteroidTimer: Phaser.Timer;
-  private asteroidBaseSpawnInterval = 20;
+  private asteroidBaseSpawnInterval = 30;
 
   private spritesToDestroy: Set<Phaser.Sprite> = new Set();
 

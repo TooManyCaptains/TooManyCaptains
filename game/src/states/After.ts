@@ -54,7 +54,7 @@ export default class After extends Phaser.State {
     this.resetTickTimer.loop(1000, this.onResetTick, this);
     this.resetTickTimer.start();
 
-    this.secondsBeforeReset = 10;
+    this.secondsBeforeReset = 16;
 
     // Score statistics
     const y = 700;
