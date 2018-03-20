@@ -275,7 +275,7 @@ export default class Lobby extends Phaser.Group {
           .to({ x: -450 }, 500, Phaser.Easing.Quadratic.InOut, true);
         this.game.add
           .tween(this.rightInstruction)
-          .to({ x: 550, alpha: 1 }, 500, Phaser.Easing.Quadratic.InOut, true);
+          .to({ x: 535, alpha: 1 }, 500, Phaser.Easing.Quadratic.InOut, true);
       }
     }
   }
