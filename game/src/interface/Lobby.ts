@@ -94,6 +94,7 @@ class Instruction extends Phaser.Group {
       null,
       this,
     );
+    this.image.scale.setTo(0.9, 0.9);
     this.image.anchor.setTo(0.5, 0.5);
     const mask = this.game.add.graphics(0, 0, this);
     mask.drawRoundedRect(
@@ -280,10 +281,6 @@ export default class Lobby extends Phaser.Group {
         this.game.add
           .tween(this.instruction)
           .to({ x: -350, y: 50 }, 500, Phaser.Easing.Quadratic.InOut, true);
-
-        // Shrink
-        this.instruction.shrink(0.9);
-        this.rightInstruction.shrink(0.9);
       }
     }
   }
