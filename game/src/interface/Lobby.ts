@@ -89,7 +89,7 @@ class Instruction extends Phaser.Group {
     // Instruction graphic
     this.image = this.game.add.sprite(
       this.game.world.centerX - 250,
-      this.game.world.centerY - 150,
+      this.game.world.centerY - 140,
       imageKey,
       null,
       this,
