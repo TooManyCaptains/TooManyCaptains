@@ -157,7 +157,7 @@ export default class PlayerShip extends Phaser.Group {
     this.game.session.signals.move.add(this.updateThrusters, this);
     this.game.session.signals.health.add(this.onHealthChanged, this);
 
-    this.onSubsystemsChanged();
+    this.onSubsystemsChanged(false);
     this.onHealthChanged();
   }
 
@@ -236,7 +236,7 @@ export default class PlayerShip extends Phaser.Group {
     }
   }
 
-  private onSubsystemsChanged() {
+  private onSubsystemsChanged(playSounds = true) {
     console.log(this.game.session.configurations);
     // Thrusters
     this.updateThrusters();
@@ -263,14 +263,16 @@ export default class PlayerShip extends Phaser.Group {
     this.shield.animations.play(
       colorsToColorKey(this.game.session.shieldColors),
     );
-    const addedShieldColors = difference(
-      this.game.session.shieldColors,
-      this.currentShieldColors,
-    );
-    addedShieldColors
-      .map(colorNameToLetter)
-      .map(letter => this.shieldOnFx[letter])
-      .forEach(sound => sound.play());
+    if (playSounds) {
+      const addedShieldColors = difference(
+        this.game.session.shieldColors,
+        this.currentShieldColors,
+      );
+      addedShieldColors
+        .map(colorNameToLetter)
+        .map(letter => this.shieldOnFx[letter])
+        .forEach(sound => sound.play());
+    }
     this.currentShieldColors = this.game.session.shieldColors;
 
     // Repairs
@@ -283,7 +285,7 @@ export default class PlayerShip extends Phaser.Group {
     this.repairPercentagePerSecond = repairSpeedMap[level];
     if (level > 0) {
       // Only play sound if repair level increased, not if decreased
-      if (level > prevRepairLevel) {
+      if (level > prevRepairLevel && playSounds) {
         this.repairFx.play();
       }
       this.repair.visible = true;
