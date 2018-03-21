@@ -23,7 +23,7 @@ export default class Marquee extends Phaser.Group {
 
     // Icon (optional)
     if (iconKey) {
-      const icon = this.game.add.image(-200, 27.5, iconKey, null, this);
+      const icon = this.game.add.image(-210, 27.5, iconKey, null, this);
       // icon.anchor.setTo(0.5, 0.5);
       icon.scale.setTo(0.5, 0.5);
     }

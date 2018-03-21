@@ -144,6 +144,9 @@ export default class Board extends Phaser.Group {
             enemy.position.y,
           );
           this.createPointsBubble(position, 150);
+          if (this.enemies.countLiving() === 1) {
+            this.fastNextWave();
+          }
         } else {
           // Enemy is not hurt
           enemy.flashShield(playerBullet.color);
@@ -283,7 +286,13 @@ export default class Board extends Phaser.Group {
     });
 
     if (wave.number > 0 && wave.number % 2 === 0) {
-      this.asteroidStorm();
+      const asteroidStormTimer = this.game.time.create();
+      asteroidStormTimer.add(
+        4000 + Math.random() * 10 * 1000,
+        this.asteroidStorm,
+        this,
+      );
+      asteroidStormTimer.start();
     }
   }
 
@@ -324,18 +333,36 @@ export default class Board extends Phaser.Group {
     this.waveTimer.start();
   }
 
+  private fastNextWave() {
+    if (!this.waveTimer) {
+      return;
+    }
+    console.log('fastNextWave');
+    this.waveTimer.stop();
+    this.waveTimer.add(
+      5000 + 5000 * Math.random(),
+      () => {
+        this.spawnWave(this.wave);
+        this.wave = this.getNextWave();
+        this.onWaveTimer();
+      },
+      this,
+    );
+    this.waveTimer.start();
+  }
+
   private getNextWave(): Wave {
     const currentWave = this.wave;
     return {
       number: currentWave.number + 1,
-      seconds: 45 + currentWave.enemies,
+      seconds: 37 + currentWave.enemies,
       enemies: Math.min(15, currentWave.enemies * 1.5),
       modifiers: {
         enemyFireInterval: currentWave.modifiers.enemyFireInterval * 0.95,
         enemyMoveSpeed: currentWave.modifiers.enemyMoveSpeed * 1.05,
         asteroidMoveSpeed: currentWave.modifiers.asteroidMoveSpeed * 1.05,
         asteroidSpawnInterval:
-          currentWave.modifiers.asteroidSpawnInterval * 0.8,
+          currentWave.modifiers.asteroidSpawnInterval * 0.95,
       },
     };
   }

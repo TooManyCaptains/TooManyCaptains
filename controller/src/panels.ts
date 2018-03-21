@@ -131,7 +131,7 @@ class RepairsPanel extends Panel {
 class ShieldsPanel extends Panel {
   public readonly subsystem = 'shields';
   public readonly pins = [15, 13, 11];
-  public readonly lightIndicies = range(25, 33);
+  public readonly lightIndicies = range(24, 34);
 
   public update(): void {
     // Set LED lights for later batch-update

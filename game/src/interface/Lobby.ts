@@ -205,7 +205,7 @@ export default class Lobby extends Phaser.Group {
       let placeHolder: Placeholder;
       if (i === 0) {
         // not actual yellow b/c alpha makes it appear visually duller
-        placeHolder = new Placeholder(this, 0xffce23);
+        placeHolder = new Placeholder(this, 0xffe100);
       } else if (i <= 2) {
         placeHolder = new Placeholder(this, ColorPalette.Blue);
       } else {

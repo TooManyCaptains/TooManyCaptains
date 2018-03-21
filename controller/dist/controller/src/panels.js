@@ -122,7 +122,7 @@ class ShieldsPanel extends types_1.Panel {
         super(...arguments);
         this.subsystem = 'shields';
         this.pins = [15, 13, 11];
-        this.lightIndicies = lodash_1.range(25, 33);
+        this.lightIndicies = lodash_1.range(24, 34);
     }
     update() {
         // Set LED lights for later batch-update

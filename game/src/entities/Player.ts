@@ -159,6 +159,15 @@ export default class PlayerShip extends Phaser.Group {
 
     this.onSubsystemsChanged(false);
     this.onHealthChanged();
+
+    this.onDestroy.add(() => {
+      if (this.moveSlowFx) {
+        this.moveSlowFx.stop();
+      }
+      if (this.moveFastFx) {
+        this.moveFastFx.stop();
+      }
+    });
   }
 
   get x() {
