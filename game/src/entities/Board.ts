@@ -6,7 +6,7 @@ import { EnemyBullet, EnemyBulletPool } from './EnemyWeapon';
 import { randomColor, colorNameToLetter } from '../utils';
 import { PlayerBullet } from './PlayerWeapon';
 import { ColorPalette, baseStyle } from '../interface/Styles';
-import { random, times, sample } from 'lodash';
+import { random, times, sample, range } from 'lodash';
 import { Color } from '../../../common/types';
 
 interface Wave {
@@ -183,6 +183,24 @@ export default class Board extends Phaser.Group {
       },
     );
 
+    // Enemy bullet <-> asteroid collision
+    this.game.physics.arcade.overlap(
+      this.asteroids,
+      this.enemyBulletPool,
+      (asteroid: Asteroid, enemyBullet: EnemyBullet) => {
+        const positon = new Phaser.Point(
+          enemyBullet.position.x - 50,
+          enemyBullet.position.y,
+        );
+        this.createMovingExplosion(
+          positon,
+          (asteroid.body as Phaser.Physics.Arcade.Body).velocity,
+          0.4,
+        );
+        enemyBullet.kill();
+      },
+    );
+
     // Destroying a sprite sets all of its properties to null,
     // causing any subsequent operations on the sprite to fail.
     // This can happen if a sprite is destroyed "twice", such as if
@@ -215,23 +233,23 @@ export default class Board extends Phaser.Group {
   }
 
   public asteroidStorm() {
-    const haystack = 12;
-    const needle = random(3, 8);
-    times(haystack, i => {
-      if (i < 3) {
-        return;
-      }
-      if (i >= needle - 2 && i <= needle + 2) {
+    const storms = [[1, 2, 3, 8, 9, 10], range(6), range(5, 10)];
+
+    const storm = sample(storms)!;
+    const numSlots = 10;
+    const slotSize = this.game.physics.arcade.bounds.height / numSlots;
+
+    times(numSlots, slotIndex => {
+      if (!storm.includes(slotIndex)) {
         return;
       }
       const asteroid = new Asteroid(
         this.game,
         this.game.width - 100 * Math.random(),
-        i * 50,
+        this.game.physics.arcade.bounds.top + slotIndex * slotSize,
         this.wave.modifiers.asteroidMoveSpeed,
       );
       this.asteroids.add(asteroid);
-      // asteroid.events.onOutOfBounds.add(this.onAsteroidOutOfBounds, this);
     });
   }
 
