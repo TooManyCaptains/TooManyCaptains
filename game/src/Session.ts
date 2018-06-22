@@ -194,13 +194,20 @@ export default class Session {
       this.configurations = packet.configurations;
     } else if (packet.kind === 'move') {
       const thrusterDirection = (() => {
-        if (packet.state === 'released') {
-          return ThrusterDirection.Stopped;
+        if (packet.direction === this.thrusterDirection) {
+          // same direction
+          if (packet.state === 'released') {
+            return ThrusterDirection.Stopped;
+          }
+        } else {
+          // different direction
+          if (packet.state === 'pressed') {
+            return packet.direction === 'up'
+              ? ThrusterDirection.Up
+              : ThrusterDirection.Down;
+          }
         }
-        if (packet.direction === 'up') {
-          return ThrusterDirection.Up;
-        }
-        return ThrusterDirection.Down;
+        return this.thrusterDirection;
       })();
       this.thrusterDirection = thrusterDirection;
       this.signals.move.dispatch(thrusterDirection);

@@ -27,16 +27,16 @@ if ! ping -t 1 -c 1 starship >/dev/null 2>/dev/null; then
   exit
 fi
 
-# Ping starship-controller from starship
-if ! ssh crew@starship 'ping -W 1 -c 1 starship-controller' >/dev/null 2>/dev/null; then
-  echo "⚠️  Could not connect to ${bold}starship-controller${normal} from ${bold}starship${normal}... are you plugged in?"
-  exit
-fi
+# # Ping starship-controller from starship
+# if ! ssh pi@starship 'ping -W 1 -c 1 starship-controller' >/dev/null 2>/dev/null; then
+#   echo "⚠️  Could not connect to ${bold}starship-controller${normal} from ${bold}starship${normal}... are you plugged in?"
+#   exit
+# fi
 
  # Make sure docker-machine is set up
 if ! docker-machine status starship >/dev/null 2>/dev/null; then
   echo "⚠️  Docker machine for starship not found! Creating one...\n\n"
-  docker-machine create --driver generic --generic-ip-address=10.0.1.42 --generic-ssh-key ~/.ssh/id_rsa --generic-ssh-user=crew starship
+  docker-machine create --driver generic --generic-ip-address=10.10.10.1 --generic-ssh-key ~/.ssh/id_rsa --generic-ssh-user=pi starship
   exit
 fi
 
@@ -55,7 +55,7 @@ elif [ "$1" = "logs" ]; then
   echo "📚 Logs for ${bold}$name${normal}\n"
 
   if [ "$name" = "controller" ]; then
-    ssh crew@starship ssh pi@starship-controller 'docker logs --tail=20 -f controller'
+    ssh pi@starship ssh pi@starship-controller 'docker logs --tail=20 -f controller'
   else
     docker-compose logs --tail=20 -f $2
   fi
@@ -73,12 +73,12 @@ else
     docker build -t toomanycaptains/controller .
 
     echo "\n🚂 Uploading ${bold}$image${normal} to ${bold}starship-controller${normal} via ${bold}starship${normal}\n"
-    docker save toomanycaptains/controller | pv -Ibt | ssh crew@starship ssh pi@starship-controller 'docker load'
+    docker save toomanycaptains/controller | pv -Ibt | ssh pi@starship ssh pi@starship-controller 'docker load'
 
     eval $(docker-machine env --shell=sh starship)
 
     echo "\n🚀 Restarting ${bold}$image${normal}\n"
-    ssh crew@starship "ssh pi@starship-controller 'sudo systemctl restart toomanycaptains-controller'"
+    ssh pi@starship "ssh pi@starship-controller 'sudo systemctl restart toomanycaptains-controller'"
 
     echo "\n🛸🌈 We did it fam"
 
@@ -97,9 +97,9 @@ else
   eval $(docker-machine env --shell=sh starship)
 
   echo "\n🚀 Launching ${bold}$image${normal}\n"
-  if [ "$name" = "game" ]; then
-    name="game kiosk"
-  fi
+  # if [ "$name" = "game" ]; then
+  #   name="game kiosk"
+  # fi
   docker-compose up -d $name
 fi
 

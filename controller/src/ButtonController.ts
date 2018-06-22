@@ -14,7 +14,7 @@ function isButtonPressed(button: Button): boolean {
 }
 
 export class ButtonController {
-  public readonly pollRateMsec: number = 50;
+  public readonly pollRateMsec: number = 15;
   public readonly buttons: Button[];
   public readonly sendPacket: (packet: Packet) => void;
   private prevPresses: Press[] = [];

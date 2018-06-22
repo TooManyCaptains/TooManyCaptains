@@ -1,5 +1,5 @@
-FROM nginx:1.13-alpine
+FROM tobi312/rpi-nginx
 
-COPY * /usr/share/nginx/html/
+COPY * /var/www/html
 
 EXPOSE 80

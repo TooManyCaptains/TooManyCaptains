@@ -7,7 +7,7 @@ function isButtonPressed(button) {
 }
 class ButtonController {
     constructor(buttons, packetHandler, getGameState) {
-        this.pollRateMsec = 50;
+        this.pollRateMsec = 15;
         this.prevPresses = [];
         this.sendPacket = packetHandler;
         this.buttons = buttons;

@@ -1,4 +1,4 @@
-FROM node:9-alpine
+FROM resin/raspberrypi3-alpine-node:slim
 
 # Create app directory
 WORKDIR /usr/src/app

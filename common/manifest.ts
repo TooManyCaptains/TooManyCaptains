@@ -30,12 +30,12 @@ const manifest: ManifestEntry[] = [
   {
     name: 'Amber Clay',
     cardID: 4,
-    sequence: 10672107410,
+    sequence: 161210484,
   },
   {
     name: 'Iris Dodger',
     cardID: 5,
-    sequence: 1042310212,
+    sequence: 1625531010,
   },
   {
     name: 'Razzmic Phlox',
